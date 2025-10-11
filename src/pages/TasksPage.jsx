@@ -47,7 +47,6 @@ const TasksPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [priorityFilter, setPriorityFilter] = useState('All');
-  const [categoryFilter, setCategoryFilter] = useState('All');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
 
@@ -156,8 +155,7 @@ const TasksPage = () => {
                          task.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'All' || task.status === statusFilter;
     const matchesPriority = priorityFilter === 'All' || task.priority === priorityFilter;
-    const matchesCategory = categoryFilter === 'All' || task.category === categoryFilter;
-    return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
+    return matchesSearch && matchesStatus && matchesPriority;
   });
 
   const TaskCard = ({ task }) => (
@@ -295,8 +293,6 @@ const TasksPage = () => {
           setStatusFilter={setStatusFilter}
           priorityFilter={priorityFilter}
           setPriorityFilter={setPriorityFilter}
-          categoryFilter={categoryFilter}
-          setCategoryFilter={setCategoryFilter}
         />
       </Box>
 
@@ -321,9 +317,9 @@ const TasksPage = () => {
               No tasks found
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {searchTerm || statusFilter !== 'All' || priorityFilter !== 'All' || categoryFilter !== 'All'
+              {searchTerm || statusFilter !== 'All' || priorityFilter !== 'All'
                 ? 'Try adjusting your search or filter criteria.'
-                : 'Create your first task to get started.'
+                : 'No tasks available.'
               }
             </Typography>
           </Card>

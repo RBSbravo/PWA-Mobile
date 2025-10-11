@@ -11,15 +11,12 @@ const TaskFilterChips = ({
   setStatusFilter,
   priorityFilter,
   setPriorityFilter,
-  categoryFilter,
-  setCategoryFilter,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const statusOptions = ['All', 'Pending', 'In Progress', 'Completed', 'Declined'];
   const priorityOptions = ['All', 'High', 'Medium', 'Low'];
-  const categoryOptions = ['All', 'General', 'Documentation'];
 
   return (
     <Box
@@ -106,47 +103,6 @@ const TaskFilterChips = ({
               '&:hover': {
                 backgroundColor: priorityFilter === priority 
                   ? theme.palette.secondary.dark 
-                  : theme.palette.action.hover,
-              },
-            }}
-          />
-        ))}
-      </Box>
-
-      {/* Category Filter Chips */}
-      <Box
-        sx={{
-          display: 'flex',
-          gap: 1,
-          overflowX: 'auto',
-          pb: 0.5,
-          '&::-webkit-scrollbar': {
-            display: 'none',
-          },
-          '-ms-overflow-style': 'none',
-          'scrollbar-width': 'none',
-        }}
-      >
-        {categoryOptions.map((category) => (
-          <Chip
-            key={category}
-            label={category}
-            onClick={() => setCategoryFilter(category)}
-            variant={categoryFilter === category ? 'filled' : 'outlined'}
-            color={categoryFilter === category ? 'info' : 'default'}
-            size="small"
-            sx={{
-              minWidth: 'auto',
-              borderRadius: theme.shape.borderRadius * 3,
-              fontWeight: categoryFilter === category ? 600 : 500,
-              fontSize: isMobile ? 11 : 12,
-              height: 28,
-              '& .MuiChip-label': {
-                px: 1.2,
-              },
-              '&:hover': {
-                backgroundColor: categoryFilter === category 
-                  ? theme.palette.info.dark 
                   : theme.palette.action.hover,
               },
             }}
