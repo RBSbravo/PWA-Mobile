@@ -250,13 +250,12 @@ const DashboardPage = () => {
       <Box sx={{ 
         backgroundColor: theme.palette.primaryContainer,
         borderRadius: theme.shape.borderRadius * 2,
-        p: isMobile ? 2 : 4,
-        m: isMobile ? 2 : 4,
+        p: { xs: 2, sm: 3, md: 4 },
         mb: 4,
         boxShadow: theme.shadows[1],
       }}>
-        <Grid container spacing={isMobile ? 2 : 3}>
-          <Grid item xs={12} sm={6}>
+        <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
             <StatCard
               icon={<AssignmentIcon />}
               label="Open Tasks"
@@ -264,7 +263,7 @@ const DashboardPage = () => {
               color="primary"
             />
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} md={3}>
             <StatCard
               icon={<ErrorIcon />}
               label="Overdue"
@@ -272,13 +271,29 @@ const DashboardPage = () => {
               color="error"
             />
           </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={<AssignmentIcon />}
+              label="Completed"
+              value={stats.completedTasks}
+              color="success"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <StatCard
+              icon={<AssignmentIcon />}
+              label="Total Tasks"
+              value={stats.totalTasks}
+              color="info"
+            />
+          </Grid>
         </Grid>
       </Box>
 
-      <Divider sx={{ mx: isMobile ? 2 : 4 }} />
+      <Divider sx={{ mb: 4 }} />
 
       {/* Recent Activity */}
-      <Box sx={{ p: isMobile ? 2 : 4 }}>
+      <Box sx={{ mb: 4 }}>
         <RecentActivityCard />
       </Box>
     </Box>

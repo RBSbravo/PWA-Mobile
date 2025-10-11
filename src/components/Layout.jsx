@@ -167,32 +167,74 @@ const Layout = ({ children }) => {
         </Drawer>
       )}
 
-      {/* Desktop Sidebar */}
+      {/* Desktop Top Navigation Bar */}
       {!isMobile && (
-        <Drawer
-          variant="permanent"
-          sx={{
-            width: 250,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: 250,
-              boxSizing: 'border-box',
-              position: 'relative',
-            },
+        <AppBar 
+          position="static" 
+          sx={{ 
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+            boxShadow: theme.shadows[1],
+            borderBottom: `1px solid ${theme.palette.divider}`,
           }}
         >
-          {drawerContent}
-        </Drawer>
+          <Toolbar sx={{ justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="h6" fontWeight="bold" color="primary.main">
+                MITO Task Manager
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {navigationItems.map((item, index) => (
+                <IconButton
+                  key={item.label}
+                  onClick={() => navigate(item.path)}
+                  color={currentTab === index ? 'primary' : 'default'}
+                  sx={{
+                    borderRadius: 2,
+                    px: 2,
+                    py: 1,
+                    backgroundColor: currentTab === index ? theme.palette.primary.main + '20' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: theme.palette.action.hover,
+                    },
+                  }}
+                >
+                  {item.badge ? (
+                    <Badge 
+                      badgeContent={item.badge} 
+                      color="error"
+                      sx={{
+                        '& .MuiBadge-badge': {
+                          fontSize: '0.7rem',
+                          height: '18px',
+                          minWidth: '18px',
+                        },
+                      }}
+                    >
+                      {item.icon}
+                    </Badge>
+                  ) : (
+                    item.icon
+                  )}
+                </IconButton>
+              ))}
+            </Box>
+          </Toolbar>
+        </AppBar>
       )}
 
-      {/* Main Content */}
+      {/* Main Content - Full Width */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: isMobile ? 2 : 3,
-          width: isMobile ? '100%' : 'calc(100% - 250px)',
+          width: '100%',
           mt: isMobile ? '64px' : 0,
+          maxWidth: '100%',
+          mx: 'auto',
+          px: { xs: 2, sm: 3, md: 4, lg: 6 },
+          py: { xs: 2, sm: 3 },
         }}
       >
         {children}

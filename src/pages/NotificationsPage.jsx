@@ -329,7 +329,7 @@ const NotificationsPage = () => {
       )}
 
       {/* Tabs */}
-      <Box sx={{ p: isMobile ? 2 : 4, pt: 0, pb: 2 }}>
+      <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
           {TABS.map(t => {
             let count = 0;
@@ -355,7 +355,7 @@ const NotificationsPage = () => {
       </Box>
 
       {/* Notifications List */}
-      <Box sx={{ p: isMobile ? 2 : 4, pt: 0 }}>
+      <Box sx={{ mb: 4 }}>
         {filteredNotifications.length > 0 ? (
           filteredNotifications.map((notification) => (
             <NotificationItem key={notification.id} item={notification} />

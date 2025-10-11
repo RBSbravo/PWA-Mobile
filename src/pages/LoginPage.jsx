@@ -105,14 +105,14 @@ const LoginPage = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        p: 2,
+        p: { xs: 2, sm: 3, md: 4 },
       }}
     >
       <Card
         sx={{
           width: '100%',
-          maxWidth: 400,
-          borderRadius: 5,
+          maxWidth: { xs: '100%', sm: 450, md: 500 },
+          borderRadius: theme.shape.borderRadius * 2.5,
           boxShadow: theme.shadows[4],
           backgroundColor: theme.palette.surface,
           border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',

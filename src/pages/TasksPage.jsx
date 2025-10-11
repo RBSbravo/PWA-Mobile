@@ -328,7 +328,7 @@ const TasksPage = () => {
       )}
 
       {/* Search */}
-      <Box sx={{ p: isMobile ? 2 : 4, pt: 2 }}>
+      <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
           placeholder="Search tasks..."
@@ -351,7 +351,7 @@ const TasksPage = () => {
       </Box>
 
       {/* Filter Chips */}
-      <Box sx={{ px: isMobile ? 2 : 4 }}>
+      <Box sx={{ mb: 3 }}>
         <TaskFilterChips
           statusFilter={statusFilter}
           setStatusFilter={setStatusFilter}
@@ -363,11 +363,15 @@ const TasksPage = () => {
       </Box>
 
       {/* Tasks List */}
-      <Box sx={{ p: isMobile ? 2 : 4, pt: 0 }}>
+      <Box sx={{ mb: 4 }}>
         {filteredTasks.length > 0 ? (
-          filteredTasks.map((task) => (
-            <TaskItem key={task.id} task={task} onPress={(task) => navigate(`/tasks/${task.id}`)} />
-          ))
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
+            {filteredTasks.map((task) => (
+              <Grid item xs={12} sm={6} lg={4} key={task.id}>
+                <TaskItem task={task} onPress={(task) => navigate(`/tasks/${task.id}`)} />
+              </Grid>
+            ))}
+          </Grid>
         ) : (
           <Card sx={{ 
             p: 4, 

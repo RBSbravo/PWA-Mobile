@@ -217,7 +217,7 @@ const ProfilePage = () => {
       )}
 
       {/* Profile Information */}
-      <Box sx={{ p: isMobile ? 2 : 4, pt: 0 }}>
+      <Box sx={{ mb: 4 }}>
         <Card sx={{ 
           backgroundColor: theme.palette.surface,
           border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
@@ -249,7 +249,7 @@ const ProfilePage = () => {
       </Box>
 
       {/* Action Buttons */}
-      <Box sx={{ p: isMobile ? 2 : 4, pt: 0 }}>
+      <Box sx={{ mb: 4 }}>
         <Button
           fullWidth
           variant="contained"
@@ -309,7 +309,7 @@ const ProfilePage = () => {
       </Box>
 
       {/* Theme Toggle */}
-      <Box sx={{ p: isMobile ? 2 : 4, pt: 0 }}>
+      <Box sx={{ mb: 4 }}>
         <Card sx={{ 
           backgroundColor: theme.palette.surface,
           border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
