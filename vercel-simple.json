@@ -1,7 +1,6 @@
 {
   "version": 2,
-  "name": "mito-pwa-mobile-app",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:prod",
   "outputDirectory": "dist",
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",
@@ -22,10 +21,5 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "VITE_API_URL": "https://ticketing-and-task-management-system-production.up.railway.app/api",
-    "VITE_SOCKET_URL": "https://ticketing-and-task-management-system-production.up.railway.app"
-  }
+  ]
 }
