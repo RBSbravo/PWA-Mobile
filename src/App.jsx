@@ -75,11 +75,11 @@ const AppContent = () => {
         alignItems="center"
         minHeight="100vh"
         sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          backgroundColor: theme.palette.background.default,
         }}
       >
-        <Box textAlign="center" color="white">
-          <CircularProgress color="inherit" size={60} />
+        <Box textAlign="center" color="text.primary">
+          <CircularProgress color="primary" size={60} />
           <Box mt={2} fontSize="18px" fontWeight={500}>
             MITO Task Manager
           </Box>

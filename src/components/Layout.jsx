@@ -168,62 +168,7 @@ const Layout = ({ children }) => {
         </Drawer>
       )}
 
-      {/* Desktop Top Navigation Bar */}
-      {isDesktop && (
-        <AppBar 
-          position="static" 
-          sx={{ 
-            backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-            boxShadow: theme.shadows[1],
-            borderBottom: `1px solid ${theme.palette.divider}`,
-          }}
-        >
-          <Toolbar sx={{ justifyContent: 'space-between' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant="h6" fontWeight="bold" color="primary.main">
-                MITO Task Manager
-              </Typography>
-            </Box>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              {navigationItems.map((item, index) => (
-                <IconButton
-                  key={item.label}
-                  onClick={() => navigate(item.path)}
-                  color={currentTab === index ? 'primary' : 'default'}
-                  sx={{
-                    borderRadius: 2,
-                    px: 2,
-                    py: 1,
-                    backgroundColor: currentTab === index ? theme.palette.primary.main + '20' : 'transparent',
-                    '&:hover': {
-                      backgroundColor: theme.palette.action.hover,
-                    },
-                  }}
-                >
-                  {item.badge ? (
-                    <Badge 
-                      badgeContent={item.badge} 
-                      color="error"
-                      sx={{
-                        '& .MuiBadge-badge': {
-                          fontSize: '0.7rem',
-                          height: '18px',
-                          minWidth: '18px',
-                        },
-                      }}
-                    >
-                      {item.icon}
-                    </Badge>
-                  ) : (
-                    item.icon
-                  )}
-                </IconButton>
-              ))}
-            </Box>
-          </Toolbar>
-        </AppBar>
-      )}
+      {/* Desktop Top Navigation Bar - REMOVED */}
 
       {/* Main Content - Full Width */}
       <Box
@@ -238,20 +183,19 @@ const Layout = ({ children }) => {
         {children}
       </Box>
 
-      {/* Mobile Bottom Navigation */}
-      {isMobile && (
-        <Paper
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: theme.zIndex.appBar,
-            backgroundColor: theme.palette.surface,
-            borderTop: `1px solid ${theme.palette.border}`,
-          }}
-          elevation={8}
-        >
+      {/* Bottom Navigation - All Screen Sizes */}
+      <Paper
+        sx={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: theme.zIndex.appBar,
+          backgroundColor: theme.palette.surface,
+          borderTop: `1px solid ${theme.palette.border}`,
+        }}
+        elevation={8}
+      >
           <BottomNavigation
             value={currentTab}
             onChange={handleTabChange}
@@ -303,10 +247,9 @@ const Layout = ({ children }) => {
             ))}
           </BottomNavigation>
         </Paper>
-      )}
 
-      {/* Bottom padding for mobile bottom navigation */}
-      {isMobile && <Box sx={{ height: '80px' }} />}
+      {/* Bottom padding for bottom navigation */}
+      <Box sx={{ height: '80px' }} />
     </Box>
   );
 };
