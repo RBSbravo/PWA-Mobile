@@ -1,21 +1,21 @@
 import { createTheme } from '@mui/material/styles';
 
-// Color palette
+// Mobile app color scheme
 const colors = {
-  primary: '#667eea',
-  secondary: '#764ba2',
-  success: '#4caf50',
-  warning: '#ff9800',
-  error: '#f44336',
+  primary: '#2E7D32', // A deeper green for primary actions
+  primaryContainer: '#C8E6C9', // A light green for containers or highlights
+  secondary: '#4CAF50', // A brighter green for secondary elements
+  accent: '#FFC107', // A warm accent color
+  background: '#F5F5F5', // A very light grey for the main background
+  surface: '#FFFFFF', // White for card backgrounds, etc.
+  text: '#212121', // Primary text color
+  textSecondary: '#757575', // Lighter text for subtitles, etc.
+  placeholder: '#BDBDBD',
+  error: '#D32F2F',
+  success: '#388E3C',
+  warning: '#FBC02D',
+  border: '#E0E0E0',
   info: '#2196f3',
-  background: '#f5f5f5',
-  surface: '#ffffff',
-  text: '#333333',
-  textSecondary: '#666666',
-  border: '#e0e0e0',
-  accent: '#ff6b6b',
-  primaryContainer: '#e3f2fd',
-  secondaryContainer: '#f3e5f5',
 };
 
 // Typography
@@ -191,42 +191,73 @@ export const theme = createTheme({
   },
 });
 
+// Dark theme colors
+const darkColors = {
+  primary: '#66BB6A', // A lighter green for dark mode primary actions
+  primaryContainer: '#2E7D32', // Darker green for containers in dark mode
+  secondary: '#81C784',
+  accent: '#FFCA28',
+  background: '#121212', // Standard dark background
+  surface: '#1E1E1E', // Slightly lighter surface for cards
+  text: '#E0E0E0', // Light grey text
+  textSecondary: '#BDBDBD', // Dimmer text
+  placeholder: '#757575',
+  error: '#EF5350',
+  success: '#66BB6A',
+  warning: '#FFA000', // Darker yellow for better contrast with light text
+  border: '#424242',
+  info: '#42A5F5',
+};
+
 // Dark theme
 export const darkTheme = createTheme({
   ...theme,
   palette: {
     mode: 'dark',
     primary: {
-      main: colors.primary,
-      light: '#9bb5ff',
-      dark: '#4a5bb7',
+      main: darkColors.primary,
+      light: darkColors.primaryContainer,
+      dark: '#2E7D32',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: colors.secondary,
-      light: '#a574c7',
-      dark: '#4a2c5a',
+      main: darkColors.secondary,
+      light: '#A5D6A7',
+      dark: '#4CAF50',
       contrastText: '#ffffff',
     },
     success: {
-      main: colors.success,
+      main: darkColors.success,
     },
     warning: {
-      main: colors.warning,
+      main: darkColors.warning,
     },
     error: {
-      main: colors.error,
+      main: darkColors.error,
     },
     info: {
-      main: colors.info,
+      main: darkColors.info,
     },
     background: {
-      default: '#121212',
-      paper: '#1e1e1e',
+      default: darkColors.background,
+      paper: darkColors.surface,
     },
     text: {
-      primary: '#ffffff',
-      secondary: '#b3b3b3',
+      primary: darkColors.text,
+      secondary: darkColors.textSecondary,
+    },
+    divider: darkColors.border,
+  },
+  components: {
+    ...theme.components,
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: borderRadius.lg,
+          boxShadow: shadows.sm,
+          border: `1px solid ${darkColors.border}`,
+        },
+      },
     },
   },
 });

@@ -17,6 +17,14 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Fab,
+  useTheme,
+  useMediaQuery,
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -26,22 +34,37 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Visibility as ViewIcon,
+  Assignment as AssignmentIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import socketService from '../services/socket';
 import { format } from 'date-fns';
+import ScreenHeader from '../components/ScreenHeader';
+import TaskItem from '../components/TaskItem';
+import TaskFilterChips from '../components/TaskFilterChips';
+import FileAttachment from '../components/FileAttachment';
+import FullScreenLoader from '../components/FullScreenLoader';
 
 const TasksPage = () => {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { token, user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [priorityFilter, setPriorityFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskDescription, setNewTaskDescription] = useState('');
+  const [newTaskFiles, setNewTaskFiles] = useState([]);
+  const [creating, setCreating] = useState(false);
 
   const fetchTasks = useCallback(async () => {
     if (!token) return;
@@ -146,9 +169,54 @@ const TasksPage = () => {
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || task.status?.toLowerCase() === filterStatus.toLowerCase();
-    return matchesSearch && matchesFilter;
+    const matchesStatus = statusFilter === 'All' || task.status === statusFilter;
+    const matchesPriority = priorityFilter === 'All' || task.priority === priorityFilter;
+    const matchesCategory = categoryFilter === 'All' || task.category === categoryFilter;
+    return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
   });
+
+  const handleCreateTask = async () => {
+    if (!newTaskTitle.trim()) return;
+    
+    setCreating(true);
+    try {
+      const taskData = {
+        title: newTaskTitle.trim(),
+        description: newTaskDescription.trim(),
+        status: 'Pending',
+        priority: 'Medium',
+        category: 'General',
+        assignedTo: user?.id,
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+      };
+      
+      const newTask = await api.createTask(token, taskData);
+      setTasks(prev => [newTask, ...prev]);
+      
+      // Upload files if any
+      for (const file of newTaskFiles) {
+        await api.uploadTaskAttachment(token, newTask.id, file);
+      }
+      
+      setCreateDialogOpen(false);
+      setNewTaskTitle('');
+      setNewTaskDescription('');
+      setNewTaskFiles([]);
+    } catch (error) {
+      setError('Failed to create task.');
+      console.error('Create task error:', error);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleFileUpload = async (file) => {
+    setNewTaskFiles(prev => [...prev, file]);
+  };
+
+  const handleFileRemove = (index) => {
+    setNewTaskFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const TaskCard = ({ task }) => (
     <Card
@@ -156,9 +224,12 @@ const TasksPage = () => {
         mb: 2,
         cursor: 'pointer',
         transition: 'all 0.2s ease-in-out',
+        backgroundColor: theme.palette.surface,
+        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+        borderRadius: theme.shape.borderRadius * 2,
         '&:hover': {
           transform: 'translateY(-2px)',
-          boxShadow: 3,
+          boxShadow: theme.shadows[4],
         },
       }}
       onClick={() => navigate(`/tasks/${task.id}`)}
@@ -194,6 +265,7 @@ const TasksPage = () => {
             color={getStatusColor(task.status)}
             size="small"
             variant="outlined"
+            sx={{ borderRadius: theme.shape.borderRadius }}
           />
           
           {task.dueDate && (
@@ -228,103 +300,172 @@ const TasksPage = () => {
   }
 
   return (
-    <Box>
+    <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
       {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" fontWeight="bold">
-          Tasks
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => navigate('/tasks/new')}
-          sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
-            },
-          }}
-        >
-          New Task
-        </Button>
-      </Box>
+      <ScreenHeader
+        title="Tasks"
+        leftIcon={<AssignmentIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
+        rightAction={
+          <Button
+            variant="text"
+            startIcon={<AddIcon />}
+            onClick={() => setCreateDialogOpen(true)}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 500,
+              color: theme.palette.primary.main,
+            }}
+          >
+            {isMobile ? '' : 'New Task'}
+          </Button>
+        }
+      />
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ m: isMobile ? 2 : 4, mb: 2 }}>
           {error}
         </Alert>
       )}
 
-      {/* Search and Filter */}
-      <Box sx={{ mb: 3 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={8}>
-            <TextField
-              fullWidth
-              placeholder="Search tasks..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              fullWidth
-              select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <FilterIcon />
-                  </InputAdornment>
-                ),
-              }}
-            >
-              <MenuItem value="all">All Tasks</MenuItem>
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="in progress">In Progress</MenuItem>
-              <MenuItem value="completed">Completed</MenuItem>
-              <MenuItem value="overdue">Overdue</MenuItem>
-            </TextField>
-          </Grid>
-        </Grid>
+      {/* Search */}
+      <Box sx={{ p: isMobile ? 2 : 4, pt: 2 }}>
+        <TextField
+          fullWidth
+          placeholder="Search tasks..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: theme.shape.borderRadius * 2,
+              backgroundColor: theme.palette.surface,
+            },
+          }}
+        />
+      </Box>
+
+      {/* Filter Chips */}
+      <Box sx={{ px: isMobile ? 2 : 4 }}>
+        <TaskFilterChips
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          priorityFilter={priorityFilter}
+          setPriorityFilter={setPriorityFilter}
+          categoryFilter={categoryFilter}
+          setCategoryFilter={setCategoryFilter}
+        />
       </Box>
 
       {/* Tasks List */}
-      {filteredTasks.length > 0 ? (
-        <Box>
-          {filteredTasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </Box>
-      ) : (
-        <Card>
-          <CardContent sx={{ textAlign: 'center', py: 6 }}>
+      <Box sx={{ p: isMobile ? 2 : 4, pt: 0 }}>
+        {filteredTasks.length > 0 ? (
+          filteredTasks.map((task) => (
+            <TaskItem key={task.id} task={task} onPress={(task) => navigate(`/tasks/${task.id}`)} />
+          ))
+        ) : (
+          <Card sx={{ 
+            p: 4, 
+            textAlign: 'center',
+            backgroundColor: theme.palette.surface,
+            border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+          }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
               No tasks found
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {searchTerm || filterStatus !== 'all' 
+              {searchTerm || statusFilter !== 'All' || priorityFilter !== 'All' || categoryFilter !== 'All'
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Create your first task to get started.'
               }
             </Typography>
-          </CardContent>
-        </Card>
-      )}
+          </Card>
+        )}
+      </Box>
 
-      {/* Task Actions Menu */}
+      {/* Floating Action Button */}
+      <Fab
+        color="primary"
+        aria-label="add task"
+        onClick={() => setCreateDialogOpen(true)}
+        sx={{
+          position: 'fixed',
+          bottom: isMobile ? 100 : 24,
+          right: 24,
+          zIndex: theme.zIndex.speedDial,
+        }}
+      >
+        <AddIcon />
+      </Fab>
+
+      {/* Create Task Dialog */}
+      <Dialog 
+        open={createDialogOpen} 
+        onClose={() => setCreateDialogOpen(false)} 
+        maxWidth="sm" 
+        fullWidth
+        fullScreen={isMobile}
+      >
+        <DialogTitle>Create New Task</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Task Title"
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+            margin="normal"
+            required
+            sx={{ borderRadius: theme.shape.borderRadius * 2 }}
+          />
+          <TextField
+            fullWidth
+            label="Description"
+            value={newTaskDescription}
+            onChange={(e) => setNewTaskDescription(e.target.value)}
+            margin="normal"
+            multiline
+            rows={3}
+            sx={{ borderRadius: theme.shape.borderRadius * 2 }}
+          />
+          <FileAttachment
+            onUpload={handleFileUpload}
+            files={newTaskFiles}
+            onRemove={handleFileRemove}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCreateDialogOpen(false)} disabled={creating}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleCreateTask} 
+            variant="contained"
+            disabled={creating || !newTaskTitle.trim()}
+            startIcon={creating ? <CircularProgress size={20} /> : null}
+          >
+            {creating ? 'Creating...' : 'Create Task'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Context Menu */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
       >
         <MenuItem onClick={handleViewTask}>
           <ListItemIcon>
@@ -338,13 +479,16 @@ const TasksPage = () => {
           </ListItemIcon>
           <ListItemText>Edit Task</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleDeleteTask}>
+        <MenuItem onClick={handleDeleteTask} sx={{ color: 'error.main' }}>
           <ListItemIcon>
-            <DeleteIcon fontSize="small" />
+            <DeleteIcon fontSize="small" color="error" />
           </ListItemIcon>
           <ListItemText>Delete Task</ListItemText>
         </MenuItem>
       </Menu>
+
+      {/* Loading Overlay */}
+      <FullScreenLoader visible={loading} message="Loading tasks..." />
     </Box>
   );
 };

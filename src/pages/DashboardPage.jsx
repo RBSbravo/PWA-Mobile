@@ -11,6 +11,7 @@ import {
   Avatar,
   useTheme,
   useMediaQuery,
+  Divider,
 } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
@@ -21,6 +22,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
 import api from '../services/api';
 import socketService from '../services/socket';
+import ScreenHeader from '../components/ScreenHeader';
 
 const DashboardPage = () => {
   const theme = useTheme();
@@ -121,8 +123,10 @@ const DashboardPage = () => {
     <Card
       sx={{
         height: '100%',
-        background: `linear-gradient(135deg, ${theme.palette[color].main}20 0%, ${theme.palette[color].main}10 100%)`,
-        border: `1px solid ${theme.palette[color].main}30`,
+        backgroundColor: theme.palette.surface,
+        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+        borderRadius: theme.shape.borderRadius * 2,
+        boxShadow: theme.shadows[2],
       }}
     >
       <CardContent sx={{ textAlign: 'center', p: 3 }}>
@@ -155,7 +159,7 @@ const DashboardPage = () => {
         </Typography>
         {notifications.length > 0 ? (
           <Box>
-            {notifications.slice(0, 3).map((notification, index) => (
+            {notifications.slice(0, 1).map((notification, index) => (
               <Box
                 key={notification.id || index}
                 sx={{
@@ -165,12 +169,12 @@ const DashboardPage = () => {
                   mb: 1,
                   borderRadius: 2,
                   backgroundColor: theme.palette.background.paper,
-                  border: `1px solid ${theme.palette.divider}`,
+                  border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
                 }}
               >
                 <NotificationsIcon
                   color="primary"
-                  sx={{ mr: 2, fontSize: 24 }}
+                  sx={{ mr: 2, fontSize: 28 }}
                 />
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="body2" fontWeight="medium">
@@ -182,14 +186,6 @@ const DashboardPage = () => {
                     </Typography>
                   )}
                 </Box>
-                {!notification.isRead && (
-                  <Chip
-                    label="New"
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                  />
-                )}
               </Box>
             ))}
           </Box>
@@ -201,9 +197,8 @@ const DashboardPage = () => {
               color: 'text.secondary',
             }}
           >
-            <NotificationsIcon sx={{ fontSize: 48, mb: 2, opacity: 0.5 }} />
             <Typography variant="body2">
-              No recent activity
+              No recent activity.
             </Typography>
           </Box>
         )}
@@ -225,85 +220,67 @@ const DashboardPage = () => {
   }
 
   return (
-    <Box>
-      {/* Welcome Header */}
-      <Box mb={4}>
-        <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
-          Welcome back, {user?.firstname || 'User'}!
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Here's a look at your day.
-        </Typography>
-      </Box>
+    <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
+      {/* Header */}
+      <ScreenHeader
+        title={`Welcome, ${user?.firstname || 'User'}!`}
+        subtitle="Here's a look at your day."
+        leftIcon={
+          <Avatar
+            sx={{
+              bgcolor: theme.palette.primary.main,
+              width: 40,
+              height: 40,
+              fontSize: 20,
+              fontWeight: 'bold',
+            }}
+          >
+            {user?.firstname ? user.firstname.charAt(0).toUpperCase() : 'U'}
+          </Avatar>
+        }
+      />
 
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ m: isMobile ? 2 : 4, mb: 2 }}>
           {error}
         </Alert>
       )}
 
-      {/* Stats Grid */}
-      <Grid container spacing={3} mb={4}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<AssignmentIcon />}
-            label="Open Tasks"
-            value={stats.pendingTasks}
-            color="primary"
-          />
+      {/* Stats Container */}
+      <Box sx={{ 
+        backgroundColor: theme.palette.primaryContainer,
+        borderRadius: theme.shape.borderRadius * 2,
+        p: isMobile ? 2 : 4,
+        m: isMobile ? 2 : 4,
+        mb: 4,
+        boxShadow: theme.shadows[1],
+      }}>
+        <Grid container spacing={isMobile ? 2 : 3}>
+          <Grid item xs={12} sm={6}>
+            <StatCard
+              icon={<AssignmentIcon />}
+              label="Open Tasks"
+              value={stats.pendingTasks}
+              color="primary"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <StatCard
+              icon={<ErrorIcon />}
+              label="Overdue"
+              value={stats.overdueTasks}
+              color="error"
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<ErrorIcon />}
-            label="Overdue"
-            value={stats.overdueTasks}
-            color="error"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<AssignmentIcon />}
-            label="Completed"
-            value={stats.completedTasks}
-            color="success"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            icon={<AssignmentIcon />}
-            label="Total Tasks"
-            value={stats.totalTasks}
-            color="info"
-          />
-        </Grid>
-      </Grid>
+      </Box>
+
+      <Divider sx={{ mx: isMobile ? 2 : 4 }} />
 
       {/* Recent Activity */}
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <RecentActivityCard />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom fontWeight="bold">
-                Quick Actions
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  • View all tasks
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  • Check notifications
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  • Update profile
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+      <Box sx={{ p: isMobile ? 2 : 4 }}>
+        <RecentActivityCard />
+      </Box>
     </Box>
   );
 };

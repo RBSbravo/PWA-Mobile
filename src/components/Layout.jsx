@@ -207,21 +207,32 @@ const Layout = ({ children }) => {
             left: 0,
             right: 0,
             zIndex: theme.zIndex.appBar,
+            backgroundColor: theme.palette.surface,
+            borderTop: `1px solid ${theme.palette.border}`,
           }}
-          elevation={3}
+          elevation={8}
         >
           <BottomNavigation
             value={currentTab}
             onChange={handleTabChange}
             showLabels
             sx={{
+              backgroundColor: theme.palette.surface,
               '& .MuiBottomNavigationAction-root': {
                 minWidth: 'auto',
-                padding: '6px 0 8px',
+                padding: '8px 0 12px',
+                color: theme.palette.text.secondary,
+                '&.Mui-selected': {
+                  color: theme.palette.primary.main,
+                },
               },
               '& .MuiBottomNavigationAction-label': {
                 fontSize: '0.75rem',
                 marginTop: '4px',
+                fontWeight: 500,
+                '&.Mui-selected': {
+                  fontWeight: 600,
+                },
               },
             }}
           >
@@ -231,7 +242,17 @@ const Layout = ({ children }) => {
                 label={item.label}
                 icon={
                   item.badge ? (
-                    <Badge badgeContent={item.badge} color="error">
+                    <Badge 
+                      badgeContent={item.badge} 
+                      color="error"
+                      sx={{
+                        '& .MuiBadge-badge': {
+                          fontSize: '0.7rem',
+                          height: '18px',
+                          minWidth: '18px',
+                        },
+                      }}
+                    >
                       {item.icon}
                     </Badge>
                   ) : (
