@@ -127,25 +127,7 @@ const Layout = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Mobile App Bar */}
-      {isMobile && (
-        <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div">
-              MITO Task Manager
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      )}
+      {/* Mobile App Bar - REMOVED */}
 
       {/* Mobile Drawer */}
       {isMobile && (
@@ -176,8 +158,7 @@ const Layout = ({ children }) => {
         sx={{
           flexGrow: 1,
           width: '100%',
-          mt: isMobile ? '64px' : 0,
-          minHeight: 'calc(100vh - 64px)',
+          minHeight: '100vh',
         }}
       >
         {children}
