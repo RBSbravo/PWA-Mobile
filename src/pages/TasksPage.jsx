@@ -224,8 +224,8 @@ const TasksPage = () => {
         mb: 2,
         cursor: 'pointer',
         transition: 'all 0.2s ease-in-out',
-        backgroundColor: theme.palette.background.paper,
-        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+        backgroundColor: theme.palette.surface,
+        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
         borderRadius: theme.shape.borderRadius * 2,
         '&:hover': {
           transform: 'translateY(-2px)',
@@ -354,7 +354,7 @@ const TasksPage = () => {
           sx={{
             '& .MuiOutlinedInput-root': {
               borderRadius: theme.shape.borderRadius * 2,
-              backgroundColor: theme.palette.background.paper,
+              backgroundColor: theme.palette.surface,
             },
           }}
         />
@@ -386,8 +386,8 @@ const TasksPage = () => {
           <Card sx={{ 
             p: 4, 
             textAlign: 'center',
-            backgroundColor: theme.palette.background.paper,
-            border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+            backgroundColor: theme.palette.surface,
+            border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
           }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
               No tasks found

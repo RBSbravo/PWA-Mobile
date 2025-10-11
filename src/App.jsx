@@ -24,7 +24,6 @@ import OfflinePage from './pages/OfflinePage';
 // Components
 import Layout from './components/Layout';
 import GlobalNotificationSnackbar from './components/GlobalNotificationSnackbar';
-import ErrorBoundary from './components/ErrorBoundary';
 
 // Services
 import socketService from './services/socket';
@@ -145,17 +144,15 @@ const AppContent = () => {
 // Main App Component
 const App = () => {
   return (
-    <ErrorBoundary>
-      <AppThemeProvider>
-        <ErrorProvider>
-          <AuthProvider>
-            <NotificationProvider>
-              <AppContent />
-            </NotificationProvider>
-          </AuthProvider>
-        </ErrorProvider>
-      </AppThemeProvider>
-    </ErrorBoundary>
+    <AppThemeProvider>
+      <ErrorProvider>
+        <AuthProvider>
+          <NotificationProvider>
+            <AppContent />
+          </NotificationProvider>
+        </AuthProvider>
+      </ErrorProvider>
+    </AppThemeProvider>
   );
 };
 

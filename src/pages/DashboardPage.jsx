@@ -123,8 +123,8 @@ const DashboardPage = () => {
     <Card
       sx={{
         height: '100%',
-        backgroundColor: theme.palette.background.paper,
-        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+        backgroundColor: theme.palette.surface,
+        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
         borderRadius: theme.shape.borderRadius * 2,
         boxShadow: theme.shadows[2],
       }}
@@ -169,7 +169,7 @@ const DashboardPage = () => {
                   mb: 1,
                   borderRadius: 2,
                   backgroundColor: theme.palette.background.paper,
-                  border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+                  border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
                 }}
               >
                 <NotificationsIcon
@@ -258,7 +258,7 @@ const DashboardPage = () => {
 
         {/* Stats Container */}
         <Box sx={{ 
-          backgroundColor: theme.palette.primary.light,
+          backgroundColor: theme.palette.primaryContainer,
           borderRadius: theme.shape.borderRadius * 2,
           p: { xs: 2, sm: 3, md: 4 },
           mb: 4,

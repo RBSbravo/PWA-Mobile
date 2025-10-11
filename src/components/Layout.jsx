@@ -127,7 +127,25 @@ const Layout = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Mobile App Bar - REMOVED */}
+      {/* Mobile App Bar */}
+      {isMobile && (
+        <AppBar position="fixed" sx={{ zIndex: theme.zIndex.drawer + 1 }}>
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div">
+              MITO Task Manager
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      )}
 
       {/* Mobile Drawer */}
       {isMobile && (
@@ -158,7 +176,8 @@ const Layout = ({ children }) => {
         sx={{
           flexGrow: 1,
           width: '100%',
-          minHeight: '100vh',
+          mt: isMobile ? '64px' : 0,
+          minHeight: 'calc(100vh - 64px)',
         }}
       >
         {children}
@@ -172,8 +191,8 @@ const Layout = ({ children }) => {
           left: 0,
           right: 0,
           zIndex: theme.zIndex.appBar,
-          backgroundColor: theme.palette.background.paper,
-          borderTop: `1px solid ${theme.palette.divider}`,
+          backgroundColor: theme.palette.surface,
+          borderTop: `1px solid ${theme.palette.border}`,
         }}
         elevation={8}
       >
@@ -182,7 +201,7 @@ const Layout = ({ children }) => {
             onChange={handleTabChange}
             showLabels
             sx={{
-              backgroundColor: theme.palette.background.paper,
+              backgroundColor: theme.palette.surface,
               '& .MuiBottomNavigationAction-root': {
                 minWidth: 'auto',
                 padding: '8px 0 12px',

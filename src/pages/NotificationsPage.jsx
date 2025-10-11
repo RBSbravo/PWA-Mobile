@@ -216,8 +216,8 @@ const NotificationsPage = () => {
         sx={{
           mb: 1,
           cursor: 'pointer',
-          backgroundColor: isRead ? theme.palette.background.paper : theme.palette.primary.light,
-          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+          backgroundColor: isRead ? theme.palette.surface : theme.palette.primaryContainer,
+          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
           borderRadius: theme.shape.borderRadius * 2,
           '&:hover': {
             boxShadow: theme.shadows[2],
@@ -374,8 +374,8 @@ const NotificationsPage = () => {
           <Card sx={{ 
             p: 4, 
             textAlign: 'center',
-            backgroundColor: theme.palette.background.paper,
-            border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+            backgroundColor: theme.palette.surface,
+            border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
           }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
               No notifications found

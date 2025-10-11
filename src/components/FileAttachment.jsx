@@ -102,9 +102,9 @@ const FileAttachment = ({ onUpload, files = [], onRemove }) => {
           </Typography>
           <List
             sx={{
-              backgroundColor: theme.palette.background.paper,
+              backgroundColor: theme.palette.surface,
               borderRadius: theme.shape.borderRadius * 2,
-              border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+              border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
               maxHeight: 200,
               overflow: 'auto',
             }}

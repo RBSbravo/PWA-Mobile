@@ -229,8 +229,8 @@ const ProfilePage = () => {
         {/* Profile Information */}
       <Box sx={{ mb: 4 }}>
         <Card sx={{ 
-          backgroundColor: theme.palette.background.paper,
-          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+          backgroundColor: theme.palette.surface,
+          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
           borderRadius: theme.shape.borderRadius * 2,
         }}>
           <CardContent>
@@ -321,8 +321,8 @@ const ProfilePage = () => {
       {/* Theme Toggle */}
       <Box sx={{ mb: 4 }}>
         <Card sx={{ 
-          backgroundColor: theme.palette.background.paper,
-          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+          backgroundColor: theme.palette.surface,
+          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
           borderRadius: theme.shape.borderRadius * 2,
         }}>
           <CardContent>

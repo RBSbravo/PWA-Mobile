@@ -114,8 +114,8 @@ const LoginPage = () => {
           maxWidth: { xs: '100%', sm: 450, md: 500 },
           borderRadius: theme.shape.borderRadius * 2.5,
           boxShadow: theme.shadows[4],
-          backgroundColor: theme.palette.background.paper,
-          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
+          backgroundColor: theme.palette.surface,
+          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
         }}
       >
         <CardContent sx={{ p: 0 }}>
