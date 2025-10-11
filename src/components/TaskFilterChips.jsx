@@ -19,14 +19,16 @@ const TaskFilterChips = ({
 
   const statusOptions = ['All', 'Pending', 'In Progress', 'Completed', 'Declined'];
   const priorityOptions = ['All', 'High', 'Medium', 'Low'];
-  const categoryOptions = ['All', 'Development', 'Design', 'Testing', 'Documentation'];
+  const categoryOptions = ['All', 'General', 'Documentation'];
 
   return (
     <Box
       sx={{
-        mt: 2,
-        mb: 2.5,
-        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        mt: 1,
+        mb: 2,
       }}
     >
       {/* Status Filter Chips */}
@@ -35,17 +37,12 @@ const TaskFilterChips = ({
           display: 'flex',
           gap: 1,
           overflowX: 'auto',
-          pb: 1,
+          pb: 0.5,
           '&::-webkit-scrollbar': {
-            height: 4,
+            display: 'none',
           },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: 'transparent',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.divider,
-            borderRadius: 2,
-          },
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
         }}
       >
         {statusOptions.map((status) => (
@@ -55,14 +52,20 @@ const TaskFilterChips = ({
             onClick={() => setStatusFilter(status)}
             variant={statusFilter === status ? 'filled' : 'outlined'}
             color={statusFilter === status ? 'primary' : 'default'}
+            size="small"
             sx={{
               minWidth: 'auto',
-              borderRadius: theme.shape.borderRadius * 2,
+              borderRadius: theme.shape.borderRadius * 3,
               fontWeight: statusFilter === status ? 600 : 500,
-              fontSize: isMobile ? 12 : 14,
-              height: 32,
+              fontSize: isMobile ? 11 : 12,
+              height: 28,
               '& .MuiChip-label': {
-                px: 1.5,
+                px: 1.2,
+              },
+              '&:hover': {
+                backgroundColor: statusFilter === status 
+                  ? theme.palette.primary.dark 
+                  : theme.palette.action.hover,
               },
             }}
           />
@@ -75,18 +78,12 @@ const TaskFilterChips = ({
           display: 'flex',
           gap: 1,
           overflowX: 'auto',
-          pb: 1,
-          mt: 1,
+          pb: 0.5,
           '&::-webkit-scrollbar': {
-            height: 4,
+            display: 'none',
           },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: 'transparent',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.divider,
-            borderRadius: 2,
-          },
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
         }}
       >
         {priorityOptions.map((priority) => (
@@ -95,15 +92,21 @@ const TaskFilterChips = ({
             label={priority}
             onClick={() => setPriorityFilter(priority)}
             variant={priorityFilter === priority ? 'filled' : 'outlined'}
-            color={priorityFilter === priority ? 'primary' : 'default'}
+            color={priorityFilter === priority ? 'secondary' : 'default'}
+            size="small"
             sx={{
               minWidth: 'auto',
-              borderRadius: theme.shape.borderRadius * 2,
+              borderRadius: theme.shape.borderRadius * 3,
               fontWeight: priorityFilter === priority ? 600 : 500,
-              fontSize: isMobile ? 12 : 14,
-              height: 32,
+              fontSize: isMobile ? 11 : 12,
+              height: 28,
               '& .MuiChip-label': {
-                px: 1.5,
+                px: 1.2,
+              },
+              '&:hover': {
+                backgroundColor: priorityFilter === priority 
+                  ? theme.palette.secondary.dark 
+                  : theme.palette.action.hover,
               },
             }}
           />
@@ -116,18 +119,12 @@ const TaskFilterChips = ({
           display: 'flex',
           gap: 1,
           overflowX: 'auto',
-          pb: 1,
-          mt: 1,
+          pb: 0.5,
           '&::-webkit-scrollbar': {
-            height: 4,
+            display: 'none',
           },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: 'transparent',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: theme.palette.divider,
-            borderRadius: 2,
-          },
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
         }}
       >
         {categoryOptions.map((category) => (
@@ -136,15 +133,21 @@ const TaskFilterChips = ({
             label={category}
             onClick={() => setCategoryFilter(category)}
             variant={categoryFilter === category ? 'filled' : 'outlined'}
-            color={categoryFilter === category ? 'primary' : 'default'}
+            color={categoryFilter === category ? 'info' : 'default'}
+            size="small"
             sx={{
               minWidth: 'auto',
-              borderRadius: theme.shape.borderRadius * 2,
+              borderRadius: theme.shape.borderRadius * 3,
               fontWeight: categoryFilter === category ? 600 : 500,
-              fontSize: isMobile ? 12 : 14,
-              height: 32,
+              fontSize: isMobile ? 11 : 12,
+              height: 28,
               '& .MuiChip-label': {
-                px: 1.5,
+                px: 1.2,
+              },
+              '&:hover': {
+                backgroundColor: categoryFilter === category 
+                  ? theme.palette.info.dark 
+                  : theme.palette.action.hover,
               },
             }}
           />

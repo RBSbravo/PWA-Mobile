@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Button,
   Chip,
   CircularProgress,
   Alert,
@@ -17,19 +16,11 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Fab,
   useTheme,
   useMediaQuery,
-  Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  FilterList as FilterIcon,
-  Add as AddIcon,
   MoreVert as MoreVertIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -43,7 +34,6 @@ import { format } from 'date-fns';
 import ScreenHeader from '../components/ScreenHeader';
 import TaskItem from '../components/TaskItem';
 import TaskFilterChips from '../components/TaskFilterChips';
-import FileAttachment from '../components/FileAttachment';
 import FullScreenLoader from '../components/FullScreenLoader';
 
 const TasksPage = () => {
@@ -60,11 +50,6 @@ const TasksPage = () => {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
-  const [newTaskDescription, setNewTaskDescription] = useState('');
-  const [newTaskFiles, setNewTaskFiles] = useState([]);
-  const [creating, setCreating] = useState(false);
 
   const fetchTasks = useCallback(async () => {
     if (!token) return;
@@ -175,49 +160,6 @@ const TasksPage = () => {
     return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
   });
 
-  const handleCreateTask = async () => {
-    if (!newTaskTitle.trim()) return;
-    
-    setCreating(true);
-    try {
-      const taskData = {
-        title: newTaskTitle.trim(),
-        description: newTaskDescription.trim(),
-        status: 'Pending',
-        priority: 'Medium',
-        category: 'General',
-        assignedTo: user?.id,
-        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
-      };
-      
-      const newTask = await api.createTask(token, taskData);
-      setTasks(prev => [newTask, ...prev]);
-      
-      // Upload files if any
-      for (const file of newTaskFiles) {
-        await api.uploadTaskAttachment(token, newTask.id, file);
-      }
-      
-      setCreateDialogOpen(false);
-      setNewTaskTitle('');
-      setNewTaskDescription('');
-      setNewTaskFiles([]);
-    } catch (error) {
-      setError('Failed to create task.');
-      console.error('Create task error:', error);
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const handleFileUpload = async (file) => {
-    setNewTaskFiles(prev => [...prev, file]);
-  };
-
-  const handleFileRemove = (index) => {
-    setNewTaskFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
   const TaskCard = ({ task }) => (
     <Card
       sx={{
@@ -309,20 +251,6 @@ const TasksPage = () => {
       <ScreenHeader
         title="Tasks"
         leftIcon={<AssignmentIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
-        rightAction={
-          <Button
-            variant="text"
-            startIcon={<AddIcon />}
-            onClick={() => setCreateDialogOpen(true)}
-            sx={{
-              textTransform: 'none',
-              fontWeight: 500,
-              color: theme.palette.primary.main,
-            }}
-          >
-            {isMobile ? '' : 'New Task'}
-          </Button>
-        }
       />
 
       {/* Content Container */}
@@ -403,70 +331,9 @@ const TasksPage = () => {
       </Box>
       </Box>
 
-      {/* Floating Action Button */}
-      <Fab
-        color="primary"
-        aria-label="add task"
-        onClick={() => setCreateDialogOpen(true)}
-        sx={{
-          position: 'fixed',
-          bottom: isMobile ? 100 : 24,
-          right: 24,
-          zIndex: theme.zIndex.speedDial,
-        }}
-      >
-        <AddIcon />
-      </Fab>
+      {/* Floating Action Button - REMOVED */}
 
-      {/* Create Task Dialog */}
-      <Dialog 
-        open={createDialogOpen} 
-        onClose={() => setCreateDialogOpen(false)} 
-        maxWidth="sm" 
-        fullWidth
-        fullScreen={isMobile}
-      >
-        <DialogTitle>Create New Task</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Task Title"
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            margin="normal"
-            required
-            sx={{ borderRadius: theme.shape.borderRadius * 2 }}
-          />
-          <TextField
-            fullWidth
-            label="Description"
-            value={newTaskDescription}
-            onChange={(e) => setNewTaskDescription(e.target.value)}
-            margin="normal"
-            multiline
-            rows={3}
-            sx={{ borderRadius: theme.shape.borderRadius * 2 }}
-          />
-          <FileAttachment
-            onUpload={handleFileUpload}
-            files={newTaskFiles}
-            onRemove={handleFileRemove}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setCreateDialogOpen(false)} disabled={creating}>
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleCreateTask} 
-            variant="contained"
-            disabled={creating || !newTaskTitle.trim()}
-            startIcon={creating ? <CircularProgress size={20} /> : null}
-          >
-            {creating ? 'Creating...' : 'Create Task'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Create Task Dialog - REMOVED */}
 
       {/* Context Menu */}
       <Menu
