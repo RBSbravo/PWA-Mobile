@@ -4,11 +4,6 @@
   "outputDirectory": "dist",
   "installCommand": "npm ci --legacy-peer-deps",
   "framework": "vite",
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "routes": [
     {
       "src": "/sw.js",
