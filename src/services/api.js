@@ -107,18 +107,28 @@ const api = {
   // --- Auth ---
   login: async (email, password) => {
     try {
-      const response = await fetch(`${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGIN}`, {
+      const url = `${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGIN}`;
+      console.log('🔐 Login URL:', url);
+      console.log('🌐 Current origin:', window.location.origin);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        mode: 'cors',
+        credentials: 'include'
       });
       
+      console.log('📡 Login response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+      
       const data = await handleApiResponse(response);
+      console.log('✅ Login successful:', data);
       return data; // Returns { user, token }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error:', error);
       throw error;
     }
   },
