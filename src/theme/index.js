@@ -99,6 +99,7 @@ export const theme = createTheme({
       primary: colors.text,
       secondary: colors.textSecondary,
     },
+    divider: colors.border,
   },
   typography: {
     fontFamily: typography.fontFamily.regular,
