@@ -261,8 +261,11 @@ const api = {
   // --- Departments ---
   getDepartments: async () => {
     try {
-      console.log('Fetching departments from:', `${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.DEPARTMENTS.LIST}`);
-      const response = await fetch(`${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.DEPARTMENTS.LIST}`, {
+      const url = `${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.DEPARTMENTS.LIST}`;
+      console.log('🔗 Fetching departments from:', url);
+      console.log('🌐 Current origin:', window.location.origin);
+      
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -270,11 +273,15 @@ const api = {
         mode: 'cors',
         credentials: 'include'
       });
-      console.log('Departments response:', response);
+      
+      console.log('📡 Departments response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+      
       const data = await handleApiResponse(response);
+      console.log('✅ Departments loaded successfully:', data);
       return data;
     } catch (error) {
-      console.error('Get departments error:', error);
+      console.error('❌ Get departments error:', error);
       throw error;
     }
   },
