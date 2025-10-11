@@ -220,7 +220,11 @@ const DashboardPage = () => {
   }
 
   return (
-    <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
+    <Box sx={{ 
+      backgroundColor: theme.palette.background.default, 
+      minHeight: '100vh',
+      width: '100%',
+    }}>
       {/* Header */}
       <ScreenHeader
         title={`Welcome, ${user?.firstname || 'User'}!`}
@@ -240,61 +244,68 @@ const DashboardPage = () => {
         }
       />
 
-      {error && (
-        <Alert severity="error" sx={{ m: isMobile ? 2 : 4, mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-
-      {/* Stats Container */}
+      {/* Content Container */}
       <Box sx={{ 
-        backgroundColor: theme.palette.primaryContainer,
-        borderRadius: theme.shape.borderRadius * 2,
-        p: { xs: 2, sm: 3, md: 4 },
-        mb: 4,
-        boxShadow: theme.shadows[1],
+        width: '100%',
+        px: { xs: 2, sm: 3, md: 4, lg: 6 },
+        py: { xs: 2, sm: 3 },
       }}>
-        <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              icon={<AssignmentIcon />}
-              label="Open Tasks"
-              value={stats.pendingTasks}
-              color="primary"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              icon={<ErrorIcon />}
-              label="Overdue"
-              value={stats.overdueTasks}
-              color="error"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              icon={<AssignmentIcon />}
-              label="Completed"
-              value={stats.completedTasks}
-              color="success"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              icon={<AssignmentIcon />}
-              label="Total Tasks"
-              value={stats.totalTasks}
-              color="info"
-            />
-          </Grid>
-        </Grid>
-      </Box>
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
-      <Divider sx={{ mb: 4 }} />
+        {/* Stats Container */}
+        <Box sx={{ 
+          backgroundColor: theme.palette.primaryContainer,
+          borderRadius: theme.shape.borderRadius * 2,
+          p: { xs: 2, sm: 3, md: 4 },
+          mb: 4,
+          boxShadow: theme.shadows[1],
+        }}>
+          <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatCard
+                icon={<AssignmentIcon />}
+                label="Open Tasks"
+                value={stats.pendingTasks}
+                color="primary"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatCard
+                icon={<ErrorIcon />}
+                label="Overdue"
+                value={stats.overdueTasks}
+                color="error"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatCard
+                icon={<AssignmentIcon />}
+                label="Completed"
+                value={stats.completedTasks}
+                color="success"
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
+              <StatCard
+                icon={<AssignmentIcon />}
+                label="Total Tasks"
+                value={stats.totalTasks}
+                color="info"
+              />
+            </Grid>
+          </Grid>
+        </Box>
 
-      {/* Recent Activity */}
-      <Box sx={{ mb: 4 }}>
-        <RecentActivityCard />
+        <Divider sx={{ mb: 4 }} />
+
+        {/* Recent Activity */}
+        <Box sx={{ mb: 4 }}>
+          <RecentActivityCard />
+        </Box>
       </Box>
     </Box>
   );

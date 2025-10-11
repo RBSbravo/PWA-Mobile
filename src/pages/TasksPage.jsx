@@ -300,7 +300,11 @@ const TasksPage = () => {
   }
 
   return (
-    <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
+    <Box sx={{ 
+      backgroundColor: theme.palette.background.default, 
+      minHeight: '100vh',
+      width: '100%',
+    }}>
       {/* Header */}
       <ScreenHeader
         title="Tasks"
@@ -321,11 +325,17 @@ const TasksPage = () => {
         }
       />
 
-      {error && (
-        <Alert severity="error" sx={{ m: isMobile ? 2 : 4, mb: 2 }}>
-          {error}
-        </Alert>
-      )}
+      {/* Content Container */}
+      <Box sx={{ 
+        width: '100%',
+        px: { xs: 2, sm: 3, md: 4, lg: 6 },
+        py: { xs: 2, sm: 3 },
+      }}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {error}
+          </Alert>
+        )}
 
       {/* Search */}
       <Box sx={{ mb: 3 }}>
@@ -390,6 +400,7 @@ const TasksPage = () => {
             </Typography>
           </Card>
         )}
+      </Box>
       </Box>
 
       {/* Floating Action Button */}

@@ -231,10 +231,7 @@ const Layout = ({ children }) => {
           flexGrow: 1,
           width: '100%',
           mt: isMobile ? '64px' : 0,
-          maxWidth: '100%',
-          mx: 'auto',
-          px: { xs: 2, sm: 3, md: 4, lg: 6 },
-          py: { xs: 2, sm: 3 },
+          minHeight: 'calc(100vh - 64px)',
         }}
       >
         {children}
