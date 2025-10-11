@@ -31,6 +31,7 @@ import { useNotification } from '../context/NotificationContext';
 const Layout = ({ children }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -168,7 +169,7 @@ const Layout = ({ children }) => {
       )}
 
       {/* Desktop Top Navigation Bar */}
-      {!isMobile && (
+      {isDesktop && (
         <AppBar 
           position="static" 
           sx={{ 

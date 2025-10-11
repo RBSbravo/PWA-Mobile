@@ -18,3 +18,11 @@ if ('serviceWorker' in navigator) {
 // Create root and render app
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
+
+// Remove loading class after app renders
+setTimeout(() => {
+  const rootElement = document.getElementById('root');
+  if (rootElement) {
+    rootElement.classList.remove('loading');
+  }
+}, 100);

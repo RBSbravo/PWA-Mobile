@@ -27,11 +27,16 @@
       /* Critical CSS for loading screen */
       #root {
         height: 100vh;
+        width: 100%;
+        font-family: 'Roboto', sans-serif;
+      }
+      
+      /* Loading state styles */
+      #root.loading {
         display: flex;
         align-items: center;
         justify-content: center;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        font-family: 'Roboto', sans-serif;
       }
       
       .loading-container {
@@ -67,7 +72,7 @@
     </style>
   </head>
   <body>
-    <div id="root">
+    <div id="root" class="loading">
       <div class="loading-container">
         <div class="loading-spinner"></div>
         <div class="loading-text">MITO Task Manager</div>
