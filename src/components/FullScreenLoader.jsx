@@ -33,7 +33,7 @@ const FullScreenLoader = ({ visible, message = 'Loading...' }) => {
           alignItems: 'center',
           justifyContent: 'center',
           p: 3,
-          backgroundColor: theme.palette.surface,
+          backgroundColor: theme.palette.background.paper,
           borderRadius: theme.shape.borderRadius * 2,
           boxShadow: theme.shadows[8],
           minWidth: isMobile ? 200 : 250,

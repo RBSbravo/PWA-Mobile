@@ -26,7 +26,7 @@ const ScreenHeader = ({
         pt: 2.25,
         pb: 1.5,
         backgroundColor: theme.palette.background.default,
-        borderBottom: `1px solid ${theme.palette.border}`,
+        borderBottom: `1px solid ${theme.palette.divider}`,
         boxShadow: theme.shadows[1],
         zIndex: 10,
         ...style,

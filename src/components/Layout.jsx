@@ -172,8 +172,8 @@ const Layout = ({ children }) => {
           left: 0,
           right: 0,
           zIndex: theme.zIndex.appBar,
-          backgroundColor: theme.palette.surface,
-          borderTop: `1px solid ${theme.palette.border}`,
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
         }}
         elevation={8}
       >
@@ -182,7 +182,7 @@ const Layout = ({ children }) => {
             onChange={handleTabChange}
             showLabels
             sx={{
-              backgroundColor: theme.palette.surface,
+              backgroundColor: theme.palette.background.paper,
               '& .MuiBottomNavigationAction-root': {
                 minWidth: 'auto',
                 padding: '8px 0 12px',

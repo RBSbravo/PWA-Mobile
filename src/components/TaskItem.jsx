@@ -64,12 +64,12 @@ const TaskItem = React.memo(({ item, onPress }) => {
   return (
     <Card
       sx={{
-        backgroundColor: theme.palette.surface,
+        backgroundColor: theme.palette.background.paper,
         borderLeft: `5px solid ${getStatusColor(item.status, theme)}`,
         mb: 2,
         cursor: 'pointer',
         transition: 'all 0.2s ease-in-out',
-        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+        border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.divider}` : 'none',
         borderRadius: theme.shape.borderRadius * 2,
         boxShadow: theme.shadows[2],
         '&:hover': {
