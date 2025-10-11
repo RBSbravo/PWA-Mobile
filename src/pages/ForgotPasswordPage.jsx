@@ -1,79 +1,369 @@
-import React from 'react';
-import { Box, Typography, Card, CardContent, Button, TextField } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import {
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  Typography,
+  InputAdornment,
+  Alert,
+  useTheme,
+  useMediaQuery,
+  Avatar,
+  CircularProgress,
+} from '@mui/material';
+import {
+  Email as EmailIcon,
+} from '@mui/icons-material';
+import { useAuth } from '../context/AuthContext';
+
+const Logo = () => {
+  return (
+    <Box
+      sx={{
+        width: 96,
+        height: 96,
+        borderRadius: '50%',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        mb: 3,
+        alignSelf: 'center',
+        backgroundColor: 'primary.main',
+        p: 1,
+      }}
+    >
+      <Avatar
+        src="/mito_logo.png"
+        alt="MITO Logo"
+        sx={{
+          width: 80,
+          height: 80,
+          borderRadius: '50%',
+        }}
+      />
+    </Box>
+  );
+};
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { forgotPassword } = useAuth();
   
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    
+    if (!email) {
+      setError('Please enter your email address.');
+      return;
+    }
+    
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    
+    try {
+      await forgotPassword(email);
+      setSuccessMessage('Password reset email sent! Please check your inbox and follow the instructions.');
+      setSuccess(true);
+    } catch (error) {
+      const errorMessage = error.message || 'Failed to send reset email. Please try again.';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBackToLogin = () => {
+    navigate('/login');
+  };
+
+  if (success) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          backgroundColor: theme.palette.background.default,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          p: 2,
+        }}
+      >
+        <Card
+          sx={{
+            width: '100%',
+            maxWidth: 400,
+            borderRadius: 5,
+            boxShadow: theme.shadows[4],
+            backgroundColor: theme.palette.surface,
+            border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+          }}
+        >
+          <CardContent sx={{ p: 0 }}>
+            {/* Logo and Header */}
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                mb: 2.25,
+                px: 2.25,
+                pt: 2.5,
+              }}
+            >
+              <Logo />
+              <Typography
+                variant="h4"
+                component="h1"
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontWeight: 'bold',
+                  fontSize: 24,
+                  mb: 0.5,
+                }}
+              >
+                Check Your Email
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: theme.palette.text.secondary,
+                  fontSize: 14,
+                  textAlign: 'center',
+                }}
+              >
+                We've sent password reset instructions to:
+              </Typography>
+              <Typography
+                sx={{
+                  color: theme.palette.primary.main,
+                  fontWeight: 600,
+                  mt: 1,
+                  fontSize: 14,
+                }}
+              >
+                {email}
+              </Typography>
+            </Box>
+
+            {/* Content */}
+            <Box sx={{ px: 2.25, pb: 2.5 }}>
+              <Typography
+                sx={{
+                  color: theme.palette.text.secondary,
+                  fontSize: 13,
+                  textAlign: 'center',
+                  mb: 2.5,
+                }}
+              >
+                {successMessage}
+              </Typography>
+              <Typography
+                sx={{
+                  color: theme.palette.text.secondary,
+                  fontSize: 12,
+                  textAlign: 'center',
+                  mb: 2.5,
+                  fontStyle: 'italic',
+                }}
+              >
+                Note: The reset link will open in your web browser. You can complete the password reset there.
+              </Typography>
+              
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleBackToLogin}
+                sx={{
+                  borderRadius: 3,
+                  height: 40,
+                  fontSize: 15,
+                  fontWeight: 500,
+                  textTransform: 'none',
+                }}
+              >
+                Back to Login
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
+    );
+  }
+
   return (
     <Box
       sx={{
         minHeight: '100vh',
+        backgroundColor: theme.palette.background.default,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         p: 2,
       }}
     >
       <Card
         sx={{
-          maxWidth: 400,
           width: '100%',
-          borderRadius: 3,
-          boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+          maxWidth: 400,
+          borderRadius: 5,
+          boxShadow: theme.shadows[4],
+          backgroundColor: theme.palette.surface,
+          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
         }}
       >
-        <CardContent sx={{ p: 4 }}>
-          <Box textAlign="center" mb={4}>
-            <Typography variant="h4" component="h1" fontWeight="bold" color="primary" gutterBottom>
-              Forgot Password
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Enter your email to reset your password
-            </Typography>
-          </Box>
-          
-          <Box component="form">
-            <TextField
-              fullWidth
-              label="Email"
-              type="email"
-              margin="normal"
-              required
-            />
-            
-            <Button
-              fullWidth
-              variant="contained"
-              size="large"
+        <CardContent sx={{ p: 0 }}>
+          {/* Logo and Header */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              mb: 2.25,
+              px: 2.25,
+              pt: 2.5,
+            }}
+          >
+            <Logo />
+            <Typography
+              variant="h4"
+              component="h1"
               sx={{
-                mt: 3,
-                mb: 2,
-                py: 1.5,
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: theme.palette.primary.main,
+                fontWeight: 'bold',
+                fontSize: 24,
+                mb: 0.5,
               }}
             >
-              Send Reset Link
-            </Button>
-            
-            <Box textAlign="center">
-              <Typography variant="body2" color="text.secondary">
-                Remember your password?{' '}
-                <Button
-                  component={RouterLink}
-                  to="/login"
-                  color="primary"
-                  sx={{ textDecoration: 'none' }}
-                >
-                  Sign in
-                </Button>
-              </Typography>
+              Forgot Password
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: theme.palette.text.secondary,
+                fontSize: 14,
+                textAlign: 'center',
+              }}
+            >
+              Enter your email address and we'll send you instructions to reset your password.
+            </Typography>
+            <Typography
+              sx={{
+                color: theme.palette.text.secondary,
+                fontSize: 12,
+                textAlign: 'center',
+                mt: 1,
+                fontStyle: 'italic',
+              }}
+            >
+              The reset link will open in your web browser for security.
+            </Typography>
+          </Box>
+
+          {/* Form */}
+          <Box sx={{ px: 2.25, pb: 2.5 }}>
+            <Box component="form" onSubmit={handleForgotPassword} sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <TextField
+                fullWidth
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailIcon color="primary" />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    backgroundColor: theme.palette.background.default,
+                    fontSize: 15,
+                    height: 40,
+                  },
+                }}
+                placeholder="Enter your email"
+                autoComplete="email"
+                disabled={loading}
+                required
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                fullWidth
+                disabled={loading}
+                sx={{
+                  borderRadius: 3,
+                  mt: 1.25,
+                  height: 40,
+                  fontSize: 15,
+                  fontWeight: 500,
+                  textTransform: 'none',
+                }}
+              >
+                {loading ? 'Sending...' : 'Send Reset Email'}
+              </Button>
+
+              <Button
+                variant="text"
+                component={Link}
+                to="/login"
+                sx={{
+                  alignSelf: 'center',
+                  mt: 1,
+                  textTransform: 'none',
+                  fontSize: 14,
+                  color: theme.palette.primary.main,
+                  height: 'auto',
+                  minHeight: 32,
+                }}
+              >
+                Back to Login
+              </Button>
             </Box>
           </Box>
         </CardContent>
       </Card>
+
+      {/* Error Alert */}
+      {error && (
+        <Alert
+          severity="error"
+          sx={{
+            position: 'fixed',
+            top: 16,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            maxWidth: 400,
+            width: '90%',
+            zIndex: theme.zIndex.snackbar,
+          }}
+          onClose={() => setError('')}
+        >
+          {error}
+        </Alert>
+      )}
     </Box>
   );
 };
