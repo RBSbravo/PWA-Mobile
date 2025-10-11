@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, useTheme } from '@mui/material';
 
 // Context Providers
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -31,6 +31,7 @@ import api from './services/api';
 
 // App Content Component
 const AppContent = () => {
+  const theme = useTheme();
   const { isAuthenticated, loading, token, user } = useAuth();
 
   // Initialize socket connection when user is authenticated
