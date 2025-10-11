@@ -4,8 +4,8 @@
   "installCommand": "npm install --legacy-peer-deps",
   "framework": "vite",
   "env": {
-    "VITE_API_URL": "https://ticketing-and-task-management-system-production.up.railway.app/api",
-    "VITE_SOCKET_URL": "https://ticketing-and-task-management-system-production.up.railway.app"
+    "VITE_API_URL": "https://backend-ticketing-system.up.railway.app/api",
+    "VITE_SOCKET_URL": "https://backend-ticketing-system.up.railway.app"
   },
   "rewrites": [
     {

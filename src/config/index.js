@@ -3,7 +3,7 @@ const API_CONFIG = {
   // Backend API URL - Uses environment variables or defaults to Railway URL
   BACKEND_API_URL: import.meta.env.VITE_API_URL || 
     (import.meta.env.PROD 
-      ? 'https://ticketing-and-task-management-system-production.up.railway.app/api' 
+      ? 'https://backend-ticketing-system.up.railway.app/api' 
       : 'http://localhost:5000/api'),
   
   // API Endpoints
@@ -65,7 +65,7 @@ const API_CONFIG = {
 const SOCKET_CONFIG = {
   URL: import.meta.env.VITE_SOCKET_URL || 
     (import.meta.env.PROD 
-      ? 'https://ticketing-and-task-management-system-production.up.railway.app' 
+      ? 'https://backend-ticketing-system.up.railway.app' 
       : 'http://localhost:5000'),
   OPTIONS: {
     transports: ['websocket', 'polling'],
