@@ -261,12 +261,16 @@ const api = {
   // --- Departments ---
   getDepartments: async () => {
     try {
+      console.log('Fetching departments from:', `${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.DEPARTMENTS.LIST}`);
       const response = await fetch(`${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.DEPARTMENTS.LIST}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        mode: 'cors',
+        credentials: 'include'
       });
+      console.log('Departments response:', response);
       const data = await handleApiResponse(response);
       return data;
     } catch (error) {
