@@ -5,9 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npx vite build",
     "preview": "vite preview",
-    "build:prod": "vite build",
+    "build:prod": "npx vite build",
     "serve": "vite preview --port 3000",
     "test:pwa": "npm run build:prod && npx lighthouse dist/index.html --view",
     "analyze": "npm run build:prod && npx webpack-bundle-analyzer dist/assets/*.js",
