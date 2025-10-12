@@ -168,14 +168,17 @@ export const NotificationProvider = ({ children }) => {
       listenerSetupRef.current = true;
       
       const handleNotification = (notif) => {
+        // Handle backend notification format: { type: 'NEW_NOTIFICATION', data: notification }
+        const notificationData = notif.data || notif;
+        
         // Ensure the notification has proper structure without duplication (like mobile app)
-        let title = notif.title || notif.data?.title || '';
-        let message = notif.message || notif.data?.message || '';
+        let title = notificationData.title || notificationData.message || '';
+        let message = notificationData.message || notificationData.title || '';
         
         // If we have both title and message, use them as is
         // If we only have one of them, use it for both to avoid duplication
-        if (title && message) {
-          // Both exist, use them as is
+        if (title && message && title !== message) {
+          // Both exist and are different, use them as is
         } else if (title && !message) {
           // Only title exists, use it for both
           message = title;
@@ -189,14 +192,14 @@ export const NotificationProvider = ({ children }) => {
         }
         
         const notification = {
-          id: notif.id || notif.data?.id || Date.now(),
+          id: notificationData.id || Date.now(),
           title: title,
           message: message,
-          type: notif.type || notif.data?.type || 'system',
+          type: notificationData.type || 'system',
           isRead: false,
-          date: notif.date || notif.data?.date || new Date().toISOString(),
-          taskId: notif.taskId || notif.data?.taskId,
-          ticketId: notif.ticketId || notif.data?.ticketId
+          date: notificationData.createdAt || notificationData.date || new Date().toISOString(),
+          taskId: notificationData.taskId,
+          ticketId: notificationData.ticketId
         };
         
         // Add to real-time notifications (like mobile app)
