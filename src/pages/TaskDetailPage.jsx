@@ -45,6 +45,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { useMessage } from '../context/MessageContext';
 import api from '../services/api';
 import socketService from '../services/socket';
 import { format } from 'date-fns';
@@ -58,6 +59,7 @@ const TaskDetailPage = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
   const { notifications, unreadCount, realtimeNotifications, loading: notificationsLoading, fetchNotifications, markAsRead, markAllAsRead, deleteNotification, refreshUnreadCount, clearRealtimeNotifications } = useNotification();
+  const { showSuccess, showError, showWarning, showInfo } = useMessage();
 
   const [task, setTask] = useState(null);
   const [comments, setComments] = useState([]);
@@ -79,6 +81,8 @@ const TaskDetailPage = () => {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [deleteFileId, setDeleteFileId] = useState(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [deleteCommentId, setDeleteCommentId] = useState(null);
+  const [deleteCommentDialogVisible, setDeleteCommentDialogVisible] = useState(false);
 
   const fetchTaskDetails = useCallback(async () => {
     if (!token || !id) return;
@@ -106,12 +110,14 @@ const TaskDetailPage = () => {
         priority: taskData.priority || 'medium',
       });
     } catch (err) {
-      setError('Failed to load task details');
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to load task details';
+      setError(errorMessage);
+      showError(`Unable to load task: ${errorMessage}`);
       console.error('Task detail error:', err);
     } finally {
       setLoading(false);
     }
-  }, [id, token]);
+  }, [id, token, showError]);
 
   // Real-time updates
   useEffect(() => {
@@ -170,7 +176,7 @@ const TaskDetailPage = () => {
 
   const handleSave = async () => {
     if (!editForm.remarks.trim()) {
-      setError('Remarks are required when updating a task.');
+      showWarning('Remarks are required when updating a task.');
       return;
     }
     
@@ -191,8 +197,12 @@ const TaskDetailPage = () => {
       // Refresh comments
       const fetchedComments = await api.getTaskComments(token, id);
       setComments(fetchedComments);
+      
+      showSuccess('Task updated successfully!');
     } catch (err) {
-      setError('Failed to update task');
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to update task';
+      setError(errorMessage);
+      showError(`Failed to update task: ${errorMessage}`);
       console.error('Update error:', err);
     }
   };
@@ -211,25 +221,33 @@ const TaskDetailPage = () => {
   const handleDelete = async () => {
     try {
       await api.deleteTask(token, id);
+      showSuccess('Task deleted successfully!');
       navigate('/tasks');
-      // Don't manually add notifications - let the socket listener handle it
     } catch (err) {
-      setError('Failed to delete task');
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to delete task';
+      setError(errorMessage);
+      showError(`Failed to delete task: ${errorMessage}`);
       console.error('Delete error:', err);
     }
     setMenuAnchor(null);
   };
 
   const handleAddComment = async () => {
-    if (!newComment.trim()) return;
+    if (!newComment.trim()) {
+      showWarning('Please enter a comment before submitting.');
+      return;
+    }
     
     try {
       setSubmittingComment(true);
       const comment = await api.addTaskComment(token, id, newComment);
       setComments(prev => [comment, ...prev]);
       setNewComment('');
+      showSuccess('Comment added successfully!');
     } catch (err) {
-      setError('Failed to add comment');
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to add comment';
+      setError(errorMessage);
+      showError(`Failed to add comment: ${errorMessage}`);
       console.error('Comment error:', err);
     } finally {
       setSubmittingComment(false);
@@ -237,12 +255,23 @@ const TaskDetailPage = () => {
   };
 
   const handleDeleteComment = async (commentId) => {
+    setDeleteCommentId(commentId);
+    setDeleteCommentDialogVisible(true);
+  };
+
+  const confirmDeleteComment = async () => {
     try {
-      await api.deleteTaskComment(token, commentId);
-      setComments(prev => prev.filter(comment => comment.id !== commentId));
+      await api.deleteTaskComment(token, deleteCommentId);
+      setComments(prev => prev.filter(comment => comment.id !== deleteCommentId));
+      showSuccess('Comment deleted successfully!');
     } catch (err) {
-      setError('Failed to delete comment');
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to delete comment';
+      setError(errorMessage);
+      showError(`Failed to delete comment: ${errorMessage}`);
       console.error('Delete comment error:', err);
+    } finally {
+      setDeleteCommentDialogVisible(false);
+      setDeleteCommentId(null);
     }
   };
 
@@ -253,8 +282,11 @@ const TaskDetailPage = () => {
       
       // Refresh task details to get updated attachments
       await fetchTaskDetails();
+      showSuccess('File uploaded successfully!');
     } catch (err) {
-      setError('Failed to upload file');
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to upload file';
+      setError(errorMessage);
+      showError(`Failed to upload file: ${errorMessage}`);
       console.error('File upload error:', err);
     } finally {
       setUploadingFile(false);
@@ -269,8 +301,11 @@ const TaskDetailPage = () => {
       
       // Refresh task details to get updated attachments
       await fetchTaskDetails();
+      showSuccess('File deleted successfully!');
     } catch (err) {
-      setError('Failed to delete file');
+      const errorMessage = err.response?.data?.error || err.message || 'Failed to delete file';
+      setError(errorMessage);
+      showError(`Failed to delete file: ${errorMessage}`);
       console.error('File delete error:', err);
     } finally {
       setDeleteDialogVisible(false);
@@ -812,6 +847,27 @@ const TaskDetailPage = () => {
             Cancel
           </Button>
           <Button onClick={handleFileDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Comment Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteCommentDialogVisible}
+        onClose={() => setDeleteCommentDialogVisible(false)}
+      >
+        <DialogTitle>Delete Comment</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this comment? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteCommentDialogVisible(false)}>
+            Cancel
+          </Button>
+          <Button onClick={confirmDeleteComment} color="error" variant="contained">
             Delete
           </Button>
         </DialogActions>

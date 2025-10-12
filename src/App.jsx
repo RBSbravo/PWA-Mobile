@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ErrorProvider } from './context/ErrorContext';
+import { MessageProvider } from './context/MessageContext';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -142,11 +143,13 @@ const App = () => {
   return (
     <AppThemeProvider>
       <ErrorProvider>
-        <AuthProvider>
-          <NotificationProvider>
-            <AppContent />
-          </NotificationProvider>
-        </AuthProvider>
+        <MessageProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <AppContent />
+            </NotificationProvider>
+          </AuthProvider>
+        </MessageProvider>
       </ErrorProvider>
     </AppThemeProvider>
   );

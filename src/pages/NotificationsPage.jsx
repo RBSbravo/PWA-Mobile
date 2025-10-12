@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
+import { useMessage } from '../context/MessageContext';
 import api from '../services/api';
 import socketService from '../services/socket';
 import ScreenHeader from '../components/ScreenHeader';
@@ -76,6 +77,7 @@ const NotificationsPage = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
   const { notifications, fetchNotifications, refreshUnreadCount, realtimeNotifications, loading: notificationsLoading } = useNotification();
+  const { showSuccess, showError, showWarning, showInfo } = useMessage();
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -97,12 +99,14 @@ const NotificationsPage = () => {
       
       setLocalNotifications(validNotifications.sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)));
     } catch (error) {
-      setError('Failed to load notifications.');
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to load notifications';
+      setError(errorMessage);
+      showError(`Failed to load notifications: ${errorMessage}`);
       console.error('Load notifications error:', error);
     } finally {
       setLoading(false);
     }
-  }, [user, token]);
+  }, [user, token, showError]);
 
   // Add new real-time notifications to the list (like mobile app)
   useEffect(() => {
@@ -149,8 +153,11 @@ const NotificationsPage = () => {
       await api.markNotificationAsRead(id, token);
       setLocalNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
       refreshUnreadCount();
+      showSuccess('Notification marked as read');
     } catch (error) {
-      setError('Failed to update notification.');
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to update notification';
+      setError(errorMessage);
+      showError(`Failed to mark notification as read: ${errorMessage}`);
       console.error('Mark as read error:', error);
     }
   };
@@ -160,8 +167,11 @@ const NotificationsPage = () => {
       await api.markAllNotificationsAsRead(token);
       setLocalNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
       refreshUnreadCount();
+      showSuccess('All notifications marked as read');
     } catch (error) {
-      setError('Failed to update notifications.');
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to update notifications';
+      setError(errorMessage);
+      showError(`Failed to mark all notifications as read: ${errorMessage}`);
       console.error('Mark all as read error:', error);
     }
   };
@@ -171,8 +181,11 @@ const NotificationsPage = () => {
       await api.deleteNotification(id, token);
       setLocalNotifications(prev => prev.filter(n => n.id !== id));
       refreshUnreadCount();
+      showSuccess('Notification deleted');
     } catch (error) {
-      setError('Failed to delete notification.');
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to delete notification';
+      setError(errorMessage);
+      showError(`Failed to delete notification: ${errorMessage}`);
       console.error('Delete notification error:', error);
     }
   };
@@ -192,7 +205,9 @@ const NotificationsPage = () => {
         navigate(`/tasks/${item.ticketId || item.ticket_id}`);
       }
     } catch (error) {
-      setError('Failed to update notification.');
+      const errorMessage = error.response?.data?.error || error.message || 'Failed to update notification';
+      setError(errorMessage);
+      showError(`Failed to update notification: ${errorMessage}`);
       console.error('Notification press error:', error);
     }
   };
