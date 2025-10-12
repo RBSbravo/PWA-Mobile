@@ -343,12 +343,8 @@ const TasksPage = () => {
             </Typography>
           </Card>
         )}
-      </Box>
+        </Box>
       </PullToRefresh>
-
-      {/* Floating Action Button - REMOVED */}
-
-      {/* Create Task Dialog - REMOVED */}
 
       {/* Context Menu */}
       <Menu
