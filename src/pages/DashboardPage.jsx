@@ -338,7 +338,6 @@ const DashboardPage = () => {
           <RecentActivityCard />
         </Box>
         </Box>
-      </Box>
       </PullToRefresh>
     </Box>
   );

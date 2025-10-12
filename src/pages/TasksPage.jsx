@@ -344,7 +344,6 @@ const TasksPage = () => {
           </Card>
         )}
       </Box>
-      </Box>
       </PullToRefresh>
 
       {/* Floating Action Button - REMOVED */}
