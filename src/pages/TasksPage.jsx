@@ -344,6 +344,7 @@ const TasksPage = () => {
           </Card>
         )}
         </Box>
+        </Box>
       </PullToRefresh>
 
       {/* Context Menu */}
