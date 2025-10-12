@@ -115,20 +115,15 @@ const NotificationsPage = () => {
     const handleNotificationRemoved = (data) => {
       // Handle notification removal
       console.log('Notification removed:', data);
-    };
-
-    const handleRealtimeNotification = (notification) => {
-      console.log('Received notification in NotificationsPage:', notification);
-      // The NotificationContext will handle this, but we can refresh the list
+      // Refresh the notifications list when one is removed
       fetchNotifications();
     };
 
+    // Only listen to notificationRemoved, let NotificationContext handle new notifications
     socketService.on('notificationRemoved', handleNotificationRemoved);
-    socketService.on('notification', handleRealtimeNotification);
 
     return () => {
       socketService.off('notificationRemoved', handleNotificationRemoved);
-      socketService.off('notification', handleRealtimeNotification);
     };
   }, [fetchNotifications]);
 

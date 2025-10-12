@@ -99,7 +99,3 @@ const APP_CONFIG = {
 
 export { API_CONFIG, SOCKET_CONFIG, PWA_CONFIG, APP_CONFIG };
 export default API_CONFIG;
-
-// Debug: Log the configuration
-console.log('🔧 API_CONFIG loaded:', API_CONFIG.BACKEND_API_URL);
-console.log('🔧 SOCKET_CONFIG loaded:', SOCKET_CONFIG.URL);

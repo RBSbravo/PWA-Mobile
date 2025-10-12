@@ -10,7 +10,7 @@ class SocketService {
     this.maxReconnectAttempts = 5;
   }
 
-  connect(token) {
+  connect(token, userId) {
     if (this.socket && this.isConnected) {
       return;
     }
@@ -23,7 +23,7 @@ class SocketService {
         }
       });
 
-      this.setupEventListeners();
+      this.setupEventListeners(userId);
     } catch (error) {
       console.error('Socket connection failed:', error);
     }
@@ -38,18 +38,24 @@ class SocketService {
     }
   }
 
-  setupEventListeners() {
-    if (!this.socket) return;
+  setupEventListeners(userId) {
+    if (!this.socket) {
+      return;
+    }
 
     this.socket.on('connect', () => {
-      console.log('Socket connected successfully');
       this.isConnected = true;
       this.reconnectAttempts = 0;
+      
+      // Join user-specific room like mobile app
+      if (userId) {
+        this.socket.emit('join', userId);
+      }
+      
       this.emit('connection', { status: 'connected' });
     });
 
     this.socket.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
       this.isConnected = false;
       this.emit('connection', { status: 'disconnected', reason });
     });
@@ -66,51 +72,77 @@ class SocketService {
 
     // Task-related events
     this.socket.on('taskCreated', (task) => {
-      console.log('Task created:', task);
       this.emit('taskCreated', task);
     });
 
     this.socket.on('taskUpdated', (task) => {
-      console.log('Task updated:', task);
       this.emit('taskUpdated', task);
     });
 
     this.socket.on('taskDeleted', (data) => {
-      console.log('Task deleted:', data);
       this.emit('taskDeleted', data);
     });
 
     this.socket.on('taskStatusChanged', (data) => {
-      console.log('Task status changed:', data);
       this.emit('taskStatusChanged', data);
+    });
+
+    // Additional task events from mobile app
+    this.socket.on('task_update', (task) => {
+      this.emit('taskUpdated', task);
+    });
+
+    this.socket.on('task_status_change', (data) => {
+      this.emit('taskStatusChanged', data);
+    });
+
+    this.socket.on('task_assignment_change', (data) => {
+      this.emit('taskAssignmentChanged', data);
+    });
+
+    this.socket.on('task_deleted', (data) => {
+      this.emit('taskDeleted', data);
     });
 
     // Comment-related events
     this.socket.on('commentAdded', (comment) => {
-      console.log('Comment added:', comment);
       this.emit('commentAdded', comment);
     });
 
     this.socket.on('commentDeleted', (data) => {
-      console.log('Comment deleted:', data);
+      this.emit('commentDeleted', data);
+    });
+
+    // Additional comment events from mobile app
+    this.socket.on('new_comment', (comment) => {
+      this.emit('commentAdded', comment);
+    });
+
+    this.socket.on('comment_update', (comment) => {
+      this.emit('commentUpdated', comment);
+    });
+
+    this.socket.on('comment_deleted', (data) => {
       this.emit('commentDeleted', data);
     });
 
     // Notification events
     this.socket.on('notification', (notification) => {
-      console.log('New notification received:', notification);
       this.emit('notification', notification);
+    });
+
+    // Additional notification events from mobile app
+    this.socket.on('notification_removed', (data) => {
+      this.emit('notificationRemoved', data);
     });
 
     // Performance metrics
     this.socket.on('performanceUpdate', (performance) => {
-      console.log('Performance update:', performance);
       this.emit('performanceUpdate', performance);
     });
 
     // User activity
     this.socket.on('userActivity', (activity) => {
-      console.log('User activity:', activity);
       this.emit('userActivity', activity);
     });
   }

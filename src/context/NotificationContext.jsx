@@ -25,8 +25,6 @@ export const NotificationProvider = ({ children }) => {
       // Calculate unread count
       const unread = notificationsList.filter(n => !n.isRead).length;
       setUnreadCount(unread);
-      
-      console.log('Fetched notifications:', notificationsList.length, 'Unread:', unread);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     } finally {
@@ -116,6 +114,22 @@ export const NotificationProvider = ({ children }) => {
     setRealtimeNotifications([]);
   };
 
+  // Cleanup real-time notifications periodically to prevent accumulation
+  useEffect(() => {
+    const cleanupInterval = setInterval(() => {
+      setRealtimeNotifications(prev => {
+        // Keep only notifications from the last 24 hours
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        return prev.filter(notification => {
+          const notificationDate = new Date(notification.date);
+          return notificationDate > oneDayAgo;
+        });
+      });
+    }, 60000); // Clean up every minute
+
+    return () => clearInterval(cleanupInterval);
+  }, []);
+
   // Fetch notifications when token changes
   useEffect(() => {
     if (token) {
@@ -130,7 +144,15 @@ export const NotificationProvider = ({ children }) => {
   // Setup socket listeners for real-time notifications
   useEffect(() => {
     const handleRealtimeNotification = (notification) => {
-      console.log('Received real-time notification:', notification);
+      // Check if notification already exists to prevent duplicates
+      const existingNotification = notifications.find(n => 
+        n.id === notification.id || 
+        (n.title === notification.title && n.message === notification.message)
+      );
+      
+      if (existingNotification) {
+        return;
+      }
       
       // Ensure notification has proper structure
       const formattedNotification = {
@@ -155,7 +177,7 @@ export const NotificationProvider = ({ children }) => {
     return () => {
       socketService.off('notification', handleRealtimeNotification);
     };
-  }, [addRealtimeNotification]);
+  }, [addRealtimeNotification, notifications]);
 
   return (
     <NotificationContext.Provider value={{

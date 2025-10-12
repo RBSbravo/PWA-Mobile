@@ -36,13 +36,8 @@ const AppContent = () => {
 
   // Initialize socket connection when user is authenticated
   useEffect(() => {
-    if (isAuthenticated && token) {
-      socketService.connect(token);
-      
-      // Join user-specific room
-      if (user?.id) {
-        socketService.joinRoom(`user_${user.id}`);
-      }
+    if (isAuthenticated && token && user?.id) {
+      socketService.connect(token, user.id);
     } else {
       socketService.disconnect();
     }
