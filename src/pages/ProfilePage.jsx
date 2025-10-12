@@ -235,6 +235,7 @@ const ProfilePage = () => {
         backgroundColor: theme.palette.background.default, 
         minHeight: '100vh',
         width: '100%',
+        pt: '80px', // Add top padding for fixed header
       }}>
       {/* Content Container */}
       <Box sx={{ 

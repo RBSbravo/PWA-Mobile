@@ -76,7 +76,6 @@ const Layout = ({ children }) => {
           flexGrow: 1,
           width: '100%',
           minHeight: '100vh',
-          pt: '80px', // Add top padding for fixed header
         }}
       >
         {children}
