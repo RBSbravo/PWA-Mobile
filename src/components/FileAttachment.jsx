@@ -66,6 +66,7 @@ const FileAttachment = ({ onUpload, files = [], onRemove }) => {
   };
 
   const getFileIcon = (fileName) => {
+    if (!fileName) return <FileIcon />;
     const extension = fileName.split('.').pop()?.toLowerCase();
     return <FileIcon />;
   };
@@ -73,31 +74,31 @@ const FileAttachment = ({ onUpload, files = [], onRemove }) => {
   return (
     <Box sx={{ my: 1.25 }}>
       {/* Upload File Button - Matching Image Design */}
-      <Button
-        variant="contained"
-        startIcon={uploading ? <CircularProgress size={16} color="inherit" /> : <AttachFileIcon />}
-        onClick={handleAttachClick}
-        disabled={uploading}
-        sx={{
-          backgroundColor: '#4CAF50', // Light green background
-          color: '#2E7D32', // Dark green text and icon
-          borderRadius: 2,
-          textTransform: 'none',
-          fontWeight: 'bold',
-          fontSize: '14px',
-          px: 3,
-          py: 1.5,
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          '&:hover': {
-            backgroundColor: '#45A049', // Slightly darker green on hover
-            boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
-          },
-          '&:disabled': {
-            backgroundColor: '#A5D6A7',
-            color: '#81C784',
-          },
-        }}
-      >
+            <Button
+              variant="contained"
+              startIcon={uploading ? <CircularProgress size={16} color="inherit" /> : <AttachFileIcon />}
+              onClick={handleAttachClick}
+              disabled={uploading}
+              sx={{
+                backgroundColor: theme.palette.mode === 'dark' ? '#66BB6A' : '#2E7D32', // Mobile app primary colors
+                color: '#FFFFFF', // White text for better contrast
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                px: 3,
+                py: 1.5,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'dark' ? '#81C784' : '#1B5E20', // Darker variants on hover
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+                },
+                '&:disabled': {
+                  backgroundColor: theme.palette.mode === 'dark' ? '#4CAF50' : '#A5D6A7',
+                  color: theme.palette.mode === 'dark' ? '#C8E6C9' : '#81C784',
+                },
+              }}
+            >
         {uploading ? 'Uploading...' : 'Upload File (PDF & Images Only)'}
       </Button>
 

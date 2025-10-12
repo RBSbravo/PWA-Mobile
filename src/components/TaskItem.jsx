@@ -100,7 +100,7 @@ const TaskItem = React.memo(({ task, onPress }) => {
                 mr: 1.25,
               }}
             >
-              {task.assignee.name 
+              {task.assignee.name && typeof task.assignee.name === 'string'
                 ? task.assignee.name.split(' ').map(n => n[0]).join('').toUpperCase()
                 : '?'
               }
