@@ -25,6 +25,8 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useThemeContext } from '../context/ThemeContext';
+import PWARateLimitAlert from '../components/RateLimitAlert';
+import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 
 const Logo = () => {
   return (
@@ -69,6 +71,7 @@ const LoginPage = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [rateLimitData, setRateLimitData] = useState(null);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -83,17 +86,27 @@ const LoginPage = () => {
       return;
     }
     
+    // Check if we can retry (not rate limited)
+    if (!pwaRateLimitHandler.canRetry('login')) {
+      const remainingTime = pwaRateLimitHandler.getRemainingRetryTime('login');
+      setError(`Please wait ${Math.ceil(remainingTime / 1000)} seconds before trying again.`);
+      return;
+    }
+    
     try {
       await login(formData.email, formData.password);
+      pwaRateLimitHandler.clearRetryTimer('login');
       navigate('/dashboard');
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || error.message || 'An unexpected error occurred.';
-      setError(
-        errorMessage === 'Invalid credentials'
-          ? 'Invalid email or password. Please try again.'
-          : errorMessage
-      );
+      const errorInfo = handlePWAApiError(error);
+      
+      if (errorInfo.type === 'rate_limit') {
+        setRateLimitData(error.rateLimitData || { error: error.message });
+        pwaRateLimitHandler.setRetryTimer('login', errorInfo.retryTime);
+        setError(errorInfo.message);
+      } else {
+        setError(errorInfo.message);
+      }
     }
   };
 
@@ -299,7 +312,7 @@ const LoginPage = () => {
       </Box>
 
       {/* Error Alert */}
-      {error && (
+      {error && !rateLimitData && (
         <Alert
           severity="error"
           sx={{
@@ -316,6 +329,18 @@ const LoginPage = () => {
           {error}
         </Alert>
       )}
+
+      {/* Rate Limit Alert */}
+      <PWARateLimitAlert
+        isOpen={!!rateLimitData}
+        onClose={() => setRateLimitData(null)}
+        rateLimitData={rateLimitData}
+        endpoint="login"
+        onRetry={() => {
+          setRateLimitData(null);
+          setError('');
+        }}
+      />
     </Box>
   );
 };
