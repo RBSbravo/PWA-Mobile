@@ -52,6 +52,7 @@ import { format } from 'date-fns';
 import { API_CONFIG } from '../config';
 import ScreenHeader from '../components/ScreenHeader';
 import FileAttachment from '../components/FileAttachment';
+import FileViewer from '../components/FileViewer';
 import SkeletonLoader from '../components/SkeletonLoader';
 
 const TaskDetailPage = () => {
@@ -83,6 +84,8 @@ const TaskDetailPage = () => {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [deleteFileId, setDeleteFileId] = useState(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [fileViewerOpen, setFileViewerOpen] = useState(false);
   const [deleteCommentId, setDeleteCommentId] = useState(null);
   const [deleteCommentDialogVisible, setDeleteCommentDialogVisible] = useState(false);
 
@@ -292,6 +295,16 @@ const TaskDetailPage = () => {
     }
   };
 
+  const handleFileClick = (file) => {
+    setSelectedFile(file);
+    setFileViewerOpen(true);
+  };
+
+  const handleCloseFileViewer = () => {
+    setFileViewerOpen(false);
+    setSelectedFile(null);
+  };
+
   const handleFileUpload = async (file) => {
     try {
       setUploadingFile(true);
@@ -328,12 +341,6 @@ const TaskDetailPage = () => {
       setDeleteDialogVisible(false);
       setDeleteFileId(null);
     }
-  };
-
-  const handleFileClick = (file) => {
-    // Open file in new tab or download
-    const fileUrl = file.url || `${API_CONFIG.BACKEND_API_URL}/files/${file.id}/download`;
-    window.open(fileUrl, '_blank');
   };
 
   const getStatusColor = (status) => {
@@ -752,14 +759,6 @@ const TaskDetailPage = () => {
             {/* File Upload */}
             <FileAttachment
               onUpload={handleFileUpload}
-              files={attachedFiles}
-              onRemove={(index) => {
-                const file = attachedFiles[index];
-                if (file?.id) {
-                  setDeleteFileId(file.id);
-                  setDeleteDialogVisible(true);
-                }
-              }}
             />
           </CardContent>
         </Card>
@@ -901,6 +900,14 @@ const TaskDetailPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* File Viewer */}
+      <FileViewer
+        open={fileViewerOpen}
+        onClose={handleCloseFileViewer}
+        file={selectedFile}
+        token={token}
+      />
       </Box>
     </>
   );
