@@ -74,7 +74,7 @@ const NotificationsPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
-  const { notifications, fetchNotifications, refreshUnreadCount } = useNotification();
+  const { notifications, fetchNotifications, refreshUnreadCount, loading: notificationsLoading } = useNotification();
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -86,7 +86,6 @@ const NotificationsPage = () => {
   useEffect(() => {
     const handleNotificationRemoved = (data) => {
       // Handle notification removal
-      console.log('Notification removed:', data);
       // Refresh the notifications list when one is removed
       fetchNotifications();
     };
@@ -100,7 +99,19 @@ const NotificationsPage = () => {
   }, [fetchNotifications]);
 
   useEffect(() => {
-    fetchNotifications();
+    const loadNotifications = async () => {
+      setLoading(true);
+      try {
+        await fetchNotifications();
+      } catch (error) {
+        setError('Failed to load notifications');
+        console.error('Load notifications error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNotifications();
   }, [fetchNotifications]);
 
   const handleMarkAsRead = async (id) => {

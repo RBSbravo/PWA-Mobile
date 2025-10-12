@@ -238,7 +238,7 @@ const TaskDetailPage = () => {
 
   const handleDeleteComment = async (commentId) => {
     try {
-      await api.deleteTaskComment(token, id, commentId);
+      await api.deleteTaskComment(token, commentId);
       setComments(prev => prev.filter(comment => comment.id !== commentId));
     } catch (err) {
       setError('Failed to delete comment');
