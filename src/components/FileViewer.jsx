@@ -23,6 +23,7 @@ import {
   Description as DocumentIcon,
   Description as DescriptionIcon,
 } from '@mui/icons-material';
+import { API_CONFIG } from '../config';
 
 const FileViewer = ({ open, onClose, file, token }) => {
   const theme = useTheme();
@@ -34,6 +35,7 @@ const FileViewer = ({ open, onClose, file, token }) => {
 
   useEffect(() => {
     if (open && file) {
+      console.log('🔍 FileViewer - File object:', file);
       setError('');
       setFileUrl('');
       setFileType('');
@@ -53,7 +55,8 @@ const FileViewer = ({ open, onClose, file, token }) => {
       }
 
       // Set file URL
-      const url = file.url || `${import.meta.env.VITE_API_URL}/files/${file.id}/download`;
+      const url = file.url || `${API_CONFIG.BACKEND_API_URL}/files/${file.id}/download`;
+      console.log('🔍 FileViewer - Constructed URL:', url);
       setFileUrl(url);
     }
   }, [open, file]);

@@ -312,7 +312,8 @@ const TaskDetailPage = () => {
       
       // Refresh task details to get updated attachments
       await fetchTaskDetails();
-      showSuccess('File uploaded successfully!');
+      // Don't show success message - the backend will send a notification
+      // showSuccess('File uploaded successfully!');
     } catch (err) {
       const errorMessage = err.response?.data?.error || err.message || 'Failed to upload file';
       setError(errorMessage);
