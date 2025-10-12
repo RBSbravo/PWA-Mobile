@@ -335,11 +335,7 @@ const NotificationsPage = () => {
   }
 
   return (
-    <Box sx={{ 
-      backgroundColor: theme.palette.background.default, 
-      minHeight: '100vh',
-      width: '100%',
-    }}>
+    <>
       {/* Header */}
       <ScreenHeader
         title="Notifications"
@@ -361,12 +357,18 @@ const NotificationsPage = () => {
         }
       />
 
-      {/* Content Container */}
+      {/* Content */}
       <Box sx={{ 
+        backgroundColor: theme.palette.background.default, 
+        minHeight: '100vh',
         width: '100%',
-        px: { xs: 2, sm: 3, md: 4, lg: 6 },
-        py: { xs: 2, sm: 3 },
       }}>
+        {/* Content Container */}
+        <Box sx={{ 
+          width: '100%',
+          px: { xs: 2, sm: 3, md: 4, lg: 6 },
+          py: { xs: 2, sm: 3 },
+        }}>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
@@ -374,33 +376,33 @@ const NotificationsPage = () => {
         )}
 
         {/* Tabs */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-          {TABS.map(t => {
-            let count = 0;
-            if (t.key === 'all') count = totalCount;
-            else if (t.key === 'unread') count = unreadCount;
-            else if (t.key === 'read') count = readCount;
-            
-            return (
-              <Chip
-                key={t.key}
-                label={`${t.label} ${count > 0 ? `(${count})` : ''}`}
-                onClick={() => setTab(t.key)}
-                variant={tab === t.key ? 'filled' : 'outlined'}
-                color={tab === t.key ? 'primary' : 'default'}
-                sx={{
-                  borderRadius: theme.shape.borderRadius * 2,
-                  fontWeight: tab === t.key ? 600 : 500,
-                }}
-              />
-            );
-          })}
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+            {TABS.map(t => {
+              let count = 0;
+              if (t.key === 'all') count = totalCount;
+              else if (t.key === 'unread') count = unreadCount;
+              else if (t.key === 'read') count = readCount;
+              
+              return (
+                <Chip
+                  key={t.key}
+                  label={`${t.label} ${count > 0 ? `(${count})` : ''}`}
+                  onClick={() => setTab(t.key)}
+                  variant={tab === t.key ? 'filled' : 'outlined'}
+                  color={tab === t.key ? 'primary' : 'default'}
+                  sx={{
+                    borderRadius: theme.shape.borderRadius * 2,
+                    fontWeight: tab === t.key ? 600 : 500,
+                  }}
+                />
+              );
+            })}
+          </Box>
         </Box>
-      </Box>
 
-      {/* Notifications List */}
-      <Box sx={{ mb: 4 }}>
+        {/* Notifications List */}
+        <Box sx={{ mb: 4 }}>
         {filteredNotifications.length > 0 ? (
           filteredNotifications.map((notification) => (
             <NotificationItem key={notification.id} item={notification} />
@@ -433,9 +435,9 @@ const NotificationsPage = () => {
             </Button>
           </Card>
         )}
+        </Box>
       </Box>
-      </Box>
-    </Box>
+    </>
   );
 };
 

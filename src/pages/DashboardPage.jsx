@@ -221,11 +221,7 @@ const DashboardPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ 
-        backgroundColor: theme.palette.background.default, 
-        minHeight: '100vh',
-        width: '100%',
-      }}>
+      <>
         <ScreenHeader
           title={`Welcome, ${user?.firstname || user?.firstName || 'User'}!`}
           subtitle="Here's a look at your day."
@@ -243,17 +239,19 @@ const DashboardPage = () => {
             </Avatar>
           }
         />
-        <SkeletonLoader type="dashboard" />
-      </Box>
+        <Box sx={{ 
+          backgroundColor: theme.palette.background.default, 
+          minHeight: '100vh',
+          width: '100%',
+        }}>
+          <SkeletonLoader type="dashboard" />
+        </Box>
+      </>
     );
   }
 
   return (
-    <Box sx={{ 
-      backgroundColor: theme.palette.background.default, 
-      minHeight: '100vh',
-      width: '100%',
-    }}>
+    <>
       {/* Header */}
       <ScreenHeader
         title={`Welcome, ${user?.firstname || 'User'}!`}
@@ -274,7 +272,12 @@ const DashboardPage = () => {
       />
 
       {/* Pull to Refresh Container */}
-      <PullToRefresh onRefresh={handleRefresh}>
+      <Box sx={{ 
+        backgroundColor: theme.palette.background.default, 
+        minHeight: '100vh',
+        width: '100%',
+      }}>
+        <PullToRefresh onRefresh={handleRefresh}>
         {/* Content Container */}
         <Box sx={{ 
           width: '100%',
@@ -338,8 +341,9 @@ const DashboardPage = () => {
           <RecentActivityCard />
         </Box>
         </Box>
-      </PullToRefresh>
-    </Box>
+        </PullToRefresh>
+      </Box>
+    </>
   );
 };
 

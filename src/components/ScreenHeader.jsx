@@ -20,6 +20,10 @@ const ScreenHeader = ({
   return (
     <Box
       sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
         display: 'flex',
         alignItems: 'center',
         px: isMobile ? 2.5 : 3,
@@ -28,7 +32,7 @@ const ScreenHeader = ({
         backgroundColor: theme.palette.background.default,
         borderBottom: `1px solid ${theme.palette.border}`,
         boxShadow: theme.shadows[1],
-        zIndex: 10,
+        zIndex: theme.zIndex.appBar + 1,
         ...style,
       }}
     >

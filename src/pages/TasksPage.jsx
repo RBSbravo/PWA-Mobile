@@ -254,26 +254,24 @@ const TasksPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ 
-        backgroundColor: theme.palette.background.default, 
-        minHeight: '100vh',
-        width: '100%',
-      }}>
+      <>
         <ScreenHeader
           title="Tasks"
           leftIcon={<AssignmentIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
         />
-        <SkeletonLoader type="task" count={5} />
-      </Box>
+        <Box sx={{ 
+          backgroundColor: theme.palette.background.default, 
+          minHeight: '100vh',
+          width: '100%',
+        }}>
+          <SkeletonLoader type="task" count={5} />
+        </Box>
+      </>
     );
   }
 
   return (
-    <Box sx={{ 
-      backgroundColor: theme.palette.background.default, 
-      minHeight: '100vh',
-      width: '100%',
-    }}>
+    <>
       {/* Header */}
       <ScreenHeader
         title="Tasks"
@@ -281,7 +279,12 @@ const TasksPage = () => {
       />
 
       {/* Pull to Refresh Container */}
-      <PullToRefresh onRefresh={handleRefresh}>
+      <Box sx={{ 
+        backgroundColor: theme.palette.background.default, 
+        minHeight: '100vh',
+        width: '100%',
+      }}>
+        <PullToRefresh onRefresh={handleRefresh}>
         {/* Content Container */}
         <Box sx={{ 
           width: '100%',
@@ -402,7 +405,8 @@ const TasksPage = () => {
 
       {/* Loading Overlay */}
       <FullScreenLoader visible={loading} message="Loading tasks..." />
-    </Box>
+      </Box>
+    </>
   );
 };
 

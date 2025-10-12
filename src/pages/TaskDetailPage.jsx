@@ -48,9 +48,7 @@ import { useNotification } from '../context/NotificationContext';
 import { useMessage } from '../context/MessageContext';
 import api from '../services/api';
 import socketService from '../services/socket';
-import { format } from 'date-fns';
-import ScreenHeader from '../components/ScreenHeader';
-import FileAttachment from '../components/FileAttachment';
+import { API_CONFIG } from '../config';
 
 const TaskDetailPage = () => {
   const { id } = useParams();
@@ -97,10 +95,25 @@ const TaskDetailPage = () => {
       setTask(taskData);
       setComments(commentsData || []);
       
-      // Set attachments if available
-      if (taskData.attachments) {
-        setAttachedFiles(taskData.attachments);
+      // Fetch attachments separately like mobile app
+      let attachments = taskData.attachments;
+      if (!attachments) {
+        try {
+          const response = await fetch(`${API_CONFIG.BACKEND_API_URL}/files/task/${id}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+          });
+          if (response.ok) {
+            attachments = await response.json();
+          } else {
+            attachments = [];
+          }
+        } catch (err) {
+          console.error('Failed to fetch attachments:', err);
+          attachments = [];
+        }
       }
+      setAttachedFiles(attachments || []);
       
       // Initialize edit form
       setEditForm({
@@ -315,7 +328,7 @@ const TaskDetailPage = () => {
 
   const handleFileClick = (file) => {
     // Open file in new tab or download
-    const fileUrl = file.url || `${process.env.REACT_APP_BACKEND_API_URL || 'https://backend-ticketing-system.up.railway.app'}/api/files/${file.id}/download`;
+    const fileUrl = file.url || `${API_CONFIG.BACKEND_API_URL}/files/${file.id}/download`;
     window.open(fileUrl, '_blank');
   };
 
@@ -371,48 +384,48 @@ const TaskDetailPage = () => {
 
   if (error) {
     return (
-      <Box sx={{ 
-        backgroundColor: theme.palette.background.default, 
-        minHeight: '100vh',
-        width: '100%',
-      }}>
+      <>
         <ScreenHeader
           title="Task Details"
           leftIcon={<ArrowBackIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
           onLeftIconPress={() => navigate('/tasks')}
         />
-        <Box sx={{ p: 3 }}>
-          <Alert severity="error">{error}</Alert>
+        <Box sx={{ 
+          backgroundColor: theme.palette.background.default, 
+          minHeight: '100vh',
+          width: '100%',
+        }}>
+          <Box sx={{ p: 3 }}>
+            <Alert severity="error">{error}</Alert>
+          </Box>
         </Box>
-      </Box>
+      </>
     );
   }
 
   if (!task) {
     return (
-      <Box sx={{ 
-        backgroundColor: theme.palette.background.default, 
-        minHeight: '100vh',
-        width: '100%',
-      }}>
+      <>
         <ScreenHeader
           title="Task Details"
           leftIcon={<ArrowBackIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
           onLeftIconPress={() => navigate('/tasks')}
         />
-        <Box sx={{ p: 3 }}>
-          <Alert severity="info">Task not found</Alert>
+        <Box sx={{ 
+          backgroundColor: theme.palette.background.default, 
+          minHeight: '100vh',
+          width: '100%',
+        }}>
+          <Box sx={{ p: 3 }}>
+            <Alert severity="info">Task not found</Alert>
+          </Box>
         </Box>
-      </Box>
+      </>
     );
   }
 
   return (
-    <Box sx={{ 
-      backgroundColor: theme.palette.background.default, 
-      minHeight: '100vh',
-      width: '100%',
-    }}>
+    <>
       {/* Header */}
       <ScreenHeader
         title="Task Details"
@@ -427,10 +440,16 @@ const TaskDetailPage = () => {
 
       {/* Content */}
       <Box sx={{ 
+        backgroundColor: theme.palette.background.default, 
+        minHeight: '100vh',
         width: '100%',
-        px: { xs: 2, sm: 3, md: 4, lg: 6 },
-        py: { xs: 2, sm: 3 },
       }}>
+        {/* Content Container */}
+        <Box sx={{ 
+          width: '100%',
+          px: { xs: 2, sm: 3, md: 4, lg: 6 },
+          py: { xs: 2, sm: 3 },
+        }}>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
@@ -872,7 +891,8 @@ const TaskDetailPage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+      </Box>
+    </>
   );
 };
 

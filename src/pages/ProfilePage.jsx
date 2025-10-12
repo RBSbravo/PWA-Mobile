@@ -210,11 +210,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <Box sx={{ 
-      backgroundColor: theme.palette.background.default, 
-      minHeight: '100vh',
-      width: '100%',
-    }}>
+    <>
       {/* Header */}
       <ScreenHeader
         title={`${user?.firstname || user?.firstName || ''} ${user?.lastname || user?.lastName || ''}`}
@@ -234,6 +230,12 @@ const ProfilePage = () => {
         }
       />
 
+      {/* Content */}
+      <Box sx={{ 
+        backgroundColor: theme.palette.background.default, 
+        minHeight: '100vh',
+        width: '100%',
+      }}>
       {/* Content Container */}
       <Box sx={{ 
         width: '100%',
@@ -557,7 +559,8 @@ const ProfilePage = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+      </Box>
+    </>
   );
 };
 
