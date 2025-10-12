@@ -32,6 +32,7 @@ const FileViewer = ({ open, onClose, file, token }) => {
   const [error, setError] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   const [fileType, setFileType] = useState('');
+  const [blobUrl, setBlobUrl] = useState('');
 
   useEffect(() => {
     if (open && file) {
@@ -39,6 +40,7 @@ const FileViewer = ({ open, onClose, file, token }) => {
       setError('');
       setFileUrl('');
       setFileType('');
+      setBlobUrl('');
       
       // Determine file type
       const fileName = file.file_name || file.name || '';
@@ -58,8 +60,53 @@ const FileViewer = ({ open, onClose, file, token }) => {
       const url = file.url || `${API_CONFIG.BACKEND_API_URL}/files/${file.id}/download`;
       console.log('🔍 FileViewer - Constructed URL:', url);
       setFileUrl(url);
+      
+      // Load file with authentication
+      loadFileWithAuth(url);
     }
-  }, [open, file]);
+  }, [open, file, token]);
+
+  const loadFileWithAuth = async (url) => {
+    if (!token) {
+      setError('Authentication required');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to load file: ${response.status} ${response.statusText}`);
+      }
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      setBlobUrl(blobUrl);
+      
+      console.log('🔍 FileViewer - File loaded successfully, blob URL created');
+    } catch (err) {
+      console.error('🔍 FileViewer - Error loading file:', err);
+      setError(err.message || 'Failed to load file');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cleanup blob URL when component unmounts or file changes
+  useEffect(() => {
+    return () => {
+      if (blobUrl) {
+        window.URL.revokeObjectURL(blobUrl);
+      }
+    };
+  }, [blobUrl]);
 
   const handleDownload = async () => {
     try {
@@ -94,7 +141,9 @@ const FileViewer = ({ open, onClose, file, token }) => {
   };
 
   const handleOpenInNewTab = () => {
-    window.open(fileUrl, '_blank');
+    if (blobUrl) {
+      window.open(blobUrl, '_blank');
+    }
   };
 
   const renderFileContent = () => {
@@ -114,12 +163,20 @@ const FileViewer = ({ open, onClose, file, token }) => {
       );
     }
 
+    if (!blobUrl) {
+      return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+          <Typography color="text.secondary">No file loaded</Typography>
+        </Box>
+      );
+    }
+
     switch (fileType) {
       case 'image':
         return (
           <Box sx={{ textAlign: 'center' }}>
             <img
-              src={fileUrl}
+              src={blobUrl}
               alt={file.file_name || file.name}
               style={{
                 maxWidth: '100%',
@@ -136,7 +193,7 @@ const FileViewer = ({ open, onClose, file, token }) => {
         return (
           <Box sx={{ height: isMobile ? '60vh' : '70vh' }}>
             <iframe
-              src={fileUrl}
+              src={blobUrl}
               style={{
                 width: '100%',
                 height: '100%',
