@@ -96,7 +96,7 @@ const NotificationsPage = () => {
     return () => {
       socketService.off('notificationRemoved', handleNotificationRemoved);
     };
-  }, [fetchNotifications]);
+  }, [token]); // Only depend on token, not fetchNotifications
 
   useEffect(() => {
     const loadNotifications = async () => {
@@ -112,7 +112,7 @@ const NotificationsPage = () => {
     };
 
     loadNotifications();
-  }, [fetchNotifications]);
+  }, [token]); // Only depend on token, not fetchNotifications
 
   const handleMarkAsRead = async (id) => {
     try {
