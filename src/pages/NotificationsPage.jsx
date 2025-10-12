@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -71,54 +71,84 @@ const getTimeAgo = (timestamp) => {
 
 const NotificationsPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
-  const { notifications, fetchNotifications, refreshUnreadCount, loading: notificationsLoading } = useNotification();
+  const { notifications, fetchNotifications, refreshUnreadCount, realtimeNotifications, loading: notificationsLoading } = useNotification();
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('all');
+  const [localNotifications, setLocalNotifications] = useState([]);
 
-  // Use the context's fetchNotifications instead of local implementation
+  // Fetch notifications from API (like mobile app)
+  const fetchNotificationsFromAPI = useCallback(async () => {
+    try {
+      if (!user) return;
+      setLoading(true);
+      const fetchedNotifications = await api.getNotifications(token);
+      
+      // Filter out notifications without proper content (like mobile app)
+      const validNotifications = fetchedNotifications.filter(notification => {
+        const hasContent = notification.title || notification.message;
+        return hasContent;
+      });
+      
+      setLocalNotifications(validNotifications.sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)));
+    } catch (error) {
+      setError('Failed to load notifications.');
+      console.error('Load notifications error:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [user, token]);
 
-  // Real-time updates
+  // Add new real-time notifications to the list (like mobile app)
+  useEffect(() => {
+    if (realtimeNotifications && realtimeNotifications.length > 0) {
+      const newNotifications = realtimeNotifications.filter(notification => {
+        // Filter out notifications without proper content
+        const hasContent = notification.title || notification.message || notification.data?.message;
+        const isNew = !localNotifications.some(existing => existing.id === notification.id);
+        return hasContent && isNew;
+      });
+      
+      if (newNotifications.length > 0) {
+        setLocalNotifications(prev => [...newNotifications, ...prev]);
+      }
+    }
+  }, [realtimeNotifications, localNotifications]);
+
+  // Real-time updates (like mobile app)
   useEffect(() => {
     const handleNotificationRemoved = (data) => {
-      // Handle notification removal
-      // Refresh the notifications list when one is removed
-      fetchNotifications();
+      setLocalNotifications(prev => prev.filter(n => n.id !== data.notificationId));
     };
 
-    // Only listen to notificationRemoved, let NotificationContext handle new notifications
     socketService.on('notificationRemoved', handleNotificationRemoved);
 
     return () => {
       socketService.off('notificationRemoved', handleNotificationRemoved);
     };
-  }, [token]); // Only depend on token, not fetchNotifications
+  }, []);
+
+  // Refresh unread count when page is focused (like mobile app's useFocusEffect)
+  useEffect(() => {
+    if (location.pathname === '/notifications') {
+      refreshUnreadCount();
+    }
+  }, [location.pathname, refreshUnreadCount]);
 
   useEffect(() => {
-    const loadNotifications = async () => {
-      setLoading(true);
-      try {
-        await fetchNotifications();
-      } catch (error) {
-        setError('Failed to load notifications');
-        console.error('Load notifications error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadNotifications();
-  }, [token]); // Only depend on token, not fetchNotifications
+    fetchNotificationsFromAPI();
+  }, [fetchNotificationsFromAPI]);
 
   const handleMarkAsRead = async (id) => {
     try {
       await api.markNotificationAsRead(id, token);
-      // Refresh notifications to get updated state
-      await fetchNotifications();
+      setLocalNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+      refreshUnreadCount();
     } catch (error) {
       setError('Failed to update notification.');
       console.error('Mark as read error:', error);
@@ -128,8 +158,8 @@ const NotificationsPage = () => {
   const handleMarkAllAsRead = async () => {
     try {
       await api.markAllNotificationsAsRead(token);
-      // Refresh notifications to get updated state
-      await fetchNotifications();
+      setLocalNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      refreshUnreadCount();
     } catch (error) {
       setError('Failed to update notifications.');
       console.error('Mark all as read error:', error);
@@ -139,8 +169,8 @@ const NotificationsPage = () => {
   const handleDelete = async (id) => {
     try {
       await api.deleteNotification(id, token);
-      // Refresh notifications to get updated state
-      await fetchNotifications();
+      setLocalNotifications(prev => prev.filter(n => n.id !== id));
+      refreshUnreadCount();
     } catch (error) {
       setError('Failed to delete notification.');
       console.error('Delete notification error:', error);
@@ -151,8 +181,8 @@ const NotificationsPage = () => {
     try {
       if (!item.isRead) {
         await api.markNotificationAsRead(item.id, token);
-        // Refresh notifications to get updated state
-        await fetchNotifications();
+        setLocalNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n));
+        refreshUnreadCount();
       }
       
       // Navigate based on notification type
@@ -167,11 +197,11 @@ const NotificationsPage = () => {
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
-  const readCount = notifications.filter(n => n.isRead).length;
-  const totalCount = notifications.length;
+  const unreadCount = localNotifications.filter(n => !n.isRead).length;
+  const readCount = localNotifications.filter(n => n.isRead).length;
+  const totalCount = localNotifications.length;
 
-  const filteredNotifications = notifications.filter(n => {
+  const filteredNotifications = localNotifications.filter(n => {
     if (tab === 'all') return true;
     if (tab === 'unread') return !n.isRead;
     if (tab === 'read') return n.isRead;
@@ -378,6 +408,14 @@ const NotificationsPage = () => {
                 : 'You have no notifications yet.'
               }
             </Typography>
+            <Button
+              variant="outlined"
+              onClick={fetchNotificationsFromAPI}
+              sx={{ mt: 2 }}
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={20} /> : 'Refresh'}
+            </Button>
           </Card>
         )}
       </Box>
