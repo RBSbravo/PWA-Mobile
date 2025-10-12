@@ -38,12 +38,15 @@ const AppContent = () => {
   // Initialize socket connection when user is authenticated
   useEffect(() => {
     if (isAuthenticated && token && user?.id) {
+      console.log('🔌 PWA App connecting socket with user:', user.id);
       socketService.connect(token, user.id);
     } else {
+      console.log('🔌 PWA App disconnecting socket');
       socketService.disconnect();
     }
 
     return () => {
+      console.log('🔌 PWA App cleanup - disconnecting socket');
       socketService.disconnect();
     };
   }, [isAuthenticated, token, user]);

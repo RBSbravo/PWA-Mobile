@@ -50,6 +50,7 @@ import api from '../services/api';
 import socketService from '../services/socket';
 import { format } from 'date-fns';
 import { API_CONFIG } from '../config';
+import ScreenHeader from '../components/ScreenHeader';
 
 const TaskDetailPage = () => {
   const { id } = useParams();

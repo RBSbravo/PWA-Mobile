@@ -168,8 +168,11 @@ export const NotificationProvider = ({ children }) => {
       listenerSetupRef.current = true;
       
       const handleNotification = (notif) => {
+        console.log('🔔 PWA NotificationContext received notification:', notif);
+        
         // Handle backend notification format: { type: 'NEW_NOTIFICATION', data: notification }
         const notificationData = notif.data || notif;
+        console.log('🔔 PWA NotificationContext processed notification data:', notificationData);
         
         // Ensure the notification has proper structure without duplication (like mobile app)
         let title = notificationData.title || notificationData.message || '';

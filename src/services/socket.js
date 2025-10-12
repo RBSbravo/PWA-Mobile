@@ -128,6 +128,7 @@ class SocketService {
 
     // Notification events
     this.socket.on('notification', (notification) => {
+      console.log('🔔 PWA SocketService received notification:', notification);
       this.emit('notification', notification);
     });
 
