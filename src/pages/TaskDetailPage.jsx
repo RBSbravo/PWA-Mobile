@@ -26,6 +26,9 @@ import {
   Menu,
   MenuItem,
   ListItemIcon,
+  FormControl,
+  InputLabel,
+  Select,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -68,7 +71,9 @@ const TaskDetailPage = () => {
     description: '',
     status: '',
     priority: '',
+    remarks: '',
   });
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -152,15 +157,41 @@ const TaskDetailPage = () => {
   }, [fetchTaskDetails]);
 
   const handleEdit = () => {
-    setEditMode(true);
+    setEditForm({
+      title: task.title || '',
+      description: task.description || '',
+      status: task.status || 'pending',
+      priority: task.priority || 'medium',
+      remarks: '',
+    });
+    setEditDialogOpen(true);
     setMenuAnchor(null);
   };
 
   const handleSave = async () => {
+    if (!editForm.remarks.trim()) {
+      setError('Remarks are required when updating a task.');
+      return;
+    }
+    
     try {
-      await api.updateTask(token, id, editForm);
-      setTask(prev => ({ ...prev, ...editForm }));
-      setEditMode(false);
+      await api.updateTask(token, id, {
+        title: editForm.title,
+        description: editForm.description,
+        status: editForm.status,
+        priority: editForm.priority,
+      });
+      
+      // Add remarks as a comment
+      await api.addTaskComment(token, id, `📝 **Task Updated**\n\n${editForm.remarks}`);
+      
+      setEditDialogOpen(false);
+      await fetchTaskDetails();
+      
+      // Refresh comments
+      const fetchedComments = await api.getTaskComments(token, id);
+      setComments(fetchedComments);
+      
       addRealtimeNotification({
         title: 'Task Updated',
         message: `Task "${editForm.title}" has been updated`,
@@ -174,13 +205,14 @@ const TaskDetailPage = () => {
   };
 
   const handleCancel = () => {
+    setEditDialogOpen(false);
     setEditForm({
-      title: task.title || '',
-      description: task.description || '',
-      status: task.status || 'pending',
-      priority: task.priority || 'medium',
+      title: '',
+      description: '',
+      status: '',
+      priority: '',
+      remarks: '',
     });
-    setEditMode(false);
   };
 
   const handleDelete = async () => {
@@ -401,58 +433,40 @@ const TaskDetailPage = () => {
         }}>
           <CardContent>
             {/* Title */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <AssignmentIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
-              {editMode ? (
-                <TextField
-                  fullWidth
-                  value={editForm.title}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                  variant="outlined"
-                  size="small"
-                />
-              ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                <AssignmentIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
                 <Typography variant="h5" fontWeight="bold" sx={{ flex: 1 }}>
                   {task.title}
                 </Typography>
+              </Box>
+              {canEdit && (
+                <Button
+                  variant="outlined"
+                  startIcon={<EditIcon />}
+                  onClick={handleEdit}
+                  size="small"
+                  sx={{ ml: 2 }}
+                >
+                  Edit
+                </Button>
               )}
             </Box>
 
             {/* Status and Priority */}
             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
               <Chip
-                label={editMode ? (
-                  <select
-                    value={editForm.status}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value }))}
-                    style={{ border: 'none', background: 'transparent' }}
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="declined">Declined</option>
-                  </select>
-                ) : (task.status || 'Unknown')}
+                label={(task.status || 'Unknown').replace('_', ' ')}
                 sx={{
-                  backgroundColor: getStatusColor(editMode ? editForm.status : task.status),
+                  backgroundColor: getStatusColor(task.status),
                   color: '#fff',
                   fontWeight: 'bold',
                 }}
               />
               <Chip
-                label={editMode ? (
-                  <select
-                    value={editForm.priority}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, priority: e.target.value }))}
-                    style={{ border: 'none', background: 'transparent' }}
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
-                ) : (task.priority || 'Normal')}
+                label={task.priority || 'Normal'}
                 sx={{
-                  backgroundColor: getPriorityColor(editMode ? editForm.priority : task.priority),
+                  backgroundColor: getPriorityColor(task.priority),
                   color: '#fff',
                   fontWeight: 'bold',
                 }}
@@ -464,20 +478,9 @@ const TaskDetailPage = () => {
               <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
                 Description
               </Typography>
-              {editMode ? (
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  value={editForm.description}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                  variant="outlined"
-                />
-              ) : (
-                <Typography variant="body2" color="text.secondary">
-                  {task.description || 'No description provided'}
-                </Typography>
-              )}
+              <Typography variant="body2" color="text.secondary">
+                {task.description || 'No description provided'}
+              </Typography>
             </Box>
 
             {/* Due Date */}
@@ -490,37 +493,34 @@ const TaskDetailPage = () => {
               </Box>
             )}
 
-            {/* Assignee */}
-            {task.assignee && (
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <PersonIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
-                <Typography variant="body2" color="text.secondary">
-                  Assigned to: {task.assignee.name || task.assignee}
-                </Typography>
-              </Box>
-            )}
+            {/* Additional Task Details */}
+            <Box sx={{ mb: 2 }}>
+              {task.assignee && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <PersonIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Assigned to:</strong> {task.assignee.name || task.assignee}
+                  </Typography>
+                </Box>
+              )}
+              {task.project && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <AssignmentIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Project:</strong> {task.project}
+                  </Typography>
+                </Box>
+              )}
+              {task.estimatedHours && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <ScheduleIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Estimated Hours:</strong> {task.estimatedHours}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
 
-            {/* Edit Actions */}
-            {editMode && (
-              <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                <Button
-                  variant="contained"
-                  startIcon={<SaveIcon />}
-                  onClick={handleSave}
-                  size="small"
-                >
-                  Save
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<CancelIcon />}
-                  onClick={handleCancel}
-                  size="small"
-                >
-                  Cancel
-                </Button>
-              </Box>
-            )}
           </CardContent>
         </Card>
 
@@ -697,6 +697,81 @@ const TaskDetailPage = () => {
           <ListItemText>Delete Task</ListItemText>
         </MenuItem>
       </Menu>
+
+      {/* Edit Task Dialog */}
+      <Dialog
+        open={editDialogOpen}
+        onClose={handleCancel}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Update Task</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Title"
+            value={editForm.title}
+            onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+          />
+          <TextField
+            label="Description"
+            value={editForm.description}
+            onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+            fullWidth
+            multiline
+            rows={4}
+            margin="normal"
+            variant="outlined"
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={editForm.status}
+              onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value }))}
+              label="Status"
+            >
+              <MenuItem value="pending">Pending</MenuItem>
+              <MenuItem value="in_progress">In Progress</MenuItem>
+              <MenuItem value="completed">Completed</MenuItem>
+              <MenuItem value="declined">Declined</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Priority</InputLabel>
+            <Select
+              value={editForm.priority}
+              onChange={(e) => setEditForm(prev => ({ ...prev, priority: e.target.value }))}
+              label="Priority"
+            >
+              <MenuItem value="low">Low</MenuItem>
+              <MenuItem value="medium">Medium</MenuItem>
+              <MenuItem value="high">High</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Remarks *"
+            value={editForm.remarks}
+            onChange={(e) => setEditForm(prev => ({ ...prev, remarks: e.target.value }))}
+            fullWidth
+            multiline
+            rows={3}
+            margin="normal"
+            variant="outlined"
+            placeholder="Please provide remarks for this update..."
+            required
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} variant="contained">
+            Update Task
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* File Delete Confirmation Dialog */}
       <Dialog

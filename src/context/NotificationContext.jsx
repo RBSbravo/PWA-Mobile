@@ -177,7 +177,7 @@ export const NotificationProvider = ({ children }) => {
     return () => {
       socketService.off('notification', handleRealtimeNotification);
     };
-  }, [addRealtimeNotification, notifications]);
+  }, [notifications]); // Remove addRealtimeNotification from dependencies to prevent re-registration
 
   return (
     <NotificationContext.Provider value={{
