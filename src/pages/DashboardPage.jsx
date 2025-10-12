@@ -57,17 +57,17 @@ const DashboardPage = () => {
         api.getNotifications(token)
       ]);
       
-      const tasksList = tasksData.tickets || tasksData.tasks || tasksData;
+      const tasksList = Array.isArray(tasksData) ? tasksData : (tasksData.tickets || tasksData.tasks || []);
       setTasks(tasksList);
       
-      // Calculate stats
-      const pendingTasks = tasksList.filter(t => t.status && t.status.toLowerCase() === 'pending').length;
+      // Calculate stats with safety checks
+      const pendingTasks = tasksList.filter(t => t && t.status && t.status.toLowerCase() === 'pending').length;
       const overdueTasks = tasksList.filter(t => {
-        if (!t.dueDate && !t.due_date) return false;
+        if (!t || (!t.dueDate && !t.due_date)) return false;
         const due = new Date(t.dueDate || t.due_date);
         return t.status && t.status.toLowerCase() !== 'completed' && due < new Date();
       }).length;
-      const completedTasks = tasksList.filter(t => t.status && t.status.toLowerCase() === 'completed').length;
+      const completedTasks = tasksList.filter(t => t && t.status && t.status.toLowerCase() === 'completed').length;
       
       setStats({
         pendingTasks,
@@ -88,6 +88,7 @@ const DashboardPage = () => {
   // Real-time updates
   useEffect(() => {
     const handleTaskUpdate = (updatedTask) => {
+      if (!updatedTask || !updatedTask.id) return;
       setTasks(prev => prev.map(task => 
         task.id === updatedTask.id ? updatedTask : task
       ));
@@ -95,6 +96,7 @@ const DashboardPage = () => {
     };
 
     const handleTaskStatusChange = (data) => {
+      if (!data || !data.taskId) return;
       setTasks(prev => prev.map(task => 
         task.id === data.taskId ? { ...task, status: data.status } : task
       ));
@@ -102,11 +104,13 @@ const DashboardPage = () => {
     };
 
     const handleTaskDeleted = (data) => {
+      if (!data || !data.taskId) return;
       setTasks(prev => prev.filter(task => task.id !== data.taskId));
       fetchDashboardData(); // Refresh stats
     };
 
     const handleNotification = (notification) => {
+      if (!notification) return;
       addRealtimeNotification(notification);
     };
 
@@ -168,35 +172,38 @@ const DashboardPage = () => {
         </Typography>
         {notifications.length > 0 ? (
           <Box>
-            {notifications.slice(0, 1).map((notification, index) => (
-              <Box
-                key={notification.id || index}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  p: 2,
-                  mb: 1,
-                  borderRadius: 2,
-                  backgroundColor: theme.palette.background.paper,
-                  border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
-                }}
-              >
-                <NotificationsIcon
-                  color="primary"
-                  sx={{ mr: 2, fontSize: 28 }}
-                />
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body2" fontWeight="medium">
-                    {notification.message || notification.title || 'You have a new notification.'}
-                  </Typography>
-                  {notification.timestamp && (
-                    <Typography variant="caption" color="text.secondary">
-                      {new Date(notification.timestamp).toLocaleString()}
+            {notifications.slice(0, 1).map((notification, index) => {
+              if (!notification) return null;
+              return (
+                <Box
+                  key={notification.id || index}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    p: 2,
+                    mb: 1,
+                    borderRadius: 2,
+                    backgroundColor: theme.palette.background.paper,
+                    border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+                  }}
+                >
+                  <NotificationsIcon
+                    color="primary"
+                    sx={{ mr: 2, fontSize: 28 }}
+                  />
+                  <Box sx={{ flex: 1 }}>
+                    <Typography variant="body2" fontWeight="medium">
+                      {notification.message || notification.title || 'You have a new notification.'}
                     </Typography>
-                  )}
+                    {notification.timestamp && (
+                      <Typography variant="caption" color="text.secondary">
+                        {new Date(notification.timestamp).toLocaleString()}
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
-              </Box>
-            ))}
+              );
+            })}
           </Box>
         ) : (
           <Box
@@ -227,7 +234,7 @@ const DashboardPage = () => {
         width: '100%',
       }}>
         <ScreenHeader
-          title={`Welcome, ${user?.firstname || 'User'}!`}
+          title={`Welcome, ${user?.firstname || user?.firstName || 'User'}!`}
           subtitle="Here's a look at your day."
           leftIcon={
             <Avatar
@@ -239,7 +246,7 @@ const DashboardPage = () => {
                 fontWeight: 'bold',
               }}
             >
-              {user?.firstname ? user.firstname.charAt(0).toUpperCase() : 'U'}
+              {(user?.firstname || user?.firstName) ? (user?.firstname || user?.firstName).charAt(0).toUpperCase() : 'U'}
             </Avatar>
           }
         />
@@ -289,7 +296,7 @@ const DashboardPage = () => {
 
         {/* Stats Container */}
         <Box sx={{ 
-          backgroundColor: theme.palette.primaryContainer,
+          backgroundColor: theme.palette.primary.main + '10',
           borderRadius: theme.shape.borderRadius * 2,
           p: { xs: 2, sm: 3, md: 4 },
           mb: 4,

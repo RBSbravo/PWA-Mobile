@@ -165,6 +165,11 @@ const TasksPage = () => {
   }, [fetchTasks]);
 
   const filteredTasks = tasks.filter(task => {
+    // Safety check to ensure task exists and has required properties
+    if (!task || !task.id) {
+      return false;
+    }
+    
     const matchesSearch = task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'All' || task.status === statusFilter;
@@ -172,7 +177,13 @@ const TasksPage = () => {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  const TaskCard = ({ task }) => (
+  const TaskCard = ({ task }) => {
+    // Safety check for task object
+    if (!task || !task.id) {
+      return null;
+    }
+    
+    return (
     <Card
       sx={{
         mb: 2,
@@ -238,7 +249,8 @@ const TasksPage = () => {
         )}
       </CardContent>
     </Card>
-  );
+    );
+  };
 
   if (loading) {
     return (
@@ -319,11 +331,18 @@ const TasksPage = () => {
       <Box sx={{ mb: 4 }}>
         {filteredTasks.length > 0 ? (
           <Grid container spacing={{ xs: 2, sm: 3 }}>
-            {filteredTasks.map((task) => (
-              <Grid item xs={12} sm={6} lg={4} key={task.id}>
-                <TaskItem task={task} onPress={(task) => navigate(`/tasks/${task.id}`)} />
-              </Grid>
-            ))}
+            {filteredTasks.map((task) => {
+              // Additional safety check before rendering
+              if (!task || !task.id) {
+                return null;
+              }
+              
+              return (
+                <Grid item xs={12} sm={6} lg={4} key={task.id}>
+                  <TaskItem task={task} onPress={(task) => navigate(`/tasks/${task.id}`)} />
+                </Grid>
+              );
+            })}
           </Grid>
         ) : (
           <Card sx={{ 

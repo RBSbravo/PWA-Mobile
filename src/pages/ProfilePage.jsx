@@ -217,7 +217,7 @@ const ProfilePage = () => {
     }}>
       {/* Header */}
       <ScreenHeader
-        title={`${user?.firstname || ''} ${user?.lastname || ''}`}
+        title={`${user?.firstname || user?.firstName || ''} ${user?.lastname || user?.lastName || ''}`}
         subtitle={user?.email || ''}
         leftIcon={
           <Avatar
@@ -229,7 +229,7 @@ const ProfilePage = () => {
               fontWeight: 'bold',
             }}
           >
-            {user?.firstname ? user.firstname.charAt(0).toUpperCase() : 'U'}
+            {(user?.firstname || user?.firstName) ? (user?.firstname || user?.firstName).charAt(0).toUpperCase() : 'U'}
           </Avatar>
         }
       />

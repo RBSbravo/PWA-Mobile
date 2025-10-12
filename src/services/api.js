@@ -379,12 +379,13 @@ const api = {
     return handleApiResponse(response);
   },
 
-  getUnreadNotificationCount: async (userId) => {
+  getUnreadNotificationCount: async (userId, token) => {
     try {
       const response = await fetch(`${API_CONFIG.BACKEND_API_URL}/notifications/unread-count/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
         }
       });
       const data = await handleApiResponse(response);

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
+import socketService from '../services/socket';
 
 const NotificationContext = createContext(null);
 
@@ -24,6 +25,8 @@ export const NotificationProvider = ({ children }) => {
       // Calculate unread count
       const unread = notificationsList.filter(n => !n.isRead).length;
       setUnreadCount(unread);
+      
+      console.log('Fetched notifications:', notificationsList.length, 'Unread:', unread);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
     } finally {
@@ -123,6 +126,36 @@ export const NotificationProvider = ({ children }) => {
       setRealtimeNotifications([]);
     }
   }, [token]);
+
+  // Setup socket listeners for real-time notifications
+  useEffect(() => {
+    const handleRealtimeNotification = (notification) => {
+      console.log('Received real-time notification:', notification);
+      
+      // Ensure notification has proper structure
+      const formattedNotification = {
+        id: notification.id || Date.now(),
+        title: notification.title || notification.message || 'New notification',
+        message: notification.message || notification.title || 'You have a new notification',
+        type: notification.type || 'system',
+        isRead: false,
+        date: notification.date || notification.createdAt || new Date().toISOString(),
+        taskId: notification.taskId,
+        ticketId: notification.ticketId,
+        userId: notification.userId,
+      };
+      
+      // Add to real-time notifications
+      addRealtimeNotification(formattedNotification);
+    };
+
+    // Listen for notification events
+    socketService.on('notification', handleRealtimeNotification);
+
+    return () => {
+      socketService.off('notification', handleRealtimeNotification);
+    };
+  }, [addRealtimeNotification]);
 
   return (
     <NotificationContext.Provider value={{

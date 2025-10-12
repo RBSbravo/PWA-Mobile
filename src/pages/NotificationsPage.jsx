@@ -117,12 +117,20 @@ const NotificationsPage = () => {
       console.log('Notification removed:', data);
     };
 
+    const handleRealtimeNotification = (notification) => {
+      console.log('Received notification in NotificationsPage:', notification);
+      // The NotificationContext will handle this, but we can refresh the list
+      fetchNotifications();
+    };
+
     socketService.on('notificationRemoved', handleNotificationRemoved);
+    socketService.on('notification', handleRealtimeNotification);
 
     return () => {
       socketService.off('notificationRemoved', handleNotificationRemoved);
+      socketService.off('notification', handleRealtimeNotification);
     };
-  }, []);
+  }, [fetchNotifications]);
 
   useEffect(() => {
     fetchNotifications();

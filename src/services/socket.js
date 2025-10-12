@@ -42,7 +42,7 @@ class SocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('Socket connected');
+      console.log('Socket connected successfully');
       this.isConnected = true;
       this.reconnectAttempts = 0;
       this.emit('connection', { status: 'connected' });
@@ -98,7 +98,7 @@ class SocketService {
 
     // Notification events
     this.socket.on('notification', (notification) => {
-      console.log('New notification:', notification);
+      console.log('New notification received:', notification);
       this.emit('notification', notification);
     });
 

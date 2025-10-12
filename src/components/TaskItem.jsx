@@ -54,18 +54,23 @@ const formatDate = (dateString) => {
   });
 };
 
-const TaskItem = React.memo(({ item, onPress }) => {
+const TaskItem = React.memo(({ task, onPress }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const isOverdue = item.dueDate && new Date(item.dueDate) < new Date();
-  const isDueSoon = item.dueDate && (new Date(item.dueDate) - new Date()) < (3 * 24 * 60 * 60 * 1000);
+  // Add safety check for task object
+  if (!task) {
+    return null;
+  }
+
+  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
+  const isDueSoon = task.dueDate && (new Date(task.dueDate) - new Date()) < (3 * 24 * 60 * 60 * 1000);
 
   return (
     <Card
       sx={{
         backgroundColor: theme.palette.surface,
-        borderLeft: `5px solid ${getStatusColor(item.status, theme)}`,
+        borderLeft: `5px solid ${getStatusColor(task.status, theme)}`,
         mb: 2,
         cursor: 'pointer',
         transition: 'all 0.2s ease-in-out',
@@ -77,13 +82,13 @@ const TaskItem = React.memo(({ item, onPress }) => {
           boxShadow: theme.shadows[4],
         },
       }}
-      onClick={() => onPress(item)}
+      onClick={() => onPress(task)}
     >
       <CardContent sx={{ pb: 1.5 }}>
         {/* Header with assignee and title */}
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
           {/* Assignee avatar/initials if available */}
-          {item.assignee && (
+          {task.assignee && (
             <Avatar
               sx={{
                 width: 32,
@@ -95,8 +100,8 @@ const TaskItem = React.memo(({ item, onPress }) => {
                 mr: 1.25,
               }}
             >
-              {item.assignee.name 
-                ? item.assignee.name.split(' ').map(n => n[0]).join('').toUpperCase()
+              {task.assignee.name 
+                ? task.assignee.name.split(' ').map(n => n[0]).join('').toUpperCase()
                 : '?'
               }
             </Avatar>
@@ -114,17 +119,17 @@ const TaskItem = React.memo(({ item, onPress }) => {
               whiteSpace: 'nowrap',
             }}
           >
-            {item.title}
+            {task.title}
           </Typography>
         </Box>
 
         {/* Status and Priority Chips */}
         <Box sx={{ display: 'flex', alignItems: 'center', my: 0.75, gap: 1 }}>
           <Chip
-            label={(item.status || '').replace('_', ' ')}
+            label={(task.status || '').replace('_', ' ')}
             size="small"
             sx={{
-              backgroundColor: getStatusColor(item.status, theme),
+              backgroundColor: getStatusColor(task.status, theme),
               color: '#fff',
               fontWeight: 'bold',
               fontSize: 11,
@@ -135,10 +140,10 @@ const TaskItem = React.memo(({ item, onPress }) => {
             }}
           />
           <Chip
-            label={item.priority || 'Normal'}
+            label={task.priority || 'Normal'}
             size="small"
             sx={{
-              backgroundColor: getPriorityColor(item.priority, theme),
+              backgroundColor: getPriorityColor(task.priority, theme),
               color: '#fff',
               fontWeight: 'bold',
               fontSize: 11,
@@ -165,7 +170,7 @@ const TaskItem = React.memo(({ item, onPress }) => {
             lineHeight: 1.4,
           }}
         >
-          {item.description}
+          {task.description}
         </Typography>
 
         {/* Due date and category */}
@@ -189,10 +194,10 @@ const TaskItem = React.memo(({ item, onPress }) => {
               mr: 1.5,
             }}
           >
-            Due: {formatDate(item.dueDate)}
+            Due: {formatDate(task.dueDate)}
           </Typography>
           
-          {item.category && (
+          {task.category && (
             <>
               <CategoryIcon 
                 sx={{ 
@@ -209,7 +214,7 @@ const TaskItem = React.memo(({ item, onPress }) => {
                   ml: 0.5 
                 }}
               >
-                {item.category}
+                {task.category}
               </Typography>
             </>
           )}
