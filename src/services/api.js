@@ -108,8 +108,6 @@ const api = {
   login: async (email, password) => {
     try {
       const url = `${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.AUTH.LOGIN}`;
-      console.log('🔐 Login URL:', url);
-      console.log('🌐 Current origin:', window.location.origin);
       
       const response = await fetch(url, {
         method: 'POST',
@@ -121,11 +119,7 @@ const api = {
         credentials: 'include'
       });
       
-      console.log('📡 Login response status:', response.status);
-      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
-      
       const data = await handleApiResponse(response);
-      console.log('✅ Login successful:', data);
       return data; // Returns { user, token }
     } catch (error) {
       console.error('❌ Login error:', error);
@@ -272,8 +266,6 @@ const api = {
   getDepartments: async () => {
     try {
       const url = `${API_CONFIG.BACKEND_API_URL}${API_CONFIG.ENDPOINTS.DEPARTMENTS.LIST}`;
-      console.log('🔗 Fetching departments from:', url);
-      console.log('🌐 Current origin:', window.location.origin);
       
       const response = await fetch(url, {
         method: 'GET',
@@ -284,11 +276,7 @@ const api = {
         credentials: 'include'
       });
       
-      console.log('📡 Departments response status:', response.status);
-      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
-      
       const data = await handleApiResponse(response);
-      console.log('✅ Departments loaded successfully:', data);
       return data;
     } catch (error) {
       console.error('❌ Get departments error:', error);

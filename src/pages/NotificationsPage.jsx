@@ -436,6 +436,7 @@ const NotificationsPage = () => {
           </Card>
         )}
         </Box>
+        </Box>
       </Box>
     </>
   );
