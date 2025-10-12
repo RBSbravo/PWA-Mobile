@@ -117,7 +117,8 @@ const NotificationsPage = () => {
   const handleMarkAsRead = async (id) => {
     try {
       await api.markNotificationAsRead(id, token);
-      refreshUnreadCount();
+      // Refresh notifications to get updated state
+      await fetchNotifications();
     } catch (error) {
       setError('Failed to update notification.');
       console.error('Mark as read error:', error);
@@ -127,7 +128,8 @@ const NotificationsPage = () => {
   const handleMarkAllAsRead = async () => {
     try {
       await api.markAllNotificationsAsRead(token);
-      refreshUnreadCount();
+      // Refresh notifications to get updated state
+      await fetchNotifications();
     } catch (error) {
       setError('Failed to update notifications.');
       console.error('Mark all as read error:', error);
@@ -137,7 +139,8 @@ const NotificationsPage = () => {
   const handleDelete = async (id) => {
     try {
       await api.deleteNotification(id, token);
-      refreshUnreadCount();
+      // Refresh notifications to get updated state
+      await fetchNotifications();
     } catch (error) {
       setError('Failed to delete notification.');
       console.error('Delete notification error:', error);
@@ -148,7 +151,8 @@ const NotificationsPage = () => {
     try {
       if (!item.isRead) {
         await api.markNotificationAsRead(item.id, token);
-        refreshUnreadCount();
+        // Refresh notifications to get updated state
+        await fetchNotifications();
       }
       
       // Navigate based on notification type

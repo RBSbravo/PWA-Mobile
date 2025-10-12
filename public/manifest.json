@@ -1,7 +1,7 @@
 {
   "name": "MITO Task Manager",
-  "short_name": "TMS",
-  "description": "MITO Task Management System - Progressive Web App",
+  "short_name": "TMA",
+  "description": "MITO Task Management App - Progressive Web App",
   "theme_color": "#667eea",
   "background_color": "#ffffff",
   "display": "standalone",

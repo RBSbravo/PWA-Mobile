@@ -238,6 +238,10 @@ const TaskDetailPage = () => {
 
   const handleDeleteComment = async (commentId) => {
     try {
+      console.log('Attempting to delete comment with ID:', commentId);
+      console.log('Comment ID type:', typeof commentId);
+      console.log('Comment ID length:', commentId?.length);
+      
       await api.deleteTaskComment(token, commentId);
       setComments(prev => prev.filter(comment => comment.id !== commentId));
     } catch (err) {
@@ -572,7 +576,11 @@ const TaskDetailPage = () => {
                         {(comment.commentUser?.id === user?.id || comment.user?.id === user?.id) && (
                           <IconButton
                             size="small"
-                            onClick={() => handleDeleteComment(comment.id)}
+                            onClick={() => {
+                              console.log('Comment object:', comment);
+                              console.log('Comment ID:', comment.id);
+                              handleDeleteComment(comment.id);
+                            }}
                             sx={{ 
                               color: theme.palette.error.main,
                               ml: 1,
