@@ -74,41 +74,13 @@ const NotificationsPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
-  const { notifications, addRealtimeNotification, refreshUnreadCount } = useNotification();
+  const { notifications, fetchNotifications, refreshUnreadCount } = useNotification();
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('all');
 
-  const fetchNotifications = useCallback(async () => {
-    try {
-      if (!user) return;
-      setLoading(true);
-      const fetchedNotifications = await api.getNotifications(token);
-      
-      // Filter out notifications without proper content
-      const validNotifications = fetchedNotifications.filter(notification => {
-        const hasContent = notification.title || notification.message;
-        return hasContent;
-      });
-      
-      // Sort by date (newest first)
-      const sortedNotifications = validNotifications.sort((a, b) => 
-        new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)
-      );
-      
-      // Update notifications context
-      sortedNotifications.forEach(notification => {
-        addRealtimeNotification(notification);
-      });
-      
-    } catch (error) {
-      setError('Failed to load notifications.');
-      console.error('Notifications error:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, token, addRealtimeNotification]);
+  // Use the context's fetchNotifications instead of local implementation
 
   // Real-time updates
   useEffect(() => {
