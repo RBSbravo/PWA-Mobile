@@ -18,6 +18,8 @@ import {
   Email as EmailIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
+import PWARateLimitAlert from '../components/RateLimitAlert';
+import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 
 const Logo = () => {
   return (
@@ -60,9 +62,17 @@ const ForgotPasswordPage = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [rateLimitData, setRateLimitData] = useState(null);
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
+    
+    // Check if we can retry (not rate limited)
+    if (!pwaRateLimitHandler.canRetry('forgotPassword')) {
+      const remainingTime = pwaRateLimitHandler.getRemainingRetryTime('forgotPassword');
+      setError(`Please wait ${Math.ceil(remainingTime / 1000)} seconds before trying again.`);
+      return;
+    }
     
     if (!email) {
       setError('Please enter your email address.');
@@ -78,14 +88,23 @@ const ForgotPasswordPage = () => {
 
     setLoading(true);
     setError("");
+    setRateLimitData(null);
     
     try {
       await forgotPassword(email);
       setSuccessMessage('Password reset email sent! Please check your inbox and follow the instructions.');
       setSuccess(true);
+      pwaRateLimitHandler.clearRetryTimer('forgotPassword');
     } catch (error) {
-      const errorMessage = error.message || 'Failed to send reset email. Please try again.';
-      setError(errorMessage);
+      const errorInfo = handlePWAApiError(error);
+      
+      if (errorInfo.type === 'rate_limit') {
+        setRateLimitData(error.rateLimitData || { error: error.message });
+        pwaRateLimitHandler.setRetryTimer('forgotPassword', errorInfo.retryTime);
+        setError(errorInfo.message);
+      } else {
+        setError(errorInfo.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -313,6 +332,7 @@ const ForgotPasswordPage = () => {
                 variant="contained"
                 fullWidth
                 disabled={loading}
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
                 sx={{
                   borderRadius: 3,
                   mt: 1.25,
@@ -347,7 +367,7 @@ const ForgotPasswordPage = () => {
       </Card>
 
       {/* Error Alert */}
-      {error && (
+      {error && !rateLimitData && (
         <Alert
           severity="error"
           sx={{
@@ -364,6 +384,18 @@ const ForgotPasswordPage = () => {
           {error}
         </Alert>
       )}
+
+      {/* Rate Limit Alert */}
+      <PWARateLimitAlert
+        isOpen={!!rateLimitData}
+        onClose={() => setRateLimitData(null)}
+        rateLimitData={rateLimitData}
+        endpoint="forgotPassword"
+        onRetry={() => {
+          setRateLimitData(null);
+          setError('');
+        }}
+      />
     </Box>
   );
 };

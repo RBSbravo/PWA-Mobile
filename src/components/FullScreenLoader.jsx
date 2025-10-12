@@ -6,9 +6,16 @@ import {
   Backdrop,
   useTheme,
   useMediaQuery,
+  LinearProgress,
 } from '@mui/material';
 
-const FullScreenLoader = ({ visible, message = 'Loading...' }) => {
+const FullScreenLoader = ({ 
+  visible, 
+  message = 'Loading...', 
+  progress = null,
+  showProgress = false,
+  variant = 'circular' // 'circular' or 'linear'
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -37,15 +44,49 @@ const FullScreenLoader = ({ visible, message = 'Loading...' }) => {
           borderRadius: theme.shape.borderRadius * 2,
           boxShadow: theme.shadows[8],
           minWidth: isMobile ? 200 : 250,
+          maxWidth: isMobile ? '90%' : 300,
         }}
       >
-        <CircularProgress
-          size={isMobile ? 40 : 50}
-          sx={{
-            color: theme.palette.primary.main,
-            mb: 2,
-          }}
-        />
+        {variant === 'circular' ? (
+          <CircularProgress
+            size={isMobile ? 40 : 50}
+            sx={{
+              color: theme.palette.primary.main,
+              mb: 2,
+            }}
+          />
+        ) : (
+          <Box sx={{ width: '100%', mb: 2 }}>
+            <LinearProgress
+              variant={progress !== null ? 'determinate' : 'indeterminate'}
+              value={progress}
+              sx={{
+                height: 6,
+                borderRadius: 3,
+                backgroundColor: theme.palette.action.hover,
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 3,
+                  backgroundColor: theme.palette.primary.main,
+                },
+              }}
+            />
+            {showProgress && progress !== null && (
+              <Typography
+                variant="caption"
+                sx={{
+                  display: 'block',
+                  textAlign: 'center',
+                  mt: 1,
+                  fontSize: 12,
+                  color: theme.palette.text.secondary,
+                }}
+              >
+                {Math.round(progress)}%
+              </Typography>
+            )}
+          </Box>
+        )}
+
         <Typography
           variant="body1"
           sx={{

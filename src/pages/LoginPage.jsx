@@ -16,6 +16,7 @@ import {
   useMediaQuery,
   Divider,
   Avatar,
+  CircularProgress,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -254,6 +255,7 @@ const LoginPage = () => {
                 variant="contained"
                 fullWidth
                 disabled={loginLoading}
+                startIcon={loginLoading ? <CircularProgress size={20} color="inherit" /> : null}
                 sx={{
                   borderRadius: 3,
                   mt: 1.25,

@@ -23,6 +23,8 @@ import { useNotification } from '../context/NotificationContext';
 import api from '../services/api';
 import socketService from '../services/socket';
 import ScreenHeader from '../components/ScreenHeader';
+import SkeletonLoader from '../components/SkeletonLoader';
+import PullToRefresh from '../components/PullToRefresh';
 
 const DashboardPage = () => {
   const theme = useTheme();
@@ -30,6 +32,7 @@ const DashboardPage = () => {
   const { user, token } = useAuth();
   const { notifications, addRealtimeNotification } = useNotification();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [tasks, setTasks] = useState([]);
   const [stats, setStats] = useState({
@@ -39,10 +42,15 @@ const DashboardPage = () => {
     completedTasks: 0,
   });
 
-  const fetchDashboardData = useCallback(async () => {
+  const fetchDashboardData = useCallback(async (isRefresh = false) => {
     if (!token) return;
     
-    setLoading(true);
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+    
     try {
       const [tasksData, notificationsData] = await Promise.all([
         api.getTasks(token),
@@ -73,6 +81,7 @@ const DashboardPage = () => {
       console.error('Dashboard error:', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [token]);
 
@@ -206,15 +215,35 @@ const DashboardPage = () => {
     </Card>
   );
 
+  const handleRefresh = useCallback(async () => {
+    await fetchDashboardData(true);
+  }, [fetchDashboardData]);
+
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="400px"
-      >
-        <CircularProgress size={60} />
+      <Box sx={{ 
+        backgroundColor: theme.palette.background.default, 
+        minHeight: '100vh',
+        width: '100%',
+      }}>
+        <ScreenHeader
+          title={`Welcome, ${user?.firstname || 'User'}!`}
+          subtitle="Here's a look at your day."
+          leftIcon={
+            <Avatar
+              sx={{
+                bgcolor: theme.palette.primary.main,
+                width: 40,
+                height: 40,
+                fontSize: 20,
+                fontWeight: 'bold',
+              }}
+            >
+              {user?.firstname ? user.firstname.charAt(0).toUpperCase() : 'U'}
+            </Avatar>
+          }
+        />
+        <SkeletonLoader type="dashboard" />
       </Box>
     );
   }
@@ -244,12 +273,14 @@ const DashboardPage = () => {
         }
       />
 
-      {/* Content Container */}
-      <Box sx={{ 
-        width: '100%',
-        px: { xs: 2, sm: 3, md: 4, lg: 6 },
-        py: { xs: 2, sm: 3 },
-      }}>
+      {/* Pull to Refresh Container */}
+      <PullToRefresh onRefresh={handleRefresh}>
+        {/* Content Container */}
+        <Box sx={{ 
+          width: '100%',
+          px: { xs: 2, sm: 3, md: 4, lg: 6 },
+          py: { xs: 2, sm: 3 },
+        }}>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
@@ -306,7 +337,9 @@ const DashboardPage = () => {
         <Box sx={{ mb: 4 }}>
           <RecentActivityCard />
         </Box>
+        </Box>
       </Box>
+      </PullToRefresh>
     </Box>
   );
 };

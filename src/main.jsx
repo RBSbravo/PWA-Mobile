@@ -19,10 +19,19 @@ if ('serviceWorker' in navigator) {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
 
-// Remove loading class after app renders
+// Enhanced loading transition
 setTimeout(() => {
   const rootElement = document.getElementById('root');
   if (rootElement) {
-    rootElement.classList.remove('loading');
+    // Add fade out animation
+    rootElement.style.transition = 'opacity 0.5s ease-out';
+    rootElement.style.opacity = '0';
+    
+    // Remove loading class and restore opacity after fade
+    setTimeout(() => {
+      rootElement.classList.remove('loading');
+      rootElement.style.opacity = '1';
+      rootElement.style.transition = 'none';
+    }, 500);
   }
-}, 100);
+}, 800); // Increased delay for better UX

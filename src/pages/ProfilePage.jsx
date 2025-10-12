@@ -37,13 +37,15 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useThemeContext } from '../context/ThemeContext';
+import PWARateLimitAlert from '../components/RateLimitAlert';
 import api from '../services/api';
+import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 import ScreenHeader from '../components/ScreenHeader';
 
 const ProfilePage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const { user, token, logout, updateProfile } = useAuth();
+  const { user, token, logout, updateProfile, logoutLoading } = useAuth();
   const { isDarkMode, toggleTheme } = useThemeContext();
   
   const [loading, setLoading] = useState(false);
@@ -64,6 +66,7 @@ const ProfilePage = () => {
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false });
+  const [passwordRateLimitData, setPasswordRateLimitData] = useState(null);
   
   // Logout Dialog
   const [logoutOpen, setLogoutOpen] = useState(false);
@@ -156,8 +159,16 @@ const ProfilePage = () => {
   };
 
   const handleChangePassword = async () => {
+    // Check if we can retry (not rate limited)
+    if (!pwaRateLimitHandler.canRetry('changePassword')) {
+      const remainingTime = pwaRateLimitHandler.getRemainingRetryTime('changePassword');
+      setPasswordError(`Please wait ${Math.ceil(remainingTime / 1000)} seconds before trying again.`);
+      return;
+    }
+    
     setPasswordError('');
     setPasswordSuccess('');
+    setPasswordRateLimitData(null);
     
     const validationError = validatePasswordForm();
     if (validationError) {
@@ -169,6 +180,7 @@ const ProfilePage = () => {
     try {
       await api.changePassword(token, passwordForm.current, passwordForm.new);
       setPasswordSuccess('Password changed successfully! You will be logged out for security.');
+      pwaRateLimitHandler.clearRetryTimer('changePassword');
       setPasswordForm({ current: '', new: '', confirm: '' });
       setShowPasswords({ current: false, new: false, confirm: false });
       
@@ -178,7 +190,15 @@ const ProfilePage = () => {
         logout();
       }, 2000);
     } catch (err) {
-      setPasswordError(err.message || 'Failed to change password. Please try again.');
+      const errorInfo = handlePWAApiError(err);
+      
+      if (errorInfo.type === 'rate_limit') {
+        setPasswordRateLimitData(err.rateLimitData || { error: err.message });
+        pwaRateLimitHandler.setRetryTimer('changePassword', errorInfo.retryTime);
+        setPasswordError(errorInfo.message);
+      } else {
+        setPasswordError(errorInfo.message);
+      }
     } finally {
       setPasswordLoading(false);
     }
@@ -301,6 +321,7 @@ const ProfilePage = () => {
           variant="outlined"
           startIcon={<LogoutIcon />}
           onClick={() => setLogoutOpen(true)}
+          disabled={logoutLoading}
           sx={{
             mb: 2,
             borderRadius: theme.shape.borderRadius * 2,
@@ -314,7 +335,7 @@ const ProfilePage = () => {
             },
           }}
         >
-          Logout
+          {logoutLoading ? 'Logging out...' : 'Logout'}
         </Button>
       </Box>
 
@@ -478,7 +499,7 @@ const ProfilePage = () => {
             }}
           />
           
-          {passwordError && (
+          {passwordError && !passwordRateLimitData && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {passwordError}
             </Alert>
@@ -488,6 +509,17 @@ const ProfilePage = () => {
               {passwordSuccess}
             </Alert>
           )}
+
+          <PWARateLimitAlert
+            isOpen={!!passwordRateLimitData}
+            onClose={() => setPasswordRateLimitData(null)}
+            rateLimitData={passwordRateLimitData}
+            endpoint="changePassword"
+            onRetry={() => {
+              setPasswordRateLimitData(null);
+              setPasswordError('');
+            }}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setChangePasswordOpen(false)} disabled={passwordLoading}>
@@ -511,9 +543,17 @@ const ProfilePage = () => {
           <Typography>Are you sure you want to logout?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setLogoutOpen(false)}>Cancel</Button>
-          <Button onClick={handleLogout} variant="contained" color="error">
-            Logout
+          <Button onClick={() => setLogoutOpen(false)} disabled={logoutLoading}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleLogout} 
+            variant="contained" 
+            color="error"
+            disabled={logoutLoading}
+            startIcon={logoutLoading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {logoutLoading ? 'Logging out...' : 'Logout'}
           </Button>
         </DialogActions>
       </Dialog>

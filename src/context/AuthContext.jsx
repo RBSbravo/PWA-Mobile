@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { API_CONFIG } from '../config';
 import api from '../services/api';
+import AuthLoadingOverlay from '../components/AuthLoadingOverlay';
 
 const AuthContext = createContext(null);
 
@@ -170,6 +171,16 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated: !!user && !!token 
     }}>
       {children}
+      
+      {/* Global Auth Loading Overlays */}
+      <AuthLoadingOverlay 
+        visible={loginLoading} 
+        message="Signing you in..." 
+      />
+      <AuthLoadingOverlay 
+        visible={logoutLoading} 
+        message="Logging you out..." 
+      />
     </AuthContext.Provider>
   );
 };

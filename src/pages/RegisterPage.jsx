@@ -36,7 +36,9 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useThemeContext } from '../context/ThemeContext';
+import PWARateLimitAlert from '../components/RateLimitAlert';
 import api from '../services/api';
+import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 
 const Logo = () => {
   return (
@@ -135,6 +137,7 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [rateLimitData, setRateLimitData] = useState(null);
 
   useEffect(() => {
     const fetchDepartments = async () => {
@@ -200,11 +203,21 @@ const RegisterPage = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     
+    // Check if we can retry (not rate limited)
+    if (!pwaRateLimitHandler.canRetry('register')) {
+      const remainingTime = pwaRateLimitHandler.getRemainingRetryTime('register');
+      setError(`Please wait ${Math.ceil(remainingTime / 1000)} seconds before trying again.`);
+      return;
+    }
+    
     if (!validateForm()) {
       return;
     }
     
     setLoading(true);
+    setError('');
+    setRateLimitData(null);
+    
     try {
       const registrationData = {
         firstname: formData.firstname.trim(),
@@ -221,6 +234,7 @@ const RegisterPage = () => {
       setError('');
       setErrors({});
       setSuccess(true);
+      pwaRateLimitHandler.clearRetryTimer('register');
       
       setTimeout(() => {
         setSuccess(false);
@@ -229,8 +243,15 @@ const RegisterPage = () => {
       }, 1500);
       
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Registration failed. Please try again.';
-      setError(errorMessage);
+      const errorInfo = handlePWAApiError(error);
+      
+      if (errorInfo.type === 'rate_limit') {
+        setRateLimitData(error.rateLimitData || { error: error.message });
+        pwaRateLimitHandler.setRetryTimer('register', errorInfo.retryTime);
+        setError(errorInfo.message);
+      } else {
+        setError(errorInfo.message);
+      }
       setLoading(false);
     }
   };
@@ -509,6 +530,7 @@ const RegisterPage = () => {
               fullWidth
               onClick={handleRegister}
               disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
               sx={{
                 borderRadius: 3,
                 mt: 0.75,
@@ -622,7 +644,7 @@ const RegisterPage = () => {
       </Box>
 
       {/* Success/Error Alert */}
-      {(error || success) && (
+      {(error || success) && !rateLimitData && (
         <Alert
           severity={success ? 'success' : 'error'}
           sx={{
@@ -639,6 +661,18 @@ const RegisterPage = () => {
           {success ? 'Registration successful! Redirecting to login...' : error}
         </Alert>
       )}
+
+      {/* Rate Limit Alert */}
+      <PWARateLimitAlert
+        isOpen={!!rateLimitData}
+        onClose={() => setRateLimitData(null)}
+        rateLimitData={rateLimitData}
+        endpoint="register"
+        onRetry={() => {
+          setRateLimitData(null);
+          setError('');
+        }}
+      />
     </Box>
   );
 };

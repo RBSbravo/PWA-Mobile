@@ -35,6 +35,8 @@ import ScreenHeader from '../components/ScreenHeader';
 import TaskItem from '../components/TaskItem';
 import TaskFilterChips from '../components/TaskFilterChips';
 import FullScreenLoader from '../components/FullScreenLoader';
+import SkeletonLoader from '../components/SkeletonLoader';
+import PullToRefresh from '../components/PullToRefresh';
 
 const TasksPage = () => {
   const navigate = useNavigate();
@@ -43,6 +45,7 @@ const TasksPage = () => {
   const { token, user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -50,19 +53,26 @@ const TasksPage = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const fetchTasks = useCallback(async () => {
+  const fetchTasks = useCallback(async (isRefresh = false) => {
     if (!token) return;
     
-    setLoading(true);
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+    
     try {
       const data = await api.getTasks(token);
       const tasksList = data.tickets || data.tasks || data;
       setTasks(tasksList);
+      setError('');
     } catch (err) {
       setError('Failed to load tasks.');
       console.error('Tasks error:', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [token]);
 
@@ -150,6 +160,10 @@ const TasksPage = () => {
     }
   };
 
+  const handleRefresh = useCallback(async () => {
+    await fetchTasks(true);
+  }, [fetchTasks]);
+
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.description?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -228,13 +242,16 @@ const TasksPage = () => {
 
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="400px"
-      >
-        <CircularProgress size={60} />
+      <Box sx={{ 
+        backgroundColor: theme.palette.background.default, 
+        minHeight: '100vh',
+        width: '100%',
+      }}>
+        <ScreenHeader
+          title="Tasks"
+          leftIcon={<AssignmentIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
+        />
+        <SkeletonLoader type="task" count={5} />
       </Box>
     );
   }
@@ -251,12 +268,14 @@ const TasksPage = () => {
         leftIcon={<AssignmentIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
       />
 
-      {/* Content Container */}
-      <Box sx={{ 
-        width: '100%',
-        px: { xs: 2, sm: 3, md: 4, lg: 6 },
-        py: { xs: 2, sm: 3 },
-      }}>
+      {/* Pull to Refresh Container */}
+      <PullToRefresh onRefresh={handleRefresh}>
+        {/* Content Container */}
+        <Box sx={{ 
+          width: '100%',
+          px: { xs: 2, sm: 3, md: 4, lg: 6 },
+          py: { xs: 2, sm: 3 },
+        }}>
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
@@ -326,6 +345,7 @@ const TasksPage = () => {
         )}
       </Box>
       </Box>
+      </PullToRefresh>
 
       {/* Floating Action Button - REMOVED */}
 
