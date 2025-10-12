@@ -28,6 +28,7 @@ import {
   Done as DoneIcon,
   Delete as DeleteIcon,
   DoneAll as DoneAllIcon,
+  ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';

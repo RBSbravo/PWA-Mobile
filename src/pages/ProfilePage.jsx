@@ -41,6 +41,7 @@ import PWARateLimitAlert from '../components/RateLimitAlert';
 import api from '../services/api';
 import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 import ScreenHeader from '../components/ScreenHeader';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 const ProfilePage = () => {
   const theme = useTheme();
@@ -48,7 +49,7 @@ const ProfilePage = () => {
   const { user, token, logout, updateProfile, logoutLoading } = useAuth();
   const { isDarkMode, toggleTheme } = useThemeContext();
   
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
@@ -70,6 +71,15 @@ const ProfilePage = () => {
   
   // Logout Dialog
   const [logoutOpen, setLogoutOpen] = useState(false);
+
+  // Simulate loading user data
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // 1 second loading simulation
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleEditProfile = () => {
     setEditForm({
@@ -208,6 +218,38 @@ const ProfilePage = () => {
     setLogoutOpen(false);
     logout();
   };
+
+  if (loading) {
+    return (
+      <>
+        <ScreenHeader
+          title="Profile"
+          subtitle="Loading..."
+          leftIcon={
+            <Avatar
+              sx={{
+                width: 40,
+                height: 40,
+                bgcolor: theme.palette.primary.main,
+                fontSize: 20,
+                fontWeight: 'bold',
+              }}
+            >
+              U
+            </Avatar>
+          }
+        />
+        <Box sx={{ 
+          backgroundColor: theme.palette.background.default, 
+          minHeight: '100vh',
+          width: '100%',
+          pt: '80px', // Add top padding for fixed header
+        }}>
+          <SkeletonLoader type="profile" />
+        </Box>
+      </>
+    );
+  }
 
   return (
     <>
