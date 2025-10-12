@@ -51,6 +51,7 @@ import socketService from '../services/socket';
 import { format } from 'date-fns';
 import { API_CONFIG } from '../config';
 import ScreenHeader from '../components/ScreenHeader';
+import FileAttachment from '../components/FileAttachment';
 
 const TaskDetailPage = () => {
   const { id } = useParams();
