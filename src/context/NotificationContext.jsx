@@ -143,41 +143,91 @@ export const NotificationProvider = ({ children }) => {
 
   // Setup socket listeners for real-time notifications
   useEffect(() => {
+    let notificationTimeout;
+    
     const handleRealtimeNotification = (notification) => {
-      // Check if notification already exists to prevent duplicates
-      const existingNotification = notifications.find(n => 
-        n.id === notification.id || 
-        (n.title === notification.title && n.message === notification.message)
-      );
-      
-      if (existingNotification) {
-        return;
+      // Debounce rapid notifications
+      if (notificationTimeout) {
+        clearTimeout(notificationTimeout);
       }
       
-      // Ensure notification has proper structure
-      const formattedNotification = {
-        id: notification.id || Date.now(),
-        title: notification.title || notification.message || 'New notification',
-        message: notification.message || notification.title || 'You have a new notification',
-        type: notification.type || 'system',
-        isRead: false,
-        date: notification.date || notification.createdAt || new Date().toISOString(),
-        taskId: notification.taskId,
-        ticketId: notification.ticketId,
-        userId: notification.userId,
-      };
-      
-      // Add to real-time notifications
-      addRealtimeNotification(formattedNotification);
+      notificationTimeout = setTimeout(() => {
+        // Use functional updates to avoid stale closure issues
+        setNotifications(prevNotifications => {
+          // Check if notification already exists to prevent duplicates
+          const existingNotification = prevNotifications.find(n => 
+            n.id === notification.id || 
+            (n.title === notification.title && n.message === notification.message && 
+             Math.abs(new Date(n.date) - new Date(notification.date || notification.createdAt || new Date())) < 1000)
+          );
+          
+          if (existingNotification) {
+            return prevNotifications; // No change
+          }
+          
+          // Ensure notification has proper structure with unique ID
+          const formattedNotification = {
+            id: notification.id || `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            title: notification.title || notification.message || 'New notification',
+            message: notification.message || notification.title || 'You have a new notification',
+            type: notification.type || 'system',
+            isRead: false,
+            date: notification.date || notification.createdAt || new Date().toISOString(),
+            taskId: notification.taskId,
+            ticketId: notification.ticketId,
+            userId: notification.userId,
+          };
+          
+          // Add to main notifications list
+          const newNotifications = [formattedNotification, ...prevNotifications];
+          
+          // Update unread count
+          if (!formattedNotification.isRead) {
+            setUnreadCount(prev => prev + 1);
+          }
+          
+          return newNotifications;
+        });
+        
+        // Add to real-time notifications
+        setRealtimeNotifications(prev => {
+          const existingNotification = prev.find(n => 
+            n.id === notification.id || 
+            (n.title === notification.title && n.message === notification.message &&
+             Math.abs(new Date(n.date) - new Date(notification.date || notification.createdAt || new Date())) < 1000)
+          );
+          
+          if (existingNotification) {
+            return prev; // No change
+          }
+          
+          const formattedNotification = {
+            id: notification.id || `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            title: notification.title || notification.message || 'New notification',
+            message: notification.message || notification.title || 'You have a new notification',
+            type: notification.type || 'system',
+            isRead: false,
+            date: notification.date || notification.createdAt || new Date().toISOString(),
+            taskId: notification.taskId,
+            ticketId: notification.ticketId,
+            userId: notification.userId,
+          };
+          
+          return [formattedNotification, ...prev];
+        });
+      }, 100); // 100ms debounce
     };
 
     // Listen for notification events
     socketService.on('notification', handleRealtimeNotification);
 
     return () => {
+      if (notificationTimeout) {
+        clearTimeout(notificationTimeout);
+      }
       socketService.off('notification', handleRealtimeNotification);
     };
-  }, [notifications]); // Remove addRealtimeNotification from dependencies to prevent re-registration
+  }, []); // Empty dependency array - socket listener should only be set up once
 
   return (
     <NotificationContext.Provider value={{

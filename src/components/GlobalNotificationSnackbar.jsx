@@ -27,7 +27,7 @@ const GlobalNotificationSnackbar = () => {
         setShownNotificationIds(prev => new Set([...prev, latest.id]));
       }
     }
-  }, [realtimeNotifications, shownNotificationIds]);
+  }, [realtimeNotifications]); // Remove shownNotificationIds from dependencies to prevent infinite loop
 
   // Clean up shown notification IDs periodically to prevent memory leaks
   useEffect(() => {

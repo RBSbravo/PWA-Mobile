@@ -57,7 +57,7 @@ const TaskDetailPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
-  const { addRealtimeNotification } = useNotification();
+  const { notifications, unreadCount, realtimeNotifications, loading: notificationsLoading, fetchNotifications, markAsRead, markAllAsRead, deleteNotification, refreshUnreadCount, clearRealtimeNotifications } = useNotification();
 
   const [task, setTask] = useState(null);
   const [comments, setComments] = useState([]);
@@ -191,13 +191,6 @@ const TaskDetailPage = () => {
       // Refresh comments
       const fetchedComments = await api.getTaskComments(token, id);
       setComments(fetchedComments);
-      
-      addRealtimeNotification({
-        title: 'Task Updated',
-        message: `Task "${editForm.title}" has been updated`,
-        type: 'task_updated',
-        taskId: parseInt(id),
-      });
     } catch (err) {
       setError('Failed to update task');
       console.error('Update error:', err);
@@ -240,13 +233,6 @@ const TaskDetailPage = () => {
       const comment = await api.addTaskComment(token, id, newComment);
       setComments(prev => [comment, ...prev]);
       setNewComment('');
-      
-      addRealtimeNotification({
-        title: 'New Comment',
-        message: `New comment added to task "${task.title}"`,
-        type: 'comment_added',
-        taskId: parseInt(id),
-      });
     } catch (err) {
       setError('Failed to add comment');
       console.error('Comment error:', err);
@@ -262,13 +248,6 @@ const TaskDetailPage = () => {
       
       // Refresh task details to get updated attachments
       await fetchTaskDetails();
-      
-      addRealtimeNotification({
-        title: 'File Uploaded',
-        message: `File "${file.name}" uploaded to task "${task.title}"`,
-        type: 'file_uploaded',
-        taskId: parseInt(id),
-      });
     } catch (err) {
       setError('Failed to upload file');
       console.error('File upload error:', err);
@@ -285,13 +264,6 @@ const TaskDetailPage = () => {
       
       // Refresh task details to get updated attachments
       await fetchTaskDetails();
-      
-      addRealtimeNotification({
-        title: 'File Deleted',
-        message: `File deleted from task "${task.title}"`,
-        type: 'file_deleted',
-        taskId: parseInt(id),
-      });
     } catch (err) {
       setError('Failed to delete file');
       console.error('File delete error:', err);
@@ -526,6 +498,7 @@ const TaskDetailPage = () => {
 
         {/* Comments Section */}
         <Card sx={{ 
+          mb: 3,
           backgroundColor: theme.palette.surface,
           border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
         }}>
@@ -560,30 +533,42 @@ const TaskDetailPage = () => {
 
             {/* Comments List */}
             {comments.length > 0 ? (
-              <List>
-                {comments.map((comment, index) => (
-                  <ListItem key={comment.id || index} sx={{ px: 0 }}>
-                    <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
-                        {comment.user?.name ? comment.user.name.charAt(0).toUpperCase() : 'U'}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="subtitle2" fontWeight="bold">
-                            {comment.user?.name || 'Unknown User'}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {format(new Date(comment.createdAt || comment.date), 'MMM dd, yyyy HH:mm')}
-                          </Typography>
-                        </Box>
-                      }
-                      secondary={comment.content || comment.message}
-                    />
-                  </ListItem>
-                ))}
-              </List>
+              <Box>
+                {comments.map((comment, index) => {
+                  const isTaskUpdate = comment.content && comment.content.startsWith('📝 **Task Updated**');
+                  return (
+                    <Box
+                      key={comment.id || index}
+                      sx={{
+                        p: 2,
+                        mb: 1,
+                        borderRadius: 1,
+                        backgroundColor: isTaskUpdate ? theme.palette.primary.main + '10' : 'transparent',
+                        borderLeft: isTaskUpdate ? `4px solid ${theme.palette.primary.main}` : 'none',
+                        borderLeftWidth: isTaskUpdate ? 4 : 0,
+                        pl: isTaskUpdate ? 2.5 : 0,
+                      }}
+                    >
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          mb: 1,
+                          fontWeight: isTaskUpdate ? 'bold' : 'normal',
+                          whiteSpace: 'pre-wrap',
+                        }}
+                      >
+                        {comment.content || comment.message}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {comment.commentUser?.firstname || comment.user?.firstname || 'Unknown'} {comment.commentUser?.lastname || comment.user?.lastname || ''} - {format(new Date(comment.createdAt || comment.date), 'MMM dd, yyyy HH:mm')}
+                      </Typography>
+                      {index < comments.length - 1 && (
+                        <Divider sx={{ mt: 1.5, opacity: 0.3 }} />
+                      )}
+                    </Box>
+                  );
+                })}
+              </Box>
             ) : (
               <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
                 No comments yet. Be the first to comment!
@@ -594,6 +579,7 @@ const TaskDetailPage = () => {
 
         {/* File Attachments Section */}
         <Card sx={{ 
+          mb: 3,
           backgroundColor: theme.palette.surface,
           border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
         }}>
@@ -604,58 +590,75 @@ const TaskDetailPage = () => {
 
             {/* File List */}
             {attachedFiles.length > 0 ? (
-              <List sx={{ mb: 2 }}>
+              <Box sx={{ mb: 2 }}>
                 {attachedFiles.map((file, index) => {
                   const uploadedByCurrentUser = file.uploaded_by === user?.id || file.uploader?.id === user?.id;
                   return (
-                    <ListItem
+                    <Box
                       key={file.id || index}
                       sx={{
-                        borderBottom: index < attachedFiles.length - 1 ? `1px solid ${theme.palette.divider}` : 'none',
-                        '&:last-child': { borderBottom: 'none' },
+                        display: 'flex',
+                        alignItems: 'center',
+                        p: 2,
+                        mb: 1,
+                        borderRadius: 1,
+                        border: `1px solid ${theme.palette.divider}`,
+                        backgroundColor: theme.palette.background.paper,
+                        '&:hover': {
+                          backgroundColor: theme.palette.action.hover,
+                        },
                       }}
                     >
-                      <Box sx={{ mr: 1, color: theme.palette.text.secondary }}>
-                        <AttachFileIcon />
-                      </Box>
-                      <ListItemText
-                        primary={
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontWeight: 500,
-                              cursor: 'pointer',
-                              color: theme.palette.primary.main,
-                              '&:hover': { textDecoration: 'underline' },
-                            }}
-                            onClick={() => handleFileClick(file)}
-                          >
-                            {file.file_name || file.name}
-                          </Typography>
-                        }
-                        secondary={
-                          <Typography variant="caption" color="text.secondary">
-                            {file.created_at && format(new Date(file.created_at), 'MMM dd, yyyy HH:mm')}
-                          </Typography>
-                        }
+                      <AttachFileIcon 
+                        sx={{ 
+                          mr: 2, 
+                          color: theme.palette.primary.main,
+                          fontSize: 20,
+                        }} 
                       />
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            color: theme.palette.primary.main,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            '&:hover': {
+                              textDecoration: 'underline',
+                            },
+                          }}
+                          onClick={() => handleFileClick(file)}
+                        >
+                          {file.file_name || file.name}
+                        </Typography>
+                        {file.created_at && (
+                          <Typography variant="caption" color="text.secondary">
+                            {format(new Date(file.created_at), 'MMM dd, yyyy HH:mm')}
+                          </Typography>
+                        )}
+                      </Box>
                       {uploadedByCurrentUser && (
                         <IconButton
-                          edge="end"
                           onClick={() => {
                             setDeleteFileId(file.id);
                             setDeleteDialogVisible(true);
                           }}
-                          sx={{ color: theme.palette.error.main }}
+                          sx={{ 
+                            color: theme.palette.error.main,
+                            ml: 1,
+                          }}
                           size="small"
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       )}
-                    </ListItem>
+                    </Box>
                   );
                 })}
-              </List>
+              </Box>
             ) : (
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2, textAlign: 'center', py: 2 }}>
                 No attachments yet.
