@@ -180,8 +180,9 @@ export const NotificationProvider = ({ children }) => {
         }
         
         // Ensure the notification has proper structure without duplication (like mobile app)
-        let title = notificationData.title || notificationData.message || '';
-        let message = notificationData.message || notificationData.title || '';
+        // Check both direct properties and data properties
+        let title = notif.title || notif.data?.title || notificationData.title || '';
+        let message = notif.message || notif.data?.message || notificationData.message || '';
         
         // If we have both title and message, use them as is
         // If we only have one of them, use it for both to avoid duplication
@@ -200,14 +201,14 @@ export const NotificationProvider = ({ children }) => {
         }
         
         const notification = {
-          id: notificationData.id || Date.now(),
+          id: notificationData.id || notif.id || Date.now(),
           title: title,
           message: message,
-          type: notificationData.type || 'system',
+          type: notificationData.type || notif.type || 'system',
           isRead: false,
-          date: notificationData.createdAt || notificationData.date || new Date().toISOString(),
-          taskId: notificationData.taskId,
-          ticketId: notificationData.ticketId
+          date: notificationData.createdAt || notificationData.date || notif.createdAt || notif.date || new Date().toISOString(),
+          taskId: notificationData.taskId || notif.taskId,
+          ticketId: notificationData.ticketId || notif.ticketId
         };
         
         // Add to real-time notifications (like mobile app)

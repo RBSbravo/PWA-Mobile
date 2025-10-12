@@ -21,6 +21,7 @@ import {
   Image as ImageIcon,
   PictureAsPdf as PdfIcon,
   Description as DocumentIcon,
+  Description as DescriptionIcon,
 } from '@mui/icons-material';
 
 const FileViewer = ({ open, onClose, file, token }) => {
