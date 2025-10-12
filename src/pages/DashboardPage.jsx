@@ -30,7 +30,7 @@ const DashboardPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
-  const { notifications, addRealtimeNotification } = useNotification();
+  const { notifications } = useNotification();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
@@ -109,24 +109,17 @@ const DashboardPage = () => {
       fetchDashboardData(); // Refresh stats
     };
 
-    const handleNotification = (notification) => {
-      if (!notification) return;
-      addRealtimeNotification(notification);
-    };
-
     // Set up socket listeners
     socketService.on('taskUpdated', handleTaskUpdate);
     socketService.on('taskStatusChanged', handleTaskStatusChange);
     socketService.on('taskDeleted', handleTaskDeleted);
-    socketService.on('notification', handleNotification);
 
     return () => {
       socketService.off('taskUpdated', handleTaskUpdate);
       socketService.off('taskStatusChanged', handleTaskStatusChange);
       socketService.off('taskDeleted', handleTaskDeleted);
-      socketService.off('notification', handleNotification);
     };
-  }, [addRealtimeNotification, fetchDashboardData]);
+  }, [fetchDashboardData]);
 
   useEffect(() => {
     fetchDashboardData();

@@ -212,12 +212,7 @@ const TaskDetailPage = () => {
     try {
       await api.deleteTask(token, id);
       navigate('/tasks');
-      addRealtimeNotification({
-        title: 'Task Deleted',
-        message: `Task "${task.title}" has been deleted`,
-        type: 'task_deleted',
-        taskId: parseInt(id),
-      });
+      // Don't manually add notifications - let the socket listener handle it
     } catch (err) {
       setError('Failed to delete task');
       console.error('Delete error:', err);
@@ -238,6 +233,16 @@ const TaskDetailPage = () => {
       console.error('Comment error:', err);
     } finally {
       setSubmittingComment(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await api.deleteTaskComment(token, id, commentId);
+      setComments(prev => prev.filter(comment => comment.id !== commentId));
+    } catch (err) {
+      setError('Failed to delete comment');
+      console.error('Delete comment error:', err);
     }
   };
 
@@ -559,9 +564,24 @@ const TaskDetailPage = () => {
                       >
                         {comment.content || comment.message}
                       </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {comment.commentUser?.firstname || comment.user?.firstname || 'Unknown'} {comment.commentUser?.lastname || comment.user?.lastname || ''} - {format(new Date(comment.createdAt || comment.date), 'MMM dd, yyyy HH:mm')}
-                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="caption" color="text.secondary">
+                          {comment.commentUser?.firstname || comment.user?.firstname || 'Unknown'} {comment.commentUser?.lastname || comment.user?.lastname || ''} - {format(new Date(comment.createdAt || comment.date), 'MMM dd, yyyy HH:mm')}
+                        </Typography>
+                        {/* Show delete button only for the commenter */}
+                        {(comment.commentUser?.id === user?.id || comment.user?.id === user?.id) && (
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeleteComment(comment.id)}
+                            sx={{ 
+                              color: theme.palette.error.main,
+                              ml: 1,
+                            }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
                       {index < comments.length - 1 && (
                         <Divider sx={{ mt: 1.5, opacity: 0.3 }} />
                       )}

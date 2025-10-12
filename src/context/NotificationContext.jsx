@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
 import socketService from '../services/socket';
@@ -11,6 +11,7 @@ export const NotificationProvider = ({ children }) => {
   const [realtimeNotifications, setRealtimeNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const { token, user } = useAuth();
+  const listenerSetupRef = useRef(false);
 
   // Fetch notifications from API
   const fetchNotifications = async () => {
@@ -163,7 +164,9 @@ export const NotificationProvider = ({ children }) => {
 
   // Setup socket listeners for real-time notifications (like mobile app)
   useEffect(() => {
-    if (user?.id && token) {
+    if (user?.id && token && !listenerSetupRef.current) {
+      listenerSetupRef.current = true;
+      
       const handleNotification = (notif) => {
         // Ensure the notification has proper structure without duplication (like mobile app)
         let title = notif.title || notif.data?.title || '';
@@ -222,6 +225,7 @@ export const NotificationProvider = ({ children }) => {
 
       return () => {
         socketService.off('notification', handleNotification);
+        listenerSetupRef.current = false;
       };
     }
   }, [user, token]); // Dependencies like mobile app
