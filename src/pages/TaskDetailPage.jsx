@@ -52,6 +52,7 @@ import { format } from 'date-fns';
 import { API_CONFIG } from '../config';
 import ScreenHeader from '../components/ScreenHeader';
 import FileAttachment from '../components/FileAttachment';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 const TaskDetailPage = () => {
   const { id } = useParams();
@@ -372,16 +373,21 @@ const TaskDetailPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ 
-        backgroundColor: theme.palette.background.default, 
-        minHeight: '100vh',
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <CircularProgress size={60} />
-      </Box>
+      <>
+        <ScreenHeader
+          title="Task Details"
+          leftIcon={<ArrowBackIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
+          onLeftIconPress={() => navigate('/tasks')}
+        />
+        <Box sx={{ 
+          backgroundColor: theme.palette.background.default, 
+          minHeight: '100vh',
+          width: '100%',
+          pt: '80px', // Add top padding for fixed header
+        }}>
+          <SkeletonLoader type="task-detail" />
+        </Box>
+      </>
     );
   }
 

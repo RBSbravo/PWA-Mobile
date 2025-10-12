@@ -15,7 +15,8 @@ const PullToRefresh = ({ onRefresh, children, threshold = 80 }) => {
   const handleTouchStart = (e) => {
     if (!isMobile) return;
     
-    const scrollTop = containerRef.current?.scrollTop || 0;
+    // Check if we're at the top of the page
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     setIsAtTop(scrollTop === 0);
     setStartY(e.touches[0].clientY);
   };
@@ -54,17 +55,17 @@ const PullToRefresh = ({ onRefresh, children, threshold = 80 }) => {
   };
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    if (!isMobile) return;
 
-    container.addEventListener('touchstart', handleTouchStart, { passive: false });
-    container.addEventListener('touchmove', handleTouchMove, { passive: false });
-    container.addEventListener('touchend', handleTouchEnd, { passive: false });
+    // Attach event listeners to document for global touch handling
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
     };
   }, [isAtTop, isRefreshing, isPulling, startY]);
 
@@ -77,8 +78,9 @@ const PullToRefresh = ({ onRefresh, children, threshold = 80 }) => {
       sx={{
         position: 'relative',
         height: '100%',
-        overflow: 'auto',
-        WebkitOverflowScrolling: 'touch',
+        // Remove overflow: 'auto' to prevent creating a separate scrolling context
+        // overflow: 'auto',
+        // WebkitOverflowScrolling: 'touch',
       }}
     >
       {/* Pull to Refresh Indicator */}

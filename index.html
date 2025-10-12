@@ -32,6 +32,20 @@
         background-color: #ffffff;
       }
       
+      /* Fix scrolling issues */
+      html, body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+        position: relative;
+      }
+      
       /* Loading state styles - Enhanced */
       #root.loading {
         display: flex;

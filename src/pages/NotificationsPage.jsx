@@ -35,6 +35,7 @@ import { useMessage } from '../context/MessageContext';
 import api from '../services/api';
 import socketService from '../services/socket';
 import ScreenHeader from '../components/ScreenHeader';
+import SkeletonLoader from '../components/SkeletonLoader';
 
 const TABS = [
   { key: 'all', label: 'All' },
@@ -323,14 +324,21 @@ const NotificationsPage = () => {
 
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="400px"
-      >
-        <CircularProgress size={60} />
-      </Box>
+      <>
+        <ScreenHeader
+          title="Notifications"
+          leftIcon={<ArrowBackIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
+          onLeftIconPress={() => navigate('/dashboard')}
+        />
+        <Box sx={{ 
+          backgroundColor: theme.palette.background.default, 
+          minHeight: '100vh',
+          width: '100%',
+          pt: '80px', // Add top padding for fixed header
+        }}>
+          <SkeletonLoader type="notification" />
+        </Box>
+      </>
     );
   }
 

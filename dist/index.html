@@ -32,6 +32,20 @@
         background-color: #ffffff;
       }
       
+      /* Fix scrolling issues */
+      html, body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+        position: relative;
+      }
+      
       /* Loading state styles - Enhanced */
       #root.loading {
         display: flex;
@@ -116,7 +130,7 @@
         50% { background-position: 100% 50%; }
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-c6e5adfd.js"></script>
+    <script type="module" crossorigin src="/assets/index-ed5db4f1.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/vendor-e1e3bd03.js">
     <link rel="modulepreload" crossorigin href="/assets/mui-73f48a13.js">
     <link rel="modulepreload" crossorigin href="/assets/router-ecc20443.js">

@@ -90,6 +90,80 @@ const SkeletonLoader = ({ type = 'task', count = 3 }) => {
     </Box>
   );
 
+  const TaskDetailSkeleton = () => (
+    <Box sx={{ p: isMobile ? 2 : 4 }}>
+      {/* Header Skeleton */}
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+        <Skeleton variant="circular" width={40} height={40} sx={{ mr: 2 }} />
+        <Box sx={{ flexGrow: 1 }}>
+          <Skeleton variant="text" width="60%" height={28} />
+        </Box>
+        <Skeleton variant="rounded" width={60} height={36} />
+      </Box>
+
+      {/* Task Details Card Skeleton */}
+      <Box
+        sx={{
+          mb: 3,
+          p: 2,
+          backgroundColor: theme.palette.surface,
+          borderRadius: theme.shape.borderRadius * 2,
+          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Skeleton variant="circular" width={24} height={24} sx={{ mr: 1 }} />
+          <Skeleton variant="text" width="70%" height={24} />
+        </Box>
+        
+        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+          <Skeleton variant="rounded" width={80} height={24} />
+          <Skeleton variant="rounded" width={60} height={24} />
+        </Box>
+        
+        <Box sx={{ mb: 2 }}>
+          <Skeleton variant="text" width="30%" height={18} sx={{ mb: 1 }} />
+          <Skeleton variant="text" width="100%" height={16} />
+          <Skeleton variant="text" width="80%" height={16} />
+        </Box>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          <Skeleton variant="circular" width={16} height={16} sx={{ mr: 1 }} />
+          <Skeleton variant="text" width="40%" height={14} />
+        </Box>
+      </Box>
+
+      {/* Comments Section Skeleton */}
+      <Box
+        sx={{
+          mb: 3,
+          p: 2,
+          backgroundColor: theme.palette.surface,
+          borderRadius: theme.shape.borderRadius * 2,
+          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+        }}
+      >
+        <Skeleton variant="text" width="40%" height={20} sx={{ mb: 2 }} />
+        <Skeleton variant="rectangular" width="100%" height={80} sx={{ mb: 2 }} />
+        <Skeleton variant="rounded" width={120} height={36} />
+      </Box>
+
+      {/* File Attachments Section Skeleton */}
+      <Box
+        sx={{
+          p: 2,
+          backgroundColor: theme.palette.surface,
+          borderRadius: theme.shape.borderRadius * 2,
+          border: theme.palette.mode === 'dark' ? `1px solid ${theme.palette.border}` : 'none',
+        }}
+      >
+        <Skeleton variant="text" width="50%" height={20} sx={{ mb: 2 }} />
+        <Skeleton variant="rounded" width="100%" height={48} sx={{ mb: 1 }} />
+        <Skeleton variant="text" width="80%" height={12} />
+      </Box>
+    </Box>
+  );
+
   const NotificationSkeleton = () => (
     <Box sx={{ p: isMobile ? 2 : 4 }}>
       {/* Header Skeleton */}
@@ -132,6 +206,8 @@ const SkeletonLoader = ({ type = 'task', count = 3 }) => {
         return <DashboardSkeleton />;
       case 'notification':
         return <NotificationSkeleton />;
+      case 'task-detail':
+        return <TaskDetailSkeleton />;
       case 'task':
       default:
         return (

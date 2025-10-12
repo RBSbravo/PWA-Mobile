@@ -174,6 +174,11 @@ export const NotificationProvider = ({ children }) => {
         const notificationData = notif.data || notif;
         console.log('🔔 PWA NotificationContext processed notification data:', notificationData);
         
+        // Debug: Check if this is an assigned task notification
+        if (notificationData.type === 'task_assigned' || notificationData.message?.includes('assigned')) {
+          console.log('🎯 PWA Assigned Task Notification detected:', notificationData);
+        }
+        
         // Ensure the notification has proper structure without duplication (like mobile app)
         let title = notificationData.title || notificationData.message || '';
         let message = notificationData.message || notificationData.title || '';
