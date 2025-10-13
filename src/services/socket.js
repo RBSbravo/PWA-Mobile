@@ -134,6 +134,7 @@ class SocketService {
       console.log('🔔 PWA SocketService received notification:', notification);
       console.log('🔔 PWA SocketService notification type:', notification.type);
       console.log('🔔 PWA SocketService notification data:', notification.data);
+      console.log('🔔 PWA SocketService emitting to listeners...');
       this.emit('notification', notification);
     });
 
@@ -156,6 +157,7 @@ class SocketService {
   // Emit event to all listeners
   emit(event, data) {
     const eventListeners = this.listeners.get(event);
+    console.log(`🔌 PWA SocketService emitting event '${event}' to ${eventListeners ? eventListeners.length : 0} listeners`);
     if (eventListeners) {
       eventListeners.forEach(callback => {
         try {
@@ -173,6 +175,7 @@ class SocketService {
       this.listeners.set(event, []);
     }
     this.listeners.get(event).push(callback);
+    console.log(`🔌 PWA SocketService added listener for '${event}', total listeners: ${this.listeners.get(event).length}`);
   }
 
   // Remove event listener
