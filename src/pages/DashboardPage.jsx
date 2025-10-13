@@ -277,6 +277,10 @@ const DashboardPage = () => {
         minHeight: '100vh',
         width: '100%',
         pt: '80px', // Add top padding for fixed header
+        // Ensure smooth scrolling
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        WebkitOverflowScrolling: 'touch',
       }}>
         <PullToRefresh onRefresh={handleRefresh}>
         {/* Content Container */}

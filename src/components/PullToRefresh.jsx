@@ -77,17 +77,16 @@ const PullToRefresh = ({ onRefresh, children, threshold = 80 }) => {
       ref={containerRef}
       sx={{
         position: 'relative',
-        height: '100%',
-        // Remove overflow: 'auto' to prevent creating a separate scrolling context
-        // overflow: 'auto',
-        // WebkitOverflowScrolling: 'touch',
+        width: '100%',
+        // Remove height: '100%' to prevent creating a separate scrolling context
+        // height: '100%',
       }}
     >
       {/* Pull to Refresh Indicator */}
       {isMobile && (
         <Box
           sx={{
-            position: 'absolute',
+            position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
@@ -96,9 +95,10 @@ const PullToRefresh = ({ onRefresh, children, threshold = 80 }) => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: theme.palette.background.default,
-            zIndex: theme.zIndex.appBar,
+            zIndex: theme.zIndex.appBar + 1,
             transform: `translateY(-${refreshIndicatorHeight}px)`,
             transition: isRefreshing ? 'none' : 'transform 0.3s ease-out',
+            pointerEvents: 'none', // Allow clicks to pass through
           }}
         >
           <Box
@@ -138,8 +138,9 @@ const PullToRefresh = ({ onRefresh, children, threshold = 80 }) => {
       {/* Main Content */}
       <Box
         sx={{
-          transform: `translateY(${refreshIndicatorHeight}px)`,
-          transition: isRefreshing ? 'none' : 'transform 0.3s ease-out',
+          // Remove transform since we're using fixed positioning for the indicator
+          // transform: `translateY(${refreshIndicatorHeight}px)`,
+          // transition: isRefreshing ? 'none' : 'transform 0.3s ease-out',
         }}
       >
         {children}
