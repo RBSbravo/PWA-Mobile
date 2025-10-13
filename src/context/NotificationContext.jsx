@@ -171,23 +171,18 @@ export const NotificationProvider = ({ children }) => {
 
   // Setup socket listeners for real-time notifications (like mobile app)
   useEffect(() => {
-    console.log('🔌 PWA NotificationContext setting up socket listeners for user:', user?.id, 'token:', !!token, 'listenerSetupRef:', listenerSetupRef.current);
-    
     if (user?.id && token && !listenerSetupRef.current) {
-      listenerSetupRef.current = true;
-      console.log('🔌 PWA NotificationContext setting up socket listener');
+      // Wait for socket connection before setting up listener
+      const setupListener = () => {
+        if (socketService.getConnectionStatus().isConnected) {
+          listenerSetupRef.current = true;
       
       const handleNotification = (notif) => {
         console.log('🔔 PWA NotificationContext received notification:', notif);
-        console.log('🔔 PWA NotificationContext notification type:', notif.type);
-        console.log('🔔 PWA NotificationContext notification data:', notif.data);
         
         // Handle backend notification format: { type: 'NEW_NOTIFICATION', data: notification }
         const notificationData = notif.data || notif;
         console.log('🔔 PWA NotificationContext processed notification data:', notificationData);
-        console.log('🔔 PWA NotificationContext notificationData type:', notificationData.type);
-        console.log('🔔 PWA NotificationContext notificationData message:', notificationData.message);
-        console.log('🔔 PWA NotificationContext notificationData id:', notificationData.id);
         
         // Debug: Check if this is an assigned task notification
         if (notificationData.type === 'task_assigned' || notificationData.message?.includes('assigned')) {
@@ -195,7 +190,6 @@ export const NotificationProvider = ({ children }) => {
           console.log('🎯 PWA Notification type:', notificationData.type);
           console.log('🎯 PWA Notification message:', notificationData.message);
           console.log('🎯 PWA Notification title:', notificationData.title);
-          console.log('🎯 PWA Notification id:', notificationData.id);
         }
         
         // Ensure the notification has proper structure without duplication (like mobile app)
@@ -220,7 +214,7 @@ export const NotificationProvider = ({ children }) => {
         }
         
         const notification = {
-          id: notificationData.id || notif.id || Date.now(),
+          id: notificationData.id || notif.id || `${notificationData.type || 'notif'}_${Date.now()}`,
           title: title,
           message: message,
           type: notificationData.type || notif.type || 'system',
@@ -233,38 +227,38 @@ export const NotificationProvider = ({ children }) => {
         // Add to real-time notifications (like mobile app)
         setRealtimeNotifications(prev => [notification, ...prev]);
         
-        console.log('🔔 PWA NotificationContext adding to realtime notifications:', notification);
-        
         // Add to main notifications list only if it's new
         setNotifications(prev => {
           const existingNotification = prev.find(n => 
             n.id === notification.id || 
-            (n.title === notification.title && n.message === notification.message)
+            (n.type === notification.type && n.taskId === notification.taskId && n.message === notification.message)
           );
           
           if (existingNotification) {
-            console.log('🔔 PWA NotificationContext notification already exists, skipping:', existingNotification);
             return prev; // No change
           }
           
-          console.log('🔔 PWA NotificationContext adding to main notifications list:', notification);
           return [notification, ...prev];
         });
         
         // Update unread count
-        setUnreadCount(prev => {
-          console.log('🔔 PWA NotificationContext updating unread count from', prev, 'to', prev + 1);
-          return prev + 1;
-        });
+        setUnreadCount(prev => prev + 1);
       };
       
-      // Listen for notification events
-      socketService.on('notification', handleNotification);
+          // Listen for notification events
+          socketService.on('notification', handleNotification);
 
-      return () => {
-        socketService.off('notification', handleNotification);
-        listenerSetupRef.current = false;
+          return () => {
+            socketService.off('notification', handleNotification);
+            listenerSetupRef.current = false;
+          };
+        } else {
+          // Socket not connected yet, try again in 100ms
+          setTimeout(setupListener, 100);
+        }
       };
+      
+      setupListener();
     }
   }, [user, token]); // Dependencies like mobile app
 
