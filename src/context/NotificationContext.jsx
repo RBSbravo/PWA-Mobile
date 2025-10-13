@@ -174,6 +174,10 @@ export const NotificationProvider = ({ children }) => {
     if (user?.id && token && !listenerSetupRef.current) {
       listenerSetupRef.current = true;
       
+      // Debug: Check socket connection status
+      console.log('🔔 PWA NotificationContext setting up listener for user:', user.id);
+      console.log('🔔 PWA NotificationContext socket connected:', socketService.getConnectionStatus().isConnected);
+      
       const handleNotification = (notif) => {
         console.log('🔔 PWA NotificationContext received notification:', notif);
         
@@ -249,6 +253,14 @@ export const NotificationProvider = ({ children }) => {
       };
     }
   }, [user, token]); // Dependencies like mobile app
+
+  // Debug: Log notification context state
+  console.log('🔔 PWA NotificationContext state:', {
+    notifications: notifications.length,
+    realtimeNotifications: realtimeNotifications.length,
+    unreadCount,
+    loading
+  });
 
   return (
     <NotificationContext.Provider value={{
