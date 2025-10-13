@@ -22,9 +22,19 @@ export const NotificationProvider = ({ children }) => {
       const data = await api.getNotifications(token);
       const notificationsList = data.notifications || data;
       
+      console.log('🔔 PWA fetchNotifications - Raw API response:', data);
+      console.log('🔔 PWA fetchNotifications - Notifications list:', notificationsList);
+      
       // Filter out notifications without proper content (like mobile app)
       const validNotifications = notificationsList.filter(notification => {
         const hasContent = notification.title || notification.message;
+        console.log('🔔 PWA fetchNotifications - Checking notification:', {
+          id: notification.id,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          hasContent
+        });
         return hasContent;
       }).map(notification => {
         // Ensure all notifications have both title and message for consistency
@@ -35,10 +45,13 @@ export const NotificationProvider = ({ children }) => {
         };
       });
       
+      console.log('🔔 PWA fetchNotifications - Valid notifications:', validNotifications);
+      
       setNotifications(validNotifications);
       
       // Calculate unread count
       const unread = validNotifications.filter(n => !n.isRead).length;
+      console.log('🔔 PWA fetchNotifications - Unread count:', unread);
       setUnreadCount(unread);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
@@ -137,9 +150,22 @@ export const NotificationProvider = ({ children }) => {
     setUnreadCount(count);
   };
 
-  // Clear realtime notifications
-  const clearRealtimeNotifications = () => {
-    setRealtimeNotifications([]);
+  // Test function to manually add a notification (for debugging)
+  const addTestNotification = () => {
+    const testNotification = {
+      id: 'TEST-' + Date.now(),
+      title: 'Test Assigned Task',
+      message: 'You have been assigned to task "Test Task"',
+      type: 'task_assigned',
+      isRead: false,
+      date: new Date().toISOString(),
+      taskId: 'TEST-TASK-123'
+    };
+    
+    console.log('🧪 PWA Adding test notification:', testNotification);
+    
+    setNotifications(prev => [testNotification, ...prev]);
+    setUnreadCount(prev => prev + 1);
   };
 
   // Cleanup real-time notifications periodically to prevent accumulation
@@ -176,6 +202,8 @@ export const NotificationProvider = ({ children }) => {
       
       const handleNotification = (notif) => {
         console.log('🔔 PWA NotificationContext received notification:', notif);
+        console.log('🔔 PWA NotificationContext notification type:', notif.type);
+        console.log('🔔 PWA NotificationContext notification data:', notif.data);
         
         // Handle backend notification format: { type: 'NEW_NOTIFICATION', data: notification }
         const notificationData = notif.data || notif;
@@ -265,6 +293,7 @@ export const NotificationProvider = ({ children }) => {
       addRealtimeNotification,
       refreshUnreadCount,
       clearRealtimeNotifications,
+      addTestNotification, // Add test function for debugging
     }}>
       {children}
     </NotificationContext.Provider>

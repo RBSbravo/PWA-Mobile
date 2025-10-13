@@ -78,7 +78,7 @@ const NotificationsPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
-  const { notifications, fetchNotifications, refreshUnreadCount, realtimeNotifications, loading: notificationsLoading } = useNotification();
+  const { notifications, fetchNotifications, refreshUnreadCount, realtimeNotifications, loading: notificationsLoading, addTestNotification } = useNotification();
   const { showSuccess, showError, showWarning, showInfo } = useMessage();
   
   const [loading, setLoading] = useState(true);
@@ -93,11 +93,29 @@ const NotificationsPage = () => {
       setLoading(true);
       const fetchedNotifications = await api.getNotifications(token);
       
+      console.log('🔔 PWA NotificationsPage - Raw API response:', fetchedNotifications);
+      
       // Filter out notifications without proper content (like mobile app)
       const validNotifications = fetchedNotifications.filter(notification => {
         const hasContent = notification.title || notification.message;
+        console.log('🔔 PWA NotificationsPage - Checking notification:', {
+          id: notification.id,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          hasContent
+        });
         return hasContent;
+      }).map(notification => {
+        // Ensure all notifications have both title and message for consistency
+        return {
+          ...notification,
+          title: notification.title || notification.message || 'New notification',
+          message: notification.message || notification.title || 'You have a new notification'
+        };
       });
+      
+      console.log('🔔 PWA NotificationsPage - Valid notifications:', validNotifications);
       
       setLocalNotifications(validNotifications.sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)));
     } catch (error) {
@@ -330,6 +348,16 @@ const NotificationsPage = () => {
           title="Notifications"
           leftIcon={<ArrowBackIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
           onLeftIconPress={() => navigate('/dashboard')}
+          rightAction={
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={addTestNotification}
+              sx={{ fontSize: '0.75rem', px: 1 }}
+            >
+              Test
+            </Button>
+          }
         />
         <Box sx={{ 
           backgroundColor: theme.palette.background.default, 
@@ -348,21 +376,32 @@ const NotificationsPage = () => {
       {/* Header */}
       <ScreenHeader
         title="Notifications"
-        leftIcon={<NotificationsIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
+        leftIcon={<ArrowBackIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
+        onLeftIconPress={() => navigate('/dashboard')}
         rightAction={
-          <Button
-            variant="text"
-            startIcon={<DoneAllIcon />}
-            onClick={handleMarkAllAsRead}
-            disabled={unreadCount === 0}
-            sx={{
-              textTransform: 'none',
-              fontWeight: 500,
-              color: theme.palette.primary.main,
-            }}
-          >
-            {isMobile ? '' : 'Mark All Read'}
-          </Button>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={addTestNotification}
+              sx={{ fontSize: '0.75rem', px: 1 }}
+            >
+              Test
+            </Button>
+            <Button
+              variant="text"
+              startIcon={<DoneAllIcon />}
+              onClick={handleMarkAllAsRead}
+              disabled={unreadCount === 0}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 500,
+                color: theme.palette.primary.main,
+              }}
+            >
+              {isMobile ? '' : 'Mark All Read'}
+            </Button>
+          </Box>
         }
       />
 
