@@ -116,12 +116,7 @@ const NotificationsPage = () => {
       const newNotifications = realtimeNotifications.filter(notification => {
         // Filter out notifications without proper content
         const hasContent = notification.title || notification.message || notification.data?.message;
-        // Less aggressive deduplication - only check if exact same notification exists
-        const isNew = !localNotifications.some(existing => 
-          existing.id === notification.id && 
-          existing.type === notification.type && 
-          existing.message === notification.message
-        );
+        const isNew = !localNotifications.some(existing => existing.id === notification.id);
         return hasContent && isNew;
       });
       
@@ -130,27 +125,6 @@ const NotificationsPage = () => {
       }
     }
   }, [realtimeNotifications, localNotifications]);
-
-  // Also merge notifications from NotificationContext
-  useEffect(() => {
-    if (notifications && notifications.length > 0) {
-      const newNotifications = notifications.filter(notification => {
-        // Filter out notifications without proper content
-        const hasContent = notification.title || notification.message;
-        // Less aggressive deduplication - only check if exact same notification exists
-        const isNew = !localNotifications.some(existing => 
-          existing.id === notification.id && 
-          existing.type === notification.type && 
-          existing.message === notification.message
-        );
-        return hasContent && isNew;
-      });
-      
-      if (newNotifications.length > 0) {
-        setLocalNotifications(prev => [...newNotifications, ...prev]);
-      }
-    }
-  }, [notifications, localNotifications]);
 
   // Real-time updates (like mobile app)
   useEffect(() => {
@@ -243,12 +217,6 @@ const NotificationsPage = () => {
   const unreadCount = localNotifications.filter(n => !n.isRead).length;
   const readCount = localNotifications.filter(n => n.isRead).length;
   const totalCount = localNotifications.length;
-  
-  // Debug: Log notifications to see what's in the list
-  console.log('🔔 PWA NotificationsPage - All localNotifications:', localNotifications);
-  console.log('🔔 PWA NotificationsPage - All notifications from context:', notifications);
-  console.log('🔔 PWA NotificationsPage - All realtimeNotifications:', realtimeNotifications);
-  console.log('🔔 PWA NotificationsPage - Assigned task notifications:', localNotifications.filter(n => n.type === 'task_assigned'));
 
   const filteredNotifications = localNotifications.filter(n => {
     if (tab === 'all') return true;
