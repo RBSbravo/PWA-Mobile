@@ -227,19 +227,8 @@ export const NotificationProvider = ({ children }) => {
         // Add to real-time notifications (like mobile app)
         setRealtimeNotifications(prev => [notification, ...prev]);
         
-        // Add to main notifications list only if it's new
-        setNotifications(prev => {
-          const existingNotification = prev.find(n => 
-            n.id === notification.id || 
-            (n.type === notification.type && n.taskId === notification.taskId && n.message === notification.message)
-          );
-          
-          if (existingNotification) {
-            return prev; // No change
-          }
-          
-          return [notification, ...prev];
-        });
+        // Add to main notifications list (like mobile app - no deduplication)
+        setNotifications(prev => [notification, ...prev]);
         
         // Update unread count
         setUnreadCount(prev => prev + 1);
