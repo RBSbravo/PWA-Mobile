@@ -36,7 +36,7 @@ import TaskItem from '../components/TaskItem';
 import TaskFilterChips from '../components/TaskFilterChips';
 import FullScreenLoader from '../components/FullScreenLoader';
 import SkeletonLoader from '../components/SkeletonLoader';
-import PullToRefresh from '../components/PullToRefresh';
+// import PullToRefresh from '../components/PullToRefresh';
 
 const TasksPage = () => {
   const navigate = useNavigate();
@@ -45,7 +45,6 @@ const TasksPage = () => {
   const { token, user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -53,14 +52,10 @@ const TasksPage = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
 
-  const fetchTasks = useCallback(async (isRefresh = false) => {
+  const fetchTasks = useCallback(async () => {
     if (!token) return;
     
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
+    setLoading(true);
     
     try {
       const data = await api.getTasks(token);
@@ -72,7 +67,6 @@ const TasksPage = () => {
       console.error('Tasks error:', err);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, [token]);
 
@@ -160,9 +154,7 @@ const TasksPage = () => {
     }
   };
 
-  const handleRefresh = useCallback(async () => {
-    await fetchTasks(true);
-  }, [fetchTasks]);
+  // Pull-to-refresh functionality removed to fix scrolling issues
 
   const filteredTasks = tasks.filter(task => {
     // Safety check to ensure task exists and has required properties
@@ -289,7 +281,6 @@ const TasksPage = () => {
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
       }}>
-        <PullToRefresh onRefresh={handleRefresh}>
         {/* Content Container */}
         <Box sx={{ 
           width: '100%',
@@ -372,7 +363,7 @@ const TasksPage = () => {
         )}
         </Box>
         </Box>
-      </PullToRefresh>
+      </Box>
 
       {/* Context Menu */}
       <Menu
@@ -410,7 +401,6 @@ const TasksPage = () => {
 
       {/* Loading Overlay */}
       <FullScreenLoader visible={loading} message="Loading tasks..." />
-      </Box>
     </>
   );
 };

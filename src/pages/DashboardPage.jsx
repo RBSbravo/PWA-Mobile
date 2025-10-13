@@ -24,7 +24,7 @@ import api from '../services/api';
 import socketService from '../services/socket';
 import ScreenHeader from '../components/ScreenHeader';
 import SkeletonLoader from '../components/SkeletonLoader';
-import PullToRefresh from '../components/PullToRefresh';
+// import PullToRefresh from '../components/PullToRefresh';
 
 const DashboardPage = () => {
   const theme = useTheme();
@@ -32,7 +32,6 @@ const DashboardPage = () => {
   const { user, token } = useAuth();
   const { notifications } = useNotification();
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [tasks, setTasks] = useState([]);
   const [stats, setStats] = useState({
@@ -42,14 +41,10 @@ const DashboardPage = () => {
     completedTasks: 0,
   });
 
-  const fetchDashboardData = useCallback(async (isRefresh = false) => {
+  const fetchDashboardData = useCallback(async () => {
     if (!token) return;
     
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
+    setLoading(true);
     
     try {
       const [tasksData, notificationsData] = await Promise.all([
@@ -81,7 +76,6 @@ const DashboardPage = () => {
       console.error('Dashboard error:', err);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, [token]);
 
@@ -215,9 +209,7 @@ const DashboardPage = () => {
     </Card>
   );
 
-  const handleRefresh = useCallback(async () => {
-    await fetchDashboardData(true);
-  }, [fetchDashboardData]);
+  // Pull-to-refresh functionality removed to fix scrolling issues
 
   if (loading) {
     return (
@@ -282,7 +274,6 @@ const DashboardPage = () => {
         overflowY: 'auto',
         WebkitOverflowScrolling: 'touch',
       }}>
-        <PullToRefresh onRefresh={handleRefresh}>
         {/* Content Container */}
         <Box sx={{ 
           width: '100%',
@@ -346,7 +337,6 @@ const DashboardPage = () => {
           <RecentActivityCard />
         </Box>
         </Box>
-        </PullToRefresh>
       </Box>
     </>
   );
