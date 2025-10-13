@@ -116,7 +116,12 @@ const NotificationsPage = () => {
       const newNotifications = realtimeNotifications.filter(notification => {
         // Filter out notifications without proper content
         const hasContent = notification.title || notification.message || notification.data?.message;
-        const isNew = !localNotifications.some(existing => existing.id === notification.id);
+        // Less aggressive deduplication - only check if exact same notification exists
+        const isNew = !localNotifications.some(existing => 
+          existing.id === notification.id && 
+          existing.type === notification.type && 
+          existing.message === notification.message
+        );
         return hasContent && isNew;
       });
       
@@ -217,6 +222,10 @@ const NotificationsPage = () => {
   const unreadCount = localNotifications.filter(n => !n.isRead).length;
   const readCount = localNotifications.filter(n => n.isRead).length;
   const totalCount = localNotifications.length;
+  
+  // Debug: Log notifications to see what's in the list
+  console.log('🔔 PWA NotificationsPage - All notifications:', localNotifications);
+  console.log('🔔 PWA NotificationsPage - Assigned task notifications:', localNotifications.filter(n => n.type === 'task_assigned'));
 
   const filteredNotifications = localNotifications.filter(n => {
     if (tab === 'all') return true;

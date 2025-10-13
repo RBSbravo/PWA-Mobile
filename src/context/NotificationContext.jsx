@@ -172,10 +172,7 @@ export const NotificationProvider = ({ children }) => {
   // Setup socket listeners for real-time notifications (like mobile app)
   useEffect(() => {
     if (user?.id && token && !listenerSetupRef.current) {
-      // Wait for socket connection before setting up listener
-      const setupListener = () => {
-        if (socketService.getConnectionStatus().isConnected) {
-          listenerSetupRef.current = true;
+      listenerSetupRef.current = true;
       
       const handleNotification = (notif) => {
         console.log('🔔 PWA NotificationContext received notification:', notif);
@@ -190,6 +187,7 @@ export const NotificationProvider = ({ children }) => {
           console.log('🎯 PWA Notification type:', notificationData.type);
           console.log('🎯 PWA Notification message:', notificationData.message);
           console.log('🎯 PWA Notification title:', notificationData.title);
+          console.log('🎯 PWA Processing assigned task notification...');
         }
         
         // Ensure the notification has proper structure without duplication (like mobile app)
@@ -214,14 +212,14 @@ export const NotificationProvider = ({ children }) => {
         }
         
         const notification = {
-          id: notificationData.id || notif.id || `${notificationData.type || 'notif'}_${Date.now()}`,
+          id: notif.id || notif.data?.id || notificationData.id || Date.now(),
           title: title,
           message: message,
-          type: notificationData.type || notif.type || 'system',
+          type: notif.type || notif.data?.type || notificationData.type || 'system',
           isRead: false,
-          date: notificationData.createdAt || notificationData.date || notif.createdAt || notif.date || new Date().toISOString(),
-          taskId: notificationData.taskId || notif.taskId,
-          ticketId: notificationData.ticketId || notif.ticketId
+          date: notif.date || notif.data?.date || notificationData.createdAt || notificationData.date || new Date().toISOString(),
+          taskId: notif.taskId || notif.data?.taskId || notificationData.taskId,
+          ticketId: notif.ticketId || notif.data?.ticketId || notificationData.ticketId
         };
         
         // Add to real-time notifications (like mobile app)
@@ -230,24 +228,25 @@ export const NotificationProvider = ({ children }) => {
         // Add to main notifications list (like mobile app - no deduplication)
         setNotifications(prev => [notification, ...prev]);
         
+        // Debug: Log assigned task notification addition
+        if (notification.type === 'task_assigned' || notification.message?.includes('assigned')) {
+          console.log('🎯 PWA Added assigned task notification to lists:', notification);
+          console.log('🎯 PWA Notification ID:', notification.id);
+          console.log('🎯 PWA Notification title:', notification.title);
+          console.log('🎯 PWA Notification message:', notification.message);
+        }
+        
         // Update unread count
         setUnreadCount(prev => prev + 1);
       };
       
-          // Listen for notification events
-          socketService.on('notification', handleNotification);
+      // Listen for notification events
+      socketService.on('notification', handleNotification);
 
-          return () => {
-            socketService.off('notification', handleNotification);
-            listenerSetupRef.current = false;
-          };
-        } else {
-          // Socket not connected yet, try again in 100ms
-          setTimeout(setupListener, 100);
-        }
+      return () => {
+        socketService.off('notification', handleNotification);
+        listenerSetupRef.current = false;
       };
-      
-      setupListener();
     }
   }, [user, token]); // Dependencies like mobile app
 
