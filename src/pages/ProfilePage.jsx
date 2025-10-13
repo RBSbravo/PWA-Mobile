@@ -38,6 +38,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useThemeContext } from '../context/ThemeContext';
 import PWARateLimitAlert from '../components/RateLimitAlert';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
+import passwordValidator from '../utils/passwordValidator';
 import api from '../services/api';
 import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 import ScreenHeader from '../components/ScreenHeader';
@@ -152,9 +154,11 @@ const ProfilePage = () => {
     }
     if (!passwordForm.new) {
       return 'New password is required.';
-    }
-    if (passwordForm.new.length < 8) {
-      return 'Password must be at least 8 characters long.';
+    } else {
+      const passwordValidation = passwordValidator.validate(passwordForm.new);
+      if (!passwordValidation.isValid) {
+        return passwordValidation.errors[0]; // Show first error
+      }
     }
     if (!passwordForm.confirm) {
       return 'Please confirm your new password.';
@@ -521,6 +525,8 @@ const ProfilePage = () => {
               ),
             }}
           />
+          
+          <PasswordStrengthIndicator password={passwordForm.new} />
           
           <TextField
             fullWidth

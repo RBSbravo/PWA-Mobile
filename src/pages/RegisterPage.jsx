@@ -37,6 +37,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useThemeContext } from '../context/ThemeContext';
 import PWARateLimitAlert from '../components/RateLimitAlert';
+import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
+import passwordValidator from '../utils/passwordValidator';
 import api from '../services/api';
 import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 
@@ -66,49 +68,6 @@ const Logo = () => {
           borderRadius: '50%',
         }}
       />
-    </Box>
-  );
-};
-
-const PasswordStrengthIndicator = ({ password }) => {
-  const theme = useTheme();
-  
-  const getPasswordStrength = (password) => {
-    if (!password) return { strength: 0, label: '', color: 'transparent' };
-    
-    let strength = 0;
-    if (password.length >= 6) strength += 1;
-    if (password.length >= 8) strength += 1;
-    if (/[A-Z]/.test(password)) strength += 1;
-    if (/[a-z]/.test(password)) strength += 1;
-    if (/[0-9]/.test(password)) strength += 1;
-    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
-    
-    if (strength <= 2) return { strength, label: 'Weak', color: theme.palette.error.main };
-    if (strength <= 4) return { strength, label: 'Medium', color: theme.palette.warning.main };
-    return { strength, label: 'Strong', color: theme.palette.success.main };
-  };
-
-  const { strength, label, color } = getPasswordStrength(password);
-
-  return (
-    <Box sx={{ mt: 1 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Box sx={{ flex: 1, height: 4, backgroundColor: theme.palette.divider, borderRadius: 2 }}>
-          <Box
-            sx={{
-              width: `${(strength / 6) * 100}%`,
-              height: '100%',
-              backgroundColor: color,
-              borderRadius: 2,
-              transition: 'all 0.3s ease',
-            }}
-          />
-        </Box>
-        <Typography variant="caption" sx={{ color, fontWeight: 500 }}>
-          {label}
-        </Typography>
-      </Box>
     </Box>
   );
 };
@@ -175,8 +134,11 @@ const RegisterPage = () => {
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long';
+    } else {
+      const passwordValidation = passwordValidator.validate(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password = passwordValidation.errors[0]; // Show first error
+      }
     }
 
     if (!formData.confirmPassword) {
