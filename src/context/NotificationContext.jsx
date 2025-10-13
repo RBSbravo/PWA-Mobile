@@ -26,6 +26,13 @@ export const NotificationProvider = ({ children }) => {
       const validNotifications = notificationsList.filter(notification => {
         const hasContent = notification.title || notification.message;
         return hasContent;
+      }).map(notification => {
+        // Ensure all notifications have both title and message for consistency
+        return {
+          ...notification,
+          title: notification.title || notification.message || 'New notification',
+          message: notification.message || notification.title || 'You have a new notification'
+        };
       });
       
       setNotifications(validNotifications);
@@ -177,6 +184,9 @@ export const NotificationProvider = ({ children }) => {
         // Debug: Check if this is an assigned task notification
         if (notificationData.type === 'task_assigned' || notificationData.message?.includes('assigned')) {
           console.log('🎯 PWA Assigned Task Notification detected:', notificationData);
+          console.log('🎯 PWA Notification type:', notificationData.type);
+          console.log('🎯 PWA Notification message:', notificationData.message);
+          console.log('🎯 PWA Notification title:', notificationData.title);
         }
         
         // Ensure the notification has proper structure without duplication (like mobile app)

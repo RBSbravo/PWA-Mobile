@@ -12,6 +12,7 @@ const ScreenHeader = ({
   subtitle,
   leftIcon,
   rightAction,
+  onLeftIconPress,
   style,
 }) => {
   const theme = useTheme();
@@ -45,7 +46,21 @@ const ScreenHeader = ({
           justifyContent: 'flex-start',
         }}
       >
-        {leftIcon}
+        {onLeftIconPress ? (
+          <IconButton
+            onClick={onLeftIconPress}
+            sx={{
+              p: 0.5,
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover,
+              },
+            }}
+          >
+            {leftIcon}
+          </IconButton>
+        ) : (
+          leftIcon
+        )}
       </Box>
 
       {/* Center Content */}

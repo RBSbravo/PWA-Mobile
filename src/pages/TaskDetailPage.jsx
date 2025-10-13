@@ -448,7 +448,7 @@ const TaskDetailPage = () => {
         title="Task Details"
         leftIcon={<ArrowBackIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />}
         onLeftIconPress={() => navigate('/tasks')}
-        rightIcon={canEdit ? (
+        rightAction={canEdit ? (
           <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
             <MoreVertIcon />
           </IconButton>

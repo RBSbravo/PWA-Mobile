@@ -47,8 +47,11 @@ class SocketService {
       this.isConnected = true;
       this.reconnectAttempts = 0;
       
+      console.log('🔌 PWA SocketService connected successfully');
+      
       // Join user-specific room like mobile app
       if (userId) {
+        console.log('🔌 PWA SocketService joining user room:', `user_${userId}`);
         this.socket.emit('join', userId);
       }
       
@@ -129,6 +132,8 @@ class SocketService {
     // Notification events
     this.socket.on('notification', (notification) => {
       console.log('🔔 PWA SocketService received notification:', notification);
+      console.log('🔔 PWA SocketService notification type:', notification.type);
+      console.log('🔔 PWA SocketService notification data:', notification.data);
       this.emit('notification', notification);
     });
 
