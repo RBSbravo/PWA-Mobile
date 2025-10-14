@@ -4,7 +4,20 @@ import { API_CONFIG } from '../config';
 const handleApiResponse = async (response) => {
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || errorData.message || `HTTP ${response.status}`);
+    const error = new Error(errorData.error || errorData.message || `HTTP ${response.status}`);
+    
+    // Add response data to error for rate limit handling
+    error.response = {
+      status: response.status,
+      data: errorData,
+      headers: {
+        'ratelimit-limit': response.headers.get('ratelimit-limit'),
+        'ratelimit-remaining': response.headers.get('ratelimit-remaining'),
+        'ratelimit-reset': response.headers.get('ratelimit-reset')
+      }
+    };
+    
+    throw error;
   }
   return response.json();
 };

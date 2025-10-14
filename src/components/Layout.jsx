@@ -14,6 +14,7 @@ import {
   Assignment as TasksIcon,
   Notifications as NotificationsIcon,
   Person as ProfileIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
@@ -38,6 +39,7 @@ const Layout = ({ children }) => {
       badge: unreadCount > 0 ? unreadCount : null
     },
     { label: 'Profile', icon: <ProfileIcon />, path: '/profile' },
+    { label: 'Settings', icon: <SettingsIcon />, path: '/settings' },
   ];
 
   // Get current tab index

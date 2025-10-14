@@ -19,6 +19,7 @@ import TasksPage from './pages/TasksPage';
 import TaskDetailPage from './pages/TaskDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
 import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
 import FileViewerPage from './pages/FileViewerPage';
 import OfflinePage from './pages/OfflinePage';
 
@@ -125,6 +126,7 @@ const AppContent = () => {
                   <Route path="/tasks/:id" element={<TaskDetailPage />} />
                   <Route path="/notifications" element={<NotificationsPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/file-viewer/:fileId" element={<FileViewerPage />} />
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 </Routes>

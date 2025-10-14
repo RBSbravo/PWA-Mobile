@@ -7,13 +7,19 @@ export class PWARateLimitHandler {
 
   // Handle rate limit error from API response
   handleRateLimitError(error) {
-    if (error.status === 429 || error.message?.includes('429')) {
+    // Check for rate limit in multiple ways (like desktop app)
+    const isRateLimited = error.response?.status === 429 || 
+                         error.message?.includes('429') || 
+                         error.message?.includes('Too many requests') ||
+                         error.message?.includes('rate limit');
+    
+    if (isRateLimited) {
       const rateLimitData = {
-        error: error.message || 'Too many requests',
-        retryAfter: '15 minutes', // Default fallback
-        limit: null,
-        remaining: null,
-        reset: null
+        error: error.response?.data?.error || error.message || 'Too many requests',
+        retryAfter: error.response?.data?.retryAfter || '15 minutes',
+        limit: error.response?.headers?.['ratelimit-limit'] || null,
+        remaining: error.response?.headers?.['ratelimit-remaining'] || null,
+        reset: error.response?.headers?.['ratelimit-reset'] || null
       };
 
       this.rateLimitInfo = rateLimitData;
@@ -28,7 +34,8 @@ export class PWARateLimitHandler {
         retryTime: retryTime,
         limit: rateLimitData.limit,
         remaining: rateLimitData.remaining,
-        reset: rateLimitData.reset
+        reset: rateLimitData.reset,
+        rateLimitData: rateLimitData // Include the full rate limit data
       };
     }
     
