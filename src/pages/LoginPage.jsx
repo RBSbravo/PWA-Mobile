@@ -99,19 +99,9 @@ const LoginPage = () => {
       pwaRateLimitHandler.clearRetryTimer('login');
       navigate('/dashboard');
     } catch (error) {
-      console.log('🔍 Login error details:', {
-        error: error,
-        message: error.message,
-        status: error.response?.status,
-        rateLimitData: error.rateLimitData,
-        headers: error.response?.headers
-      });
-      
       const errorInfo = handlePWAApiError(error);
-      console.log('🔍 Error info:', errorInfo);
       
       if (errorInfo.type === 'rate_limit') {
-        console.log('🚨 Rate limit detected!', errorInfo);
         setRateLimitData(error.rateLimitData || { error: error.message });
         pwaRateLimitHandler.setRetryTimer('login', errorInfo.retryTime);
         setError(errorInfo.message);

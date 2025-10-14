@@ -405,41 +405,6 @@ const ProfilePage = () => {
           User Guide
         </Button>
         
-        {/* Test Rate Limiting Button - Remove in production */}
-        <Button
-          fullWidth
-          variant="outlined"
-          onClick={async () => {
-            try {
-              // Try to trigger rate limiting by making multiple rapid requests
-              for (let i = 0; i < 10; i++) {
-                await api.login('test@example.com', 'wrongpassword');
-              }
-            } catch (error) {
-              console.log('Rate limit test error:', error);
-              const errorInfo = handlePWAApiError(error);
-              if (errorInfo.type === 'rate_limit') {
-                setPasswordRateLimitData(error.rateLimitData || { error: error.message });
-                setPasswordError(errorInfo.message);
-              }
-            }
-          }}
-          sx={{
-            mb: 2,
-            borderRadius: theme.shape.borderRadius * 2,
-            textTransform: 'none',
-            fontWeight: 500,
-            borderColor: theme.palette.warning.main,
-            color: theme.palette.warning.main,
-            '&:hover': {
-              borderColor: theme.palette.warning.dark,
-              backgroundColor: theme.palette.warning.main + '10',
-            },
-          }}
-        >
-          Test Rate Limiting
-        </Button>
-        
         <Button
           fullWidth
           variant="outlined"
