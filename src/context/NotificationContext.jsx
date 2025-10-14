@@ -96,6 +96,9 @@ export const NotificationProvider = ({ children }) => {
       // Update local state
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
       
+      // Also remove from realtime notifications
+      setRealtimeNotifications(prev => prev.filter(n => n.id !== notificationId));
+      
       // Update unread count if the deleted notification was unread
       const deletedNotification = notifications.find(n => n.id === notificationId);
       if (deletedNotification && !deletedNotification.isRead) {
@@ -133,8 +136,20 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // Refresh unread count
-  const refreshUnreadCount = (count) => {
-    setUnreadCount(count);
+  const refreshUnreadCount = async (count) => {
+    if (count !== undefined) {
+      setUnreadCount(count);
+    } else if (token && user?.id) {
+      try {
+        const unreadCountFromAPI = await api.getUnreadNotificationCount(user.id, token);
+        setUnreadCount(unreadCountFromAPI);
+      } catch (error) {
+        console.error('Failed to fetch unread count:', error);
+        // Fallback to calculating from local notifications
+        const localUnreadCount = notifications.filter(n => !n.isRead).length;
+        setUnreadCount(localUnreadCount);
+      }
+    }
   };
 
   // Clear realtime notifications

@@ -78,66 +78,14 @@ const NotificationsPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
-  const { notifications, fetchNotifications, refreshUnreadCount, realtimeNotifications, loading: notificationsLoading } = useNotification();
+  const { notifications, fetchNotifications, refreshUnreadCount, realtimeNotifications, loading: notificationsLoading, deleteNotification } = useNotification();
   const { showSuccess, showError, showWarning, showInfo } = useMessage();
   
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('all');
-  const [localNotifications, setLocalNotifications] = useState([]);
 
-  // Fetch notifications from API (like mobile app)
-  const fetchNotificationsFromAPI = useCallback(async () => {
-    try {
-      if (!user) return;
-      setLoading(true);
-      const fetchedNotifications = await api.getNotifications(token);
-      
-      // Filter out notifications without proper content (like mobile app)
-      const validNotifications = fetchedNotifications.filter(notification => {
-        const hasContent = notification.title || notification.message;
-        return hasContent;
-      });
-      
-      setLocalNotifications(validNotifications.sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt)));
-    } catch (error) {
-      const errorMessage = error.response?.data?.error || error.message || 'Failed to load notifications';
-      setError(errorMessage);
-      showError(`Failed to load notifications: ${errorMessage}`);
-      console.error('Load notifications error:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, token, showError]);
 
-  // Add new real-time notifications to the list (like mobile app)
-  useEffect(() => {
-    if (realtimeNotifications && realtimeNotifications.length > 0) {
-      const newNotifications = realtimeNotifications.filter(notification => {
-        // Filter out notifications without proper content
-        const hasContent = notification.title || notification.message || notification.data?.message;
-        const isNew = !localNotifications.some(existing => existing.id === notification.id);
-        return hasContent && isNew;
-      });
-      
-      if (newNotifications.length > 0) {
-        setLocalNotifications(prev => [...newNotifications, ...prev]);
-      }
-    }
-  }, [realtimeNotifications, localNotifications]);
 
-  // Real-time updates (like mobile app)
-  useEffect(() => {
-    const handleNotificationRemoved = (data) => {
-      setLocalNotifications(prev => prev.filter(n => n.id !== data.notificationId));
-    };
-
-    socketService.on('notificationRemoved', handleNotificationRemoved);
-
-    return () => {
-      socketService.off('notificationRemoved', handleNotificationRemoved);
-    };
-  }, []);
 
   // Refresh unread count when page is focused (like mobile app's useFocusEffect)
   useEffect(() => {
@@ -146,15 +94,11 @@ const NotificationsPage = () => {
     }
   }, [location.pathname, refreshUnreadCount]);
 
-  useEffect(() => {
-    fetchNotificationsFromAPI();
-  }, [fetchNotificationsFromAPI]);
 
   const handleMarkAsRead = async (id) => {
     try {
       await api.markNotificationAsRead(id, token);
-      setLocalNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
-      refreshUnreadCount();
+      await refreshUnreadCount();
       showSuccess('Notification marked as read');
     } catch (error) {
       const errorMessage = error.response?.data?.error || error.message || 'Failed to update notification';
@@ -167,8 +111,7 @@ const NotificationsPage = () => {
   const handleMarkAllAsRead = async () => {
     try {
       await api.markAllNotificationsAsRead(token);
-      setLocalNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-      refreshUnreadCount();
+      await refreshUnreadCount();
       showSuccess('All notifications marked as read');
     } catch (error) {
       const errorMessage = error.response?.data?.error || error.message || 'Failed to update notifications';
@@ -180,9 +123,8 @@ const NotificationsPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await api.deleteNotification(id, token);
-      setLocalNotifications(prev => prev.filter(n => n.id !== id));
-      refreshUnreadCount();
+      await deleteNotification(id);
+      await refreshUnreadCount();
       showSuccess('Notification deleted');
     } catch (error) {
       const errorMessage = error.response?.data?.error || error.message || 'Failed to delete notification';
@@ -196,8 +138,7 @@ const NotificationsPage = () => {
     try {
       if (!item.isRead) {
         await api.markNotificationAsRead(item.id, token);
-        setLocalNotifications(prev => prev.map(n => n.id === item.id ? { ...n, isRead: true } : n));
-        refreshUnreadCount();
+        await refreshUnreadCount();
       }
       
       // Navigate based on notification type
@@ -214,11 +155,13 @@ const NotificationsPage = () => {
     }
   };
 
-  const unreadCount = localNotifications.filter(n => !n.isRead).length;
-  const readCount = localNotifications.filter(n => n.isRead).length;
-  const totalCount = localNotifications.length;
+  // Use notifications from context instead of local state for consistency
+  const allNotifications = [...notifications, ...realtimeNotifications];
+  const unreadCount = allNotifications.filter(n => !n.isRead).length;
+  const readCount = allNotifications.filter(n => n.isRead).length;
+  const totalCount = allNotifications.length;
 
-  const filteredNotifications = localNotifications.filter(n => {
+  const filteredNotifications = allNotifications.filter(n => {
     if (tab === 'all') return true;
     if (tab === 'unread') return !n.isRead;
     if (tab === 'read') return n.isRead;
@@ -323,7 +266,7 @@ const NotificationsPage = () => {
     );
   };
 
-  if (loading) {
+  if (notificationsLoading) {
     return (
       <>
         <ScreenHeader
@@ -437,11 +380,11 @@ const NotificationsPage = () => {
             </Typography>
             <Button
               variant="outlined"
-              onClick={fetchNotificationsFromAPI}
+              onClick={fetchNotifications}
               sx={{ mt: 2 }}
-              disabled={loading}
+              disabled={notificationsLoading}
             >
-              {loading ? <CircularProgress size={20} /> : 'Refresh'}
+              {notificationsLoading ? <CircularProgress size={20} /> : 'Refresh'}
             </Button>
           </Card>
         )}
