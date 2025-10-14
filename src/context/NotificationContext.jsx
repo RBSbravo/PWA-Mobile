@@ -114,17 +114,15 @@ export const NotificationProvider = ({ children }) => {
   // Add realtime notification
   const addRealtimeNotification = (notification) => {
     setNotifications(prev => {
-      // Check if notification already exists
-      const existingNotification = prev.find(n => 
-        n.id === notification.id || 
-        (n.title === notification.title && n.message === notification.message && 
-         Math.abs(new Date(n.date) - new Date(notification.date || notification.createdAt || new Date())) < 1000)
-      );
+      // Only check for exact ID match to prevent deduplication of separate notifications
+      const existingNotification = prev.find(n => n.id === notification.id);
       
       if (existingNotification) {
+        console.log('🔄 PWA NotificationContext: Realtime notification already exists, skipping:', notification.id);
         return prev; // No change
       }
       
+      console.log('➕ PWA NotificationContext: Adding realtime notification:', notification.id, notification.type, notification.message);
       // Add new notification to the beginning
       return [notification, ...prev];
     });
@@ -205,6 +203,19 @@ export const NotificationProvider = ({ children }) => {
         // Handle backend notification format: { type: 'NEW_NOTIFICATION', data: notification }
         const notificationData = notif.data || notif;
         console.log('🔔 PWA NotificationContext processed notification data:', notificationData);
+        console.log('🔔 PWA NotificationContext notification ID:', notificationData.id);
+        console.log('🔔 PWA NotificationContext notification type:', notificationData.type);
+        
+        // Debug: Check if this notification is for the current user
+        console.log('👤 PWA NotificationContext current user ID:', user?.id);
+        console.log('👤 PWA NotificationContext notification user ID:', notificationData.userId);
+        console.log('👤 PWA NotificationContext related user ID:', notificationData.relatedUserId);
+        
+        // Skip notifications that are for the current user's own actions
+        if (notificationData.relatedUserId && notificationData.relatedUserId === user?.id) {
+          console.log('🚫 PWA NotificationContext: Skipping notification for own action:', notificationData.type);
+          return;
+        }
         
         // Debug: Check if this is an assigned task notification
         if (notificationData.type === 'task_assigned' || notificationData.message?.includes('assigned')) {
@@ -212,6 +223,27 @@ export const NotificationProvider = ({ children }) => {
           console.log('🎯 PWA Notification type:', notificationData.type);
           console.log('🎯 PWA Notification message:', notificationData.message);
           console.log('🎯 PWA Notification title:', notificationData.title);
+        }
+        
+        // Debug: Check if this is a comment notification
+        if (notificationData.type === 'comment_added' || notificationData.message?.includes('commented')) {
+          console.log('💬 PWA Comment Notification detected:', notificationData);
+          console.log('💬 PWA Notification type:', notificationData.type);
+          console.log('💬 PWA Notification message:', notificationData.message);
+        }
+        
+        // Debug: Check if this is a file upload notification
+        if (notificationData.type === 'file_uploaded' || notificationData.message?.includes('file was uploaded')) {
+          console.log('📁 PWA File Upload Notification detected:', notificationData);
+          console.log('📁 PWA Notification type:', notificationData.type);
+          console.log('📁 PWA Notification message:', notificationData.message);
+        }
+        
+        // Debug: Check if this is a task update notification
+        if (notificationData.type === 'task_updated' || notificationData.message?.includes('has been updated')) {
+          console.log('🔄 PWA Task Update Notification detected:', notificationData);
+          console.log('🔄 PWA Notification type:', notificationData.type);
+          console.log('🔄 PWA Notification message:', notificationData.message);
         }
         
         // Ensure the notification has proper structure without duplication (like mobile app)
@@ -236,7 +268,7 @@ export const NotificationProvider = ({ children }) => {
         }
         
         const notification = {
-          id: notificationData.id || notif.id || Date.now(),
+          id: notificationData.id || notif.id || `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           title: title,
           message: message,
           type: notificationData.type || notif.type || 'system',
@@ -248,15 +280,16 @@ export const NotificationProvider = ({ children }) => {
         
         // Add to notifications list only if it's new
         setNotifications(prev => {
-          const existingNotification = prev.find(n => 
-            n.id === notification.id || 
-            (n.title === notification.title && n.message === notification.message)
-          );
+          // Only check for exact ID match to prevent deduplication of separate notifications
+          const existingNotification = prev.find(n => n.id === notification.id);
           
           if (existingNotification) {
+            console.log('🔄 PWA NotificationContext: Notification already exists, skipping:', notification.id);
             return prev; // No change
           }
           
+          console.log('➕ PWA NotificationContext: Adding new notification:', notification.id, notification.type, notification.message);
+          console.log('📊 PWA NotificationContext: Total notifications after add:', prev.length + 1);
           // Add new notification to the beginning
           return [notification, ...prev];
         });
