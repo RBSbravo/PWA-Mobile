@@ -13,9 +13,21 @@ const handleApiResponse = async (response) => {
       headers: {
         'ratelimit-limit': response.headers.get('ratelimit-limit'),
         'ratelimit-remaining': response.headers.get('ratelimit-remaining'),
-        'ratelimit-reset': response.headers.get('ratelimit-reset')
+        'ratelimit-reset': response.headers.get('ratelimit-reset'),
+        'retry-after': response.headers.get('retry-after')
       }
     };
+    
+    // Add rate limit data directly to error for easier access
+    if (response.status === 429) {
+      error.rateLimitData = {
+        error: errorData.error || errorData.message || 'Too many requests',
+        retryAfter: errorData.retryAfter || response.headers.get('retry-after') || '15 minutes',
+        limit: response.headers.get('ratelimit-limit'),
+        remaining: response.headers.get('ratelimit-remaining'),
+        reset: response.headers.get('ratelimit-reset')
+      };
+    }
     
     throw error;
   }

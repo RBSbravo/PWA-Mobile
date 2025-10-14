@@ -7,19 +7,23 @@ export class PWARateLimitHandler {
 
   // Handle rate limit error from API response
   handleRateLimitError(error) {
-    // Check for rate limit in multiple ways (like desktop app)
+    // Check for rate limit in multiple ways
     const isRateLimited = error.response?.status === 429 || 
+                         error.status === 429 ||
                          error.message?.includes('429') || 
                          error.message?.includes('Too many requests') ||
-                         error.message?.includes('rate limit');
+                         error.message?.includes('Too many authentication attempts') ||
+                         error.message?.includes('Too many attempts') ||
+                         error.message?.includes('rate limit') ||
+                         error.message?.includes('temporarily locked');
     
     if (isRateLimited) {
       const rateLimitData = {
         error: error.response?.data?.error || error.message || 'Too many requests',
-        retryAfter: error.response?.data?.retryAfter || '15 minutes',
-        limit: error.response?.headers?.['ratelimit-limit'] || null,
-        remaining: error.response?.headers?.['ratelimit-remaining'] || null,
-        reset: error.response?.headers?.['ratelimit-reset'] || null
+        retryAfter: error.response?.data?.retryAfter || error.rateLimitData?.retryAfter || '15 minutes',
+        limit: error.response?.headers?.['ratelimit-limit'] || error.rateLimitData?.limit || null,
+        remaining: error.response?.headers?.['ratelimit-remaining'] || error.rateLimitData?.remaining || null,
+        reset: error.response?.headers?.['ratelimit-reset'] || error.rateLimitData?.reset || null
       };
 
       this.rateLimitInfo = rateLimitData;
@@ -44,20 +48,37 @@ export class PWARateLimitHandler {
 
   // Calculate retry time in milliseconds
   calculateRetryTime(rateLimitData) {
+    // Try to parse reset timestamp first
     if (rateLimitData.reset) {
       const resetTime = parseInt(rateLimitData.reset) * 1000;
       const currentTime = Date.now();
-      return Math.max(0, resetTime - currentTime);
+      const timeUntilReset = resetTime - currentTime;
+      
+      // If reset time is in the future, use it
+      if (timeUntilReset > 0) {
+        return timeUntilReset;
+      }
     }
     
     // Fallback to parsing retryAfter text
-    const retryText = rateLimitData.retryAfter.toLowerCase();
+    const retryText = (rateLimitData.retryAfter || '').toLowerCase();
+    
     if (retryText.includes('minute')) {
       const minutes = parseInt(retryText.match(/\d+/)?.[0] || '15');
       return minutes * 60 * 1000;
     } else if (retryText.includes('hour')) {
       const hours = parseInt(retryText.match(/\d+/)?.[0] || '1');
       return hours * 60 * 60 * 1000;
+    } else if (retryText.includes('second')) {
+      const seconds = parseInt(retryText.match(/\d+/)?.[0] || '60');
+      return seconds * 1000;
+    }
+    
+    // Default fallback based on error type
+    if (rateLimitData.error?.includes('authentication') || rateLimitData.error?.includes('login')) {
+      return 15 * 60 * 1000; // 15 minutes for auth
+    } else if (rateLimitData.error?.includes('password reset')) {
+      return 60 * 60 * 1000; // 1 hour for password reset
     }
     
     return 15 * 60 * 1000; // Default 15 minutes
@@ -80,12 +101,16 @@ export class PWARateLimitHandler {
     const retryTime = this.calculateRetryTime(rateLimitData);
     const formattedTime = this.formatRetryTime(retryTime);
     
-    if (rateLimitData.error.includes('authentication') || rateLimitData.error.includes('login')) {
+    if (rateLimitData.error?.includes('authentication') || rateLimitData.error?.includes('login')) {
       return `Too many login attempts. Please try again in ${formattedTime}.`;
-    } else if (rateLimitData.error.includes('registration') || rateLimitData.error.includes('register')) {
+    } else if (rateLimitData.error?.includes('registration') || rateLimitData.error?.includes('register')) {
       return `Too many registration attempts. Please try again in ${formattedTime}.`;
-    } else if (rateLimitData.error.includes('password reset')) {
+    } else if (rateLimitData.error?.includes('password reset')) {
       return `Too many password reset attempts. Please try again in ${formattedTime}.`;
+    } else if (rateLimitData.error?.includes('temporarily locked')) {
+      return `Account temporarily locked due to too many attempts. Please try again in ${formattedTime}.`;
+    } else if (rateLimitData.error?.includes('Too many attempts')) {
+      return `Too many attempts. Please try again in ${formattedTime}.`;
     }
     
     return `Too many requests. Please try again in ${formattedTime}.`;

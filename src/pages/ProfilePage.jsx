@@ -24,6 +24,11 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Chip,
+  Grid,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -34,6 +39,17 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Person as PersonIcon,
+  Help as HelpIcon,
+  ExpandMore as ExpandMoreIcon,
+  PhoneAndroid as MobileIcon,
+  Speed as SpeedIcon,
+  Assignment as AssignmentIcon,
+  Notifications as NotificationsIcon,
+  Star as StarIcon,
+  CheckCircle as CheckCircleIcon,
+  Warning as WarningIcon,
+  Error as ErrorIcon,
+  Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useThemeContext } from '../context/ThemeContext';
@@ -73,6 +89,9 @@ const ProfilePage = () => {
   
   // Logout Dialog
   const [logoutOpen, setLogoutOpen] = useState(false);
+  
+  // User Guide Dialog
+  const [userGuideOpen, setUserGuideOpen] = useState(false);
 
   // Simulate loading user data
   useEffect(() => {
@@ -368,6 +387,62 @@ const ProfilePage = () => {
         <Button
           fullWidth
           variant="outlined"
+          startIcon={<HelpIcon />}
+          onClick={() => setUserGuideOpen(true)}
+          sx={{
+            mb: 2,
+            borderRadius: theme.shape.borderRadius * 2,
+            textTransform: 'none',
+            fontWeight: 500,
+            borderColor: theme.palette.info.main,
+            color: theme.palette.info.main,
+            '&:hover': {
+              borderColor: theme.palette.info.dark,
+              backgroundColor: theme.palette.info.main + '10',
+            },
+          }}
+        >
+          User Guide
+        </Button>
+        
+        {/* Test Rate Limiting Button - Remove in production */}
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={async () => {
+            try {
+              // Try to trigger rate limiting by making multiple rapid requests
+              for (let i = 0; i < 10; i++) {
+                await api.login('test@example.com', 'wrongpassword');
+              }
+            } catch (error) {
+              console.log('Rate limit test error:', error);
+              const errorInfo = handlePWAApiError(error);
+              if (errorInfo.type === 'rate_limit') {
+                setPasswordRateLimitData(error.rateLimitData || { error: error.message });
+                setPasswordError(errorInfo.message);
+              }
+            }
+          }}
+          sx={{
+            mb: 2,
+            borderRadius: theme.shape.borderRadius * 2,
+            textTransform: 'none',
+            fontWeight: 500,
+            borderColor: theme.palette.warning.main,
+            color: theme.palette.warning.main,
+            '&:hover': {
+              borderColor: theme.palette.warning.dark,
+              backgroundColor: theme.palette.warning.main + '10',
+            },
+          }}
+        >
+          Test Rate Limiting
+        </Button>
+        
+        <Button
+          fullWidth
+          variant="outlined"
           startIcon={<LogoutIcon />}
           onClick={() => setLogoutOpen(true)}
           disabled={logoutLoading}
@@ -605,6 +680,503 @@ const ProfilePage = () => {
             startIcon={logoutLoading ? <CircularProgress size={20} color="inherit" /> : null}
           >
             {logoutLoading ? 'Logging out...' : 'Logout'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* User Guide Dialog */}
+      <Dialog 
+        open={userGuideOpen} 
+        onClose={() => setUserGuideOpen(false)} 
+        maxWidth="md" 
+        fullWidth
+        fullScreen={isMobile}
+      >
+        <DialogTitle sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 1,
+          backgroundColor: theme.palette.primary.main,
+          color: 'white',
+          fontWeight: 600
+        }}>
+          <HelpIcon />
+          PWA Mobile App User Guide
+        </DialogTitle>
+        <DialogContent sx={{ p: 0 }}>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: 'primary.main' }}>
+              📱 PWA Mobile App Guide
+            </Typography>
+            
+            <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', fontSize: '1.1rem' }}>
+              Welcome to the PWA Mobile Ticketing and Task Management System! This guide will help you navigate and utilize all the features effectively on your mobile device.
+            </Typography>
+
+            {/* Rate Limiting Guide */}
+            <Accordion sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <SpeedIcon sx={{ mr: 2, color: 'warning.main' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Rate Limiting & Performance
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  Our system implements rate limiting to ensure fair usage and optimal performance for all users.
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Rate Limit Features
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Smart Detection</strong> - Automatically detects rate limit violations
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Visual Timer</strong> - Shows countdown timer for retry availability
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Progress Bar</strong> - Visual progress indicator for wait time
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Auto Retry</strong> - Automatically enables retry when timer expires
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>User-Friendly Messages</strong> - Clear explanations of rate limits
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Rate Limit Types
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Login Attempts</strong> - 5 attempts per 15 minutes
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Password Changes</strong> - 3 attempts per hour
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>API Requests</strong> - 100 requests per minute
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>File Uploads</strong> - 10 uploads per 5 minutes
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Comment Creation</strong> - 20 comments per 10 minutes
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+                
+                <Alert severity="info" sx={{ mt: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Tip:</strong> If you encounter rate limiting, wait for the timer to complete before retrying. The system will automatically enable the retry button when the cooldown period ends.
+                  </Typography>
+                </Alert>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Mobile-Specific Features */}
+            <Accordion sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <MobileIcon sx={{ mr: 2, color: 'primary.main' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Mobile-Specific Features
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  The PWA mobile app is optimized for mobile devices with touch-friendly interfaces and responsive design.
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Touch Interface
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Bottom Navigation</strong> - Easy thumb navigation
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Pull to Refresh</strong> - Pull down to refresh data
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Touch Targets</strong> - Large, easy-to-tap buttons
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Swipe Actions</strong> - Swipe for quick actions
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Offline Support
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Offline Mode</strong> - Works without internet
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Auto Sync</strong> - Syncs when connection restored
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Local Storage</strong> - Caches data locally
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Queue Actions</strong> - Queues actions for later sync
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Navigation Guide */}
+            <Accordion sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <PersonIcon sx={{ mr: 2, color: 'primary.main' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Navigation & Layout
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  The mobile app uses a bottom navigation bar for easy navigation between main sections.
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Bottom Navigation
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Home</strong> - Dashboard and overview
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Tasks</strong> - Task management
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Notifications</strong> - System notifications
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Profile</strong> - User profile and settings
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Header Features
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Screen Title</strong> - Current page information
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>User Avatar</strong> - Quick profile access
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Theme Toggle</strong> - Switch light/dark mode
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Notification Badge</strong> - Unread count indicator
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Task Management Guide */}
+            <Accordion sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <AssignmentIcon sx={{ mr: 2, color: 'primary.main' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Task Management
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  Create, manage, and track tasks efficiently with mobile-optimized interfaces.
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Creating Tasks
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        1. Tap the <strong>"+"</strong> button
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        2. Fill in task details
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        3. Assign to team members
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        4. Set due date and priority
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        5. Tap <strong>"Create"</strong>
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Task Actions
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Tap to View</strong> - See full details
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Status Updates</strong> - Change status easily
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Comments</strong> - Add progress updates
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>File Attachments</strong> - Upload supporting files
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+                
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, mt: 3, color: 'primary.main' }}>
+                  Task Statuses
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'warning.light', borderRadius: 2 }}>
+                      <ScheduleIcon sx={{ mr: 1, color: 'warning.main' }} />
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        Pending
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'info.light', borderRadius: 2 }}>
+                      <AssignmentIcon sx={{ mr: 1, color: 'info.main' }} />
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        In Progress
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={4}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', p: 2, bgcolor: 'success.light', borderRadius: 2 }}>
+                      <CheckCircleIcon sx={{ mr: 1, color: 'success.main' }} />
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        Completed
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Notifications Guide */}
+            <Accordion sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <NotificationsIcon sx={{ mr: 2, color: 'primary.main' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Notifications
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  Stay updated with real-time notifications for tasks, comments, and system updates.
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Notification Types
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Task Assignments</strong> - New task assignments
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Comments</strong> - New comments on tasks
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>File Uploads</strong> - New file attachments
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Status Updates</strong> - Task status changes
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Notification Actions
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Tap to View</strong> - Open related task
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Mark as Read</strong> - Clear unread status
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Delete</strong> - Remove notification
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Mark All Read</strong> - Clear all notifications
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Tips & Best Practices */}
+            <Accordion sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <StarIcon sx={{ mr: 2, color: 'primary.main' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Tips & Best Practices
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Mobile Optimization
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • Use landscape mode for better viewing
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • Enable notifications for important updates
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • Use dark mode to save battery
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • Keep the app updated for best performance
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Performance Tips
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • Close unused browser tabs
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • Use Wi-Fi for large file uploads
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • Clear browser cache regularly
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • Restart the app if it becomes slow
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Support Information */}
+            <Accordion sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <HelpIcon sx={{ mr: 2, color: 'primary.main' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Need Help?
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  If you need additional assistance or have questions not covered in this guide, please contact your system administrator or IT support team.
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Common Issues
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>App Not Loading</strong> - Check internet connection
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Slow Performance</strong> - Clear browser cache
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Notifications Not Working</strong> - Check browser permissions
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Login Issues</strong> - Verify credentials
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Contact Information
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>IT Support</strong> - For technical issues
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Department Head</strong> - For workflow questions
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>System Admin</strong> - For account issues
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>User Guide</strong> - This comprehensive guide
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+                
+                <Alert severity="success" sx={{ mt: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Thank you for using the PWA Mobile Ticketing and Task Management System!</strong> This guide is regularly updated to reflect new features and improvements.
+                  </Typography>
+                </Alert>
+              </AccordionDetails>
+            </Accordion>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setUserGuideOpen(false)} variant="contained">
+            Close Guide
           </Button>
         </DialogActions>
       </Dialog>
