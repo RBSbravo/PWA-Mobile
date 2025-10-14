@@ -5,16 +5,16 @@ import { useNotification } from '../context/NotificationContext';
 import { useThemeContext } from '../context/ThemeContext';
 
 const GlobalNotificationSnackbar = () => {
-  const { realtimeNotifications } = useNotification();
+  const { notifications } = useNotification();
   const { theme } = useThemeContext();
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState('');
   const [shownNotificationIds, setShownNotificationIds] = useState(new Set());
 
   useEffect(() => {
-    if (realtimeNotifications && realtimeNotifications.length > 0) {
+    if (notifications && notifications.length > 0) {
       // Only show snackbar for unread notifications that haven't been shown yet
-      const unreadNotifications = realtimeNotifications.filter(notif => 
+      const unreadNotifications = notifications.filter(notif => 
         !notif.isRead && !shownNotificationIds.has(notif.id)
       );
       
@@ -27,19 +27,19 @@ const GlobalNotificationSnackbar = () => {
         setShownNotificationIds(prev => new Set([...prev, latest.id]));
       }
     }
-  }, [realtimeNotifications]); // Remove shownNotificationIds from dependencies to prevent infinite loop
+  }, [notifications]); // Remove shownNotificationIds from dependencies to prevent infinite loop
 
   // Clean up shown notification IDs periodically to prevent memory leaks
   useEffect(() => {
     const cleanup = setInterval(() => {
       setShownNotificationIds(prev => {
-        const currentNotificationIds = new Set(realtimeNotifications.map(n => n.id));
+        const currentNotificationIds = new Set(notifications.map(n => n.id));
         return new Set([...prev].filter(id => currentNotificationIds.has(id)));
       });
     }, 60000); // Clean up every minute
 
     return () => clearInterval(cleanup);
-  }, [realtimeNotifications]);
+  }, [notifications]);
 
   const handleClose = () => {
     setVisible(false);

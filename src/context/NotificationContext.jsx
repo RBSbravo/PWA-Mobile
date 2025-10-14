@@ -8,7 +8,6 @@ const NotificationContext = createContext(null);
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [realtimeNotifications, setRealtimeNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const { token, user } = useAuth();
   const listenerSetupRef = useRef(false);
@@ -93,27 +92,27 @@ export const NotificationProvider = ({ children }) => {
     try {
       await api.deleteNotification(notificationId, token);
       
-      // Update local state
+      // Find the notification to check if it was unread
+      const deletedNotification = notifications.find(n => n.id === notificationId);
+      const wasUnread = deletedNotification && !deletedNotification.isRead;
+      
+      // Update local state - remove the notification
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
       
-      // Also remove from realtime notifications
-      setRealtimeNotifications(prev => prev.filter(n => n.id !== notificationId));
-      
       // Update unread count if the deleted notification was unread
-      const deletedNotification = notifications.find(n => n.id === notificationId);
-      if (deletedNotification && !deletedNotification.isRead) {
+      if (wasUnread) {
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
+      
+      console.log('🗑️ PWA NotificationContext deleted notification:', notificationId, 'wasUnread:', wasUnread);
     } catch (error) {
       console.error('Failed to delete notification:', error);
+      throw error; // Re-throw to let the UI handle the error
     }
   };
 
-  // Add realtime notification (like mobile app - only for real-time notifications)
+  // Add realtime notification
   const addRealtimeNotification = (notification) => {
-    setRealtimeNotifications(prev => [notification, ...prev]);
-    
-    // Only add to main notifications list if it's truly new (not from API fetch)
     setNotifications(prev => {
       // Check if notification already exists
       const existingNotification = prev.find(n => 
@@ -126,6 +125,7 @@ export const NotificationProvider = ({ children }) => {
         return prev; // No change
       }
       
+      // Add new notification to the beginning
       return [notification, ...prev];
     });
     
@@ -152,26 +152,37 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
-  // Clear realtime notifications
-  const clearRealtimeNotifications = () => {
-    setRealtimeNotifications([]);
+  // Clear old notifications periodically to prevent accumulation
+  const clearOldNotifications = () => {
+    setNotifications(prev => {
+      // Keep only notifications from the last 7 days
+      const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      return prev.filter(notification => {
+        const notificationDate = new Date(notification.date || notification.createdAt);
+        return notificationDate > oneWeekAgo;
+      });
+    });
   };
 
-  // Cleanup real-time notifications periodically to prevent accumulation
+  // Cleanup old notifications periodically to prevent accumulation
   useEffect(() => {
     const cleanupInterval = setInterval(() => {
-      setRealtimeNotifications(prev => {
-        // Keep only notifications from the last 24 hours
-        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        return prev.filter(notification => {
-          const notificationDate = new Date(notification.date);
-          return notificationDate > oneDayAgo;
-        });
-      });
-    }, 60000); // Clean up every minute
+      clearOldNotifications();
+    }, 300000); // Clean up every 5 minutes
 
     return () => clearInterval(cleanupInterval);
   }, []);
+
+  // Calculate unread count from notifications
+  const calculateUnreadCount = (notificationList) => {
+    return notificationList.filter(n => !n.isRead).length;
+  };
+
+  // Update unread count whenever notifications change
+  useEffect(() => {
+    const newUnreadCount = calculateUnreadCount(notifications);
+    setUnreadCount(newUnreadCount);
+  }, [notifications]);
 
   // Fetch notifications when token changes
   useEffect(() => {
@@ -180,7 +191,6 @@ export const NotificationProvider = ({ children }) => {
     } else {
       setNotifications([]);
       setUnreadCount(0);
-      setRealtimeNotifications([]);
     }
   }, [token]);
 
@@ -236,10 +246,7 @@ export const NotificationProvider = ({ children }) => {
           ticketId: notificationData.ticketId || notif.ticketId
         };
         
-        // Add to real-time notifications (like mobile app)
-        setRealtimeNotifications(prev => [notification, ...prev]);
-        
-        // Add to main notifications list only if it's new
+        // Add to notifications list only if it's new
         setNotifications(prev => {
           const existingNotification = prev.find(n => 
             n.id === notification.id || 
@@ -250,6 +257,7 @@ export const NotificationProvider = ({ children }) => {
             return prev; // No change
           }
           
+          // Add new notification to the beginning
           return [notification, ...prev];
         });
         
@@ -271,7 +279,6 @@ export const NotificationProvider = ({ children }) => {
     <NotificationContext.Provider value={{
       notifications,
       unreadCount,
-      realtimeNotifications,
       loading,
       fetchNotifications,
       markAsRead,
@@ -279,7 +286,7 @@ export const NotificationProvider = ({ children }) => {
       deleteNotification,
       addRealtimeNotification,
       refreshUnreadCount,
-      clearRealtimeNotifications,
+      clearOldNotifications,
     }}>
       {children}
     </NotificationContext.Provider>

@@ -78,7 +78,7 @@ const NotificationsPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { user, token } = useAuth();
-  const { notifications, fetchNotifications, refreshUnreadCount, realtimeNotifications, loading: notificationsLoading, deleteNotification } = useNotification();
+  const { notifications, fetchNotifications, refreshUnreadCount, loading: notificationsLoading, deleteNotification } = useNotification();
   const { showSuccess, showError, showWarning, showInfo } = useMessage();
   
   const [error, setError] = useState('');
@@ -155,13 +155,12 @@ const NotificationsPage = () => {
     }
   };
 
-  // Use notifications from context instead of local state for consistency
-  const allNotifications = [...notifications, ...realtimeNotifications];
-  const unreadCount = allNotifications.filter(n => !n.isRead).length;
-  const readCount = allNotifications.filter(n => n.isRead).length;
-  const totalCount = allNotifications.length;
+  // Use notifications from context
+  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const readCount = notifications.filter(n => n.isRead).length;
+  const totalCount = notifications.length;
 
-  const filteredNotifications = allNotifications.filter(n => {
+  const filteredNotifications = notifications.filter(n => {
     if (tab === 'all') return true;
     if (tab === 'unread') return !n.isRead;
     if (tab === 'read') return n.isRead;
