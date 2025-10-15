@@ -671,12 +671,71 @@ const ProfilePage = () => {
         <DialogContent sx={{ p: 0 }}>
           <Box sx={{ p: 3 }}>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: 'primary.main' }}>
-              📱 PWA Mobile App Guide
+              📱 Mobile App Guide
             </Typography>
             
             <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', fontSize: '1.1rem' }}>
-              Welcome to the PWA Mobile Ticketing and Task Management System! This guide will help you navigate and utilize all the features effectively on your mobile device.
+              Welcome to the  Mobile Task Management Application! This comprehensive guide will help you navigate and utilize all features effectively on your mobile device.
             </Typography>
+
+            {/* Getting Started */}
+            <Accordion sx={{ mb: 3 }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <StarIcon sx={{ mr: 2, color: 'primary.main' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                    Getting Started
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography variant="body1" sx={{ mb: 3 }}>
+                  The  Mobile Task Management Application is designed for efficient task management on mobile devices. Here's how to get started:
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      First Steps
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        1. <strong>Login</strong> - Use your email and password to access the system
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        2. <strong>Explore Dashboard</strong> - View your task overview and recent activity
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        3. <strong>Check Tasks</strong> - Navigate to the Tasks tab to see all your tasks
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        4. <strong>Notifications</strong> - View notifications for updates
+                      </Typography>
+                    </Box>
+                  </Grid>
+                  
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
+                      Key Features
+                    </Typography>
+                    <Box sx={{ pl: 2 }}>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Real-time Updates</strong> - Live task status changes
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>File Attachments</strong> - Upload and view files
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Comments System</strong> - Collaborate on tasks
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Mobile Optimized</strong> - Touch-friendly interface
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
 
             {/* Rate Limiting Guide */}
             <Accordion sx={{ mb: 3 }}>
@@ -684,13 +743,13 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <SpeedIcon sx={{ mr: 2, color: 'warning.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    Rate Limiting & Performance
+                    Rate Limiting & Security
                   </Typography>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography variant="body1" sx={{ mb: 3 }}>
-                  Our system implements rate limiting to ensure fair usage and optimal performance for all users.
+                  Our system implements rate limiting to ensure security and optimal performance for all users.
                 </Typography>
                 
                 <Grid container spacing={3}>
@@ -719,23 +778,23 @@ const ProfilePage = () => {
                   
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Rate Limit Types
+                      Actual Rate Limits
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
                         • <strong>Login Attempts</strong> - 5 attempts per 15 minutes
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Password Changes</strong> - 3 attempts per hour
+                        • <strong>Password Reset</strong> - 3 attempts per hour
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>API Requests</strong> - 100 requests per minute
+                        • <strong>Change Password</strong> - 3 attempts per 15 minutes
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
                         • <strong>File Uploads</strong> - 10 uploads per 5 minutes
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Comment Creation</strong> - 20 comments per 10 minutes
+                        • <strong>Registration</strong> - 5 attempts per 15 minutes
                       </Typography>
                     </Box>
                   </Grid>
@@ -749,19 +808,19 @@ const ProfilePage = () => {
               </AccordionDetails>
             </Accordion>
 
-            {/* Mobile-Specific Features */}
+            {/* PWA Features */}
             <Accordion sx={{ mb: 3 }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <MobileIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    Mobile-Specific Features
+                   Mobile App Features
                   </Typography>
                 </Box>
               </AccordionSummary>
               <AccordionDetails>
                 <Typography variant="body1" sx={{ mb: 3 }}>
-                  The PWA mobile app is optimized for mobile devices with touch-friendly interfaces and responsive design.
+                  This Progressive Web App (PWA) is optimized for mobile devices with touch-friendly interfaces and responsive design.
                 </Typography>
                 
                 <Grid container spacing={3}>
@@ -771,36 +830,34 @@ const ProfilePage = () => {
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Bottom Navigation</strong> - Easy thumb navigation
+                        • <strong>Bottom Navigation</strong> - 4-tab navigation (Home, Tasks, Notifications, Profile)
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Pull to Refresh</strong> - Pull down to refresh data
+                        • <strong>Touch Targets</strong> - Large, easy-to-tap buttons and cards
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Touch Targets</strong> - Large, easy-to-tap buttons
+                        • <strong>Responsive Design</strong> - Adapts to different screen sizes
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Swipe Actions</strong> - Swipe for quick actions
+                        • <strong>Mobile-First</strong> - Designed primarily for mobile use
                       </Typography>
                     </Box>
                   </Grid>
                   
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Offline Support
+                      PWA Benefits
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Offline Mode</strong> - Works without internet
+                        • <strong>Installable</strong> - Can be installed on home screen
+                      </Typography>
+                
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Fast Loading</strong> - Cached resources for quick access
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Auto Sync</strong> - Syncs when connection restored
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Local Storage</strong> - Caches data locally
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Queue Actions</strong> - Queues actions for later sync
+                        • <strong>Push Notifications</strong> - Real-time updates
                       </Typography>
                     </Box>
                   </Grid>
@@ -820,46 +877,46 @@ const ProfilePage = () => {
               </AccordionSummary>
               <AccordionDetails>
                 <Typography variant="body1" sx={{ mb: 3 }}>
-                  The mobile app uses a bottom navigation bar for easy navigation between main sections.
+                  The PWA mobile app uses a simple bottom navigation bar for easy navigation between main sections.
                 </Typography>
                 
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Bottom Navigation
+                      Bottom Navigation Tabs
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Home</strong> - Dashboard and overview
+                        • <strong>Home</strong> - Dashboard with task overview and recent activity
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Tasks</strong> - Task management
+                        • <strong>Tasks</strong> - View and manage all your tasks
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Notifications</strong> - System notifications
+                        • <strong>Notifications</strong> - Real-time system notifications (with badge count)
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Profile</strong> - User profile and settings
+                        • <strong>Profile</strong> - User profile, settings, and this user guide
                       </Typography>
                     </Box>
                   </Grid>
                   
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Header Features
+                      Page Features
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Screen Title</strong> - Current page information
+                        • <strong>Screen Headers</strong> - Page titles and navigation
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>User Avatar</strong> - Quick profile access
+                        • <strong>Loading States</strong> - Skeleton loaders for better UX
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Theme Toggle</strong> - Switch light/dark mode
+                        • <strong>Error Handling</strong> - Clear error messages and retry options
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Notification Badge</strong> - Unread count indicator
+                        • <strong>Responsive Layout</strong> - Adapts to mobile and tablet screens
                       </Typography>
                     </Box>
                   </Grid>
@@ -879,49 +936,49 @@ const ProfilePage = () => {
               </AccordionSummary>
               <AccordionDetails>
                 <Typography variant="body1" sx={{ mb: 3 }}>
-                  Create, manage, and track tasks efficiently with mobile-optimized interfaces.
+                  Manage your tasks efficiently with the mobile-optimized task management system.
                 </Typography>
                 
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Creating Tasks
+                      Task Operations
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        1. Tap the <strong>"+"</strong> button
+                        • <strong>View Tasks</strong> - See all assigned tasks in the Tasks tab
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        2. Fill in task details
+                        • <strong>Task Details</strong> - Tap any task to view full details
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        3. Assign to team members
+                        • <strong>Status Updates</strong> - Change task status (Pending, In Progress, Completed)
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        4. Set due date and priority
+                        • <strong>Comments</strong> - Add progress updates and notes
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        5. Tap <strong>"Create"</strong>
+                        • <strong>File Attachments</strong> - Upload and view supporting files
                       </Typography>
                     </Box>
                   </Grid>
                   
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Task Actions
+                      Real-time Features
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Tap to View</strong> - See full details
+                        • <strong>Live Updates</strong> - Task changes appear instantly
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Status Updates</strong> - Change status easily
+                        • <strong>Notifications</strong> - Get notified of task assignments and updates
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Comments</strong> - Add progress updates
+                        • <strong>Comment Notifications</strong> - Real-time comment updates
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>File Attachments</strong> - Upload supporting files
+                        • <strong>File Upload Alerts</strong> - Notifications for new attachments
                       </Typography>
                     </Box>
                   </Grid>
@@ -965,7 +1022,7 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <NotificationsIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    Notifications
+                    Notifications System
                   </Typography>
                 </Box>
               </AccordionSummary>
@@ -984,37 +1041,46 @@ const ProfilePage = () => {
                         • <strong>Task Assignments</strong> - New task assignments
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Comments</strong> - New comments on tasks
+                        • <strong>Task Updates</strong> - Status changes and modifications
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Comments</strong> - New comments on your tasks
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
                         • <strong>File Uploads</strong> - New file attachments
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Status Updates</strong> - Task status changes
                       </Typography>
                     </Box>
                   </Grid>
                   
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Notification Actions
+                      Notification Features
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Tap to View</strong> - Open related task
+                        • <strong>Badge Counter</strong> - Unread count on Notifications tab
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Mark as Read</strong> - Clear unread status
+                        • <strong>Real-time Updates</strong> - Instant notification delivery
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Delete</strong> - Remove notification
+                        • <strong>Mark as Read</strong> - Clear individual notifications
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Mark All Read</strong> - Clear all notifications
+                        • <strong>Mark All Read</strong> - Clear all notifications at once
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>Delete Notifications</strong> - Remove unwanted notifications
                       </Typography>
                     </Box>
                   </Grid>
                 </Grid>
+                
+                <Alert severity="info" sx={{ mt: 3 }}>
+                  <Typography variant="body2">
+                    <strong>Note:</strong> You won't receive notifications for your own actions (e.g., commenting on your own tasks). Only other users' actions will trigger notifications.
+                  </Typography>
+                </Alert>
               </AccordionDetails>
             </Accordion>
 
@@ -1032,40 +1098,40 @@ const ProfilePage = () => {
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Mobile Optimization
+                      Mobile Usage Tips
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • Use landscape mode for better viewing
+                        • <strong>Enable Notifications</strong> - Allow browser notifications for updates
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • Enable notifications for important updates
+                        • <strong>Use Landscape Mode</strong> - Better viewing for task details
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • Use dark mode to save battery
+                        • <strong>Install PWA</strong> - Add to home screen for app-like experience
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • Keep the app updated for best performance
+                        • <strong>Check Notifications Tab</strong> - Regularly check for updates
                       </Typography>
                     </Box>
                   </Grid>
                   
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Performance Tips
+                      Task Management Tips
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • Close unused browser tabs
+                        • <strong>Update Status Regularly</strong> - Keep task status current
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • Use Wi-Fi for large file uploads
+                        • <strong>Add Comments</strong> - Provide progress updates
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • Clear browser cache regularly
+                        • <strong>Attach Files</strong> - Upload supporting documents
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • Restart the app if it becomes slow
+                        • <strong>Check Dashboard</strong> - Monitor task statistics
                       </Typography>
                     </Box>
                   </Grid>
@@ -1079,7 +1145,7 @@ const ProfilePage = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <HelpIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                    Need Help?
+                    Support & Troubleshooting
                   </Typography>
                 </Box>
               </AccordionSummary>
@@ -1095,36 +1161,39 @@ const ProfilePage = () => {
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>App Not Loading</strong> - Check internet connection
+                        • <strong>App Not Loading</strong> - Check internet connection and refresh page
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Slow Performance</strong> - Clear browser cache
+                        • <strong>Login Problems</strong> - Verify credentials and check rate limits
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Notifications Not Working</strong> - Check browser permissions
+                        • <strong>Notifications Not Working</strong> - Check browser notification permissions
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Login Issues</strong> - Verify credentials
+                        • <strong>Slow Performance</strong> - Clear browser cache and restart
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        • <strong>File Upload Issues</strong> - Check file size and format requirements
                       </Typography>
                     </Box>
                   </Grid>
                   
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
-                      Contact Information
+                      Getting Help
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>IT Support</strong> - For technical issues
+                        • <strong>IT Support</strong> - For technical issues and account problems
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Department Head</strong> - For workflow questions
+                        • <strong>Department Head</strong> - For workflow and task-related questions
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>System Admin</strong> - For account issues
+                        • <strong>System Admin</strong> - For system-wide issues and permissions
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>User Guide</strong> - This comprehensive guide
+                        • <strong>User Guide</strong> - This comprehensive guide for self-help
                       </Typography>
                     </Box>
                   </Grid>
@@ -1132,7 +1201,7 @@ const ProfilePage = () => {
                 
                 <Alert severity="success" sx={{ mt: 3 }}>
                   <Typography variant="body2">
-                    <strong>Thank you for using the PWA Mobile Ticketing and Task Management System!</strong> This guide is regularly updated to reflect new features and improvements.
+                    <strong>Thank you for using the PWA Mobile Task Management Application!</strong> This guide is regularly updated to reflect new features and improvements.
                   </Typography>
                 </Alert>
               </AccordionDetails>
