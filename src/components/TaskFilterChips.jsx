@@ -15,8 +15,8 @@ const TaskFilterChips = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  const statusOptions = ['All', 'Pending', 'In Progress', 'Completed', 'Cancelled'];
-  const priorityOptions = ['All', 'High', 'Medium', 'Low', 'Urgent'];
+  const statusOptions = ['All', 'Pending', 'In Progress', 'Completed'];
+  const priorityOptions = ['All', 'High', 'Medium', 'Low'];
 
   return (
     <Box

@@ -175,8 +175,7 @@ const TasksPage = () => {
       const statusMapping = {
         'Pending': 'pending',
         'In Progress': 'in_progress',
-        'Completed': 'completed',
-        'Cancelled': 'cancelled'
+        'Completed': 'completed'
       };
       const actualStatus = statusMapping[statusFilter] || statusFilter.toLowerCase();
       matchesStatus = task.status === actualStatus;
@@ -191,8 +190,7 @@ const TasksPage = () => {
       const priorityMapping = {
         'High': 'high',
         'Medium': 'medium',
-        'Low': 'low',
-        'Urgent': 'urgent'
+        'Low': 'low'
       };
       const actualPriority = priorityMapping[priorityFilter] || priorityFilter.toLowerCase();
       matchesPriority = task.priority === actualPriority;

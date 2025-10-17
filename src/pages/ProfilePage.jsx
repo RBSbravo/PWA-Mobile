@@ -670,9 +670,25 @@ const ProfilePage = () => {
       </Dialog>
 
       {/* Logout Dialog */}
-      <Dialog open={logoutOpen} onClose={() => setLogoutOpen(false)}>
-        <DialogTitle>Logout</DialogTitle>
-        <DialogContent>
+      <Dialog 
+        open={logoutOpen} 
+        onClose={() => setLogoutOpen(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          fontWeight: 600
+        }}>
+          Logout
+        </DialogTitle>
+        <DialogContent sx={{
+          backgroundColor: theme.palette.background.paper
+        }}>
           <Typography>Are you sure you want to logout?</Typography>
         </DialogContent>
         <DialogActions sx={{
@@ -746,13 +762,19 @@ const ProfilePage = () => {
               <AccordionSummary 
                 expandIcon={<ExpandMoreIcon />}
                 sx={{
-                  backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.main : theme.palette.primary.light,
+                  backgroundColor: theme.palette.primary.main,
                   color: theme.palette.primary.contrastText,
                   '&:hover': {
-                    backgroundColor: theme.palette.primary.main,
+                    backgroundColor: theme.palette.primary.dark,
                   },
                   '&.Mui-expanded': {
                     backgroundColor: theme.palette.primary.main,
+                  },
+                  '& .MuiAccordionSummary-content': {
+                    color: theme.palette.primary.contrastText,
+                  },
+                  '& .MuiAccordionSummary-expandIconWrapper': {
+                    color: theme.palette.primary.contrastText,
                   },
                 }}
               >
