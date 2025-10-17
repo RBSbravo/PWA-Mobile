@@ -9,8 +9,6 @@ import {
   Typography,
   IconButton,
   InputAdornment,
-  Switch,
-  FormControlLabel,
   Alert,
   useTheme,
   useMediaQuery,
@@ -25,7 +23,6 @@ import {
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import { useThemeContext } from '../context/ThemeContext';
 import PWARateLimitAlert from '../components/RateLimitAlert';
 import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 
@@ -64,7 +61,6 @@ const LoginPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { login, loginLoading } = useAuth();
-  const { isDarkMode, toggleTheme } = useThemeContext();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -291,27 +287,6 @@ const LoginPage = () => {
         </CardContent>
       </Card>
 
-      {/* Theme Toggle */}
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 16,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-        }}
-      >
-        <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontSize: 14 }}>
-          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-        </Typography>
-        <Switch
-          checked={isDarkMode}
-          onChange={toggleTheme}
-          color="primary"
-        />
-      </Box>
 
       {/* Error Alert */}
       {error && !rateLimitData && (

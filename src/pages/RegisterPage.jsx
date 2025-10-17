@@ -9,8 +9,6 @@ import {
   Typography,
   IconButton,
   InputAdornment,
-  Switch,
-  FormControlLabel,
   Alert,
   useTheme,
   useMediaQuery,
@@ -35,7 +33,6 @@ import {
   Search as SearchIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
-import { useThemeContext } from '../context/ThemeContext';
 import PWARateLimitAlert from '../components/RateLimitAlert';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 import passwordValidator from '../utils/passwordValidator';
@@ -77,7 +74,6 @@ const RegisterPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { register } = useAuth();
-  const { isDarkMode, toggleTheme } = useThemeContext();
   
   const [formData, setFormData] = useState({
     firstname: '',
@@ -596,27 +592,6 @@ const RegisterPage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Theme Toggle */}
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 16,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-        }}
-      >
-        <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontSize: 14 }}>
-          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-        </Typography>
-        <Switch
-          checked={isDarkMode}
-          onChange={toggleTheme}
-          color="primary"
-        />
-      </Box>
 
       {/* Success/Error Alert */}
       {(error || success) && !rateLimitData && (
