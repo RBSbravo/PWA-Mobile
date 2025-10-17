@@ -762,19 +762,13 @@ const ProfilePage = () => {
               <AccordionSummary 
                 expandIcon={<ExpandMoreIcon />}
                 sx={{
-                  backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.primary.contrastText,
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
                   '&:hover': {
-                    backgroundColor: theme.palette.primary.dark,
+                    backgroundColor: theme.palette.action.hover,
                   },
                   '&.Mui-expanded': {
-                    backgroundColor: theme.palette.primary.main,
-                  },
-                  '& .MuiAccordionSummary-content': {
-                    color: theme.palette.primary.contrastText,
-                  },
-                  '& .MuiAccordionSummary-expandIconWrapper': {
-                    color: theme.palette.primary.contrastText,
+                    backgroundColor: theme.palette.action.selected,
                   },
                 }}
               >
