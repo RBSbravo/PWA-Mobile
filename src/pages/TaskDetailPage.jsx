@@ -353,7 +353,7 @@ const TaskDetailPage = () => {
         return theme.palette.success.main;
       case 'pending':
         return theme.palette.warning.main;
-      case 'declined':
+      case 'cancelled':
         return theme.palette.error.main;
       default:
         return theme.palette.text.secondary;
@@ -362,6 +362,8 @@ const TaskDetailPage = () => {
 
   const getPriorityColor = (priority) => {
     switch ((priority || '').toLowerCase()) {
+      case 'urgent':
+        return theme.palette.error.main;
       case 'high':
         return theme.palette.error.main;
       case 'medium':
@@ -508,7 +510,7 @@ const TaskDetailPage = () => {
                 label={(task.status || 'Unknown').replace('_', ' ')}
                 sx={{
                   backgroundColor: getStatusColor(task.status),
-                  color: '#fff',
+                  color: theme.palette.getContrastText(getStatusColor(task.status)),
                   fontWeight: 'bold',
                 }}
               />
@@ -516,7 +518,7 @@ const TaskDetailPage = () => {
                 label={task.priority || 'Normal'}
                 sx={{
                   backgroundColor: getPriorityColor(task.priority),
-                  color: '#fff',
+                  color: theme.palette.getContrastText(getPriorityColor(task.priority)),
                   fontWeight: 'bold',
                 }}
               />
@@ -791,9 +793,22 @@ const TaskDetailPage = () => {
         onClose={handleCancel}
         maxWidth="md"
         fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          }
+        }}
       >
-        <DialogTitle>Update Task</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          fontWeight: 600
+        }}>
+          Update Task
+        </DialogTitle>
+        <DialogContent sx={{
+          backgroundColor: theme.palette.background.paper
+        }}>
           <TextField
             label="Title"
             value={editForm.title}
@@ -850,7 +865,10 @@ const TaskDetailPage = () => {
             required
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
+        }}>
           <Button onClick={handleCancel}>
             Cancel
           </Button>
@@ -864,14 +882,30 @@ const TaskDetailPage = () => {
       <Dialog
         open={deleteDialogVisible}
         onClose={() => setDeleteDialogVisible(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          }
+        }}
       >
-        <DialogTitle>Delete File</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          fontWeight: 600
+        }}>
+          Delete File
+        </DialogTitle>
+        <DialogContent sx={{
+          backgroundColor: theme.palette.background.paper
+        }}>
           <Typography>
             Are you sure you want to delete this file? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
+        }}>
           <Button onClick={() => setDeleteDialogVisible(false)}>
             Cancel
           </Button>
@@ -885,14 +919,30 @@ const TaskDetailPage = () => {
       <Dialog
         open={deleteCommentDialogVisible}
         onClose={() => setDeleteCommentDialogVisible(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          }
+        }}
       >
-        <DialogTitle>Delete Comment</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          fontWeight: 600
+        }}>
+          Delete Comment
+        </DialogTitle>
+        <DialogContent sx={{
+          backgroundColor: theme.palette.background.paper
+        }}>
           <Typography>
             Are you sure you want to delete this comment? This action cannot be undone.
           </Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
+        }}>
           <Button onClick={() => setDeleteCommentDialogVisible(false)}>
             Cancel
           </Button>

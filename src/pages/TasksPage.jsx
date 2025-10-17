@@ -146,8 +146,9 @@ const TasksPage = () => {
       case 'pending':
         return 'warning';
       case 'in progress':
+      case 'in_progress':
         return 'info';
-      case 'overdue':
+      case 'cancelled':
         return 'error';
       default:
         return 'default';
@@ -164,8 +165,39 @@ const TasksPage = () => {
     
     const matchesSearch = task.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          task.description?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'All' || task.status === statusFilter;
-    const matchesPriority = priorityFilter === 'All' || task.priority === priorityFilter;
+    
+    // Handle status filtering with proper mapping
+    let matchesStatus = false;
+    if (statusFilter === 'All') {
+      matchesStatus = true;
+    } else {
+      // Map filter options to actual database values
+      const statusMapping = {
+        'Pending': 'pending',
+        'In Progress': 'in_progress',
+        'Completed': 'completed',
+        'Cancelled': 'cancelled'
+      };
+      const actualStatus = statusMapping[statusFilter] || statusFilter.toLowerCase();
+      matchesStatus = task.status === actualStatus;
+    }
+    
+    // Handle priority filtering with proper mapping
+    let matchesPriority = false;
+    if (priorityFilter === 'All') {
+      matchesPriority = true;
+    } else {
+      // Map filter options to actual database values
+      const priorityMapping = {
+        'High': 'high',
+        'Medium': 'medium',
+        'Low': 'low',
+        'Urgent': 'urgent'
+      };
+      const actualPriority = priorityMapping[priorityFilter] || priorityFilter.toLowerCase();
+      matchesPriority = task.priority === actualPriority;
+    }
+    
     return matchesSearch && matchesStatus && matchesPriority;
   });
 

@@ -59,8 +59,8 @@ const FileAttachment = ({ onUpload }) => {
               onClick={handleAttachClick}
               disabled={uploading}
               sx={{
-                backgroundColor: theme.palette.mode === 'dark' ? '#66BB6A' : '#2E7D32', // Mobile app primary colors
-                color: '#FFFFFF', // White text for better contrast
+                backgroundColor: theme.palette.primary.main,
+                color: theme.palette.primary.contrastText,
                 borderRadius: 2,
                 textTransform: 'none',
                 fontWeight: 'bold',
@@ -69,12 +69,12 @@ const FileAttachment = ({ onUpload }) => {
                 py: 1.5,
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                 '&:hover': {
-                  backgroundColor: theme.palette.mode === 'dark' ? '#81C784' : '#1B5E20', // Darker variants on hover
+                  backgroundColor: theme.palette.primary.dark,
                   boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
                 },
                 '&:disabled': {
-                  backgroundColor: theme.palette.mode === 'dark' ? '#4CAF50' : '#A5D6A7',
-                  color: theme.palette.mode === 'dark' ? '#C8E6C9' : '#81C784',
+                  backgroundColor: theme.palette.action.disabled,
+                  color: theme.palette.action.disabled,
                 },
               }}
             >
@@ -87,7 +87,7 @@ const FileAttachment = ({ onUpload }) => {
         sx={{ 
           display: 'block', 
           mt: 1, 
-          color: '#666666',
+          color: theme.palette.text.secondary,
           fontSize: '12px',
           textAlign: 'left'
         }}

@@ -24,7 +24,7 @@ const getStatusColor = (status, theme) => {
       return theme.palette.success.main;
     case 'pending':
       return theme.palette.warning.main;
-    case 'declined':
+    case 'cancelled':
       return theme.palette.error.main;
     default:
       return theme.palette.text.secondary;
@@ -33,6 +33,8 @@ const getStatusColor = (status, theme) => {
 
 const getPriorityColor = (priority, theme) => {
   switch ((priority || '').toLowerCase()) {
+    case 'urgent':
+      return theme.palette.error.main;
     case 'high':
       return theme.palette.error.main;
     case 'medium':
@@ -130,7 +132,7 @@ const TaskItem = React.memo(({ task, onPress }) => {
             size="small"
             sx={{
               backgroundColor: getStatusColor(task.status, theme),
-              color: '#fff',
+              color: theme.palette.getContrastText(getStatusColor(task.status, theme)),
               fontWeight: 'bold',
               fontSize: 11,
               height: 24,
@@ -144,7 +146,7 @@ const TaskItem = React.memo(({ task, onPress }) => {
             size="small"
             sx={{
               backgroundColor: getPriorityColor(task.priority, theme),
-              color: '#fff',
+              color: theme.palette.getContrastText(getPriorityColor(task.priority, theme)),
               fontWeight: 'bold',
               fontSize: 11,
               height: 24,

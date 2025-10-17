@@ -533,9 +533,22 @@ const RegisterPage = () => {
         maxWidth="sm"
         fullWidth
         fullScreen={isMobile}
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          }
+        }}
       >
-        <DialogTitle>Select Department</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          fontWeight: 600
+        }}>
+          Select Department
+        </DialogTitle>
+        <DialogContent sx={{
+          backgroundColor: theme.palette.background.paper
+        }}>
           <TextField
             fullWidth
             placeholder="Search department..."

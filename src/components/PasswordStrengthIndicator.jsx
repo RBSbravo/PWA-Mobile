@@ -94,7 +94,7 @@ const PasswordStrengthIndicator = ({ password, showSuggestions = true, defaultEx
             size="small"
             sx={{
               backgroundColor: getStrengthColor(),
-              color: 'white',
+              color: theme.palette.getContrastText(getStrengthColor()),
               fontSize: '10px',
               height: 20,
               fontWeight: 600,

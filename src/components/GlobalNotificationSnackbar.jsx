@@ -67,12 +67,12 @@ const GlobalNotificationSnackbar = () => {
         }
         sx={{
           backgroundColor: theme.palette.primary.main,
-          color: 'white',
+          color: theme.palette.primary.contrastText,
           '& .MuiAlert-icon': {
-            color: 'white',
+            color: theme.palette.primary.contrastText,
           },
           '& .MuiAlert-action': {
-            color: 'white',
+            color: theme.palette.primary.contrastText,
           },
         }}
       >

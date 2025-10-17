@@ -457,9 +457,27 @@ const ProfilePage = () => {
       </Box>
 
       {/* Edit Profile Dialog */}
-      <Dialog open={editProfileOpen} onClose={() => setEditProfileOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Profile</DialogTitle>
-        <DialogContent>
+      <Dialog 
+        open={editProfileOpen} 
+        onClose={() => setEditProfileOpen(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          fontWeight: 600
+        }}>
+          Edit Profile
+        </DialogTitle>
+        <DialogContent sx={{
+          backgroundColor: theme.palette.background.paper
+        }}>
           <TextField
             fullWidth
             label="First Name"
@@ -499,7 +517,10 @@ const ProfilePage = () => {
             </Alert>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
+        }}>
           <Button onClick={() => setEditProfileOpen(false)} disabled={editLoading}>
             Cancel
           </Button>
@@ -515,9 +536,27 @@ const ProfilePage = () => {
       </Dialog>
 
       {/* Change Password Dialog */}
-      <Dialog open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Change Password</DialogTitle>
-        <DialogContent>
+      <Dialog 
+        open={changePasswordOpen} 
+        onClose={() => setChangePasswordOpen(false)} 
+        maxWidth="sm" 
+        fullWidth
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          }
+        }}
+      >
+        <DialogTitle sx={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.primary.contrastText,
+          fontWeight: 600
+        }}>
+          Change Password
+        </DialogTitle>
+        <DialogContent sx={{
+          backgroundColor: theme.palette.background.paper
+        }}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Enter your current password and choose a new password. You will be logged out after the change for security.
           </Typography>
@@ -612,7 +651,10 @@ const ProfilePage = () => {
             }}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
+        }}>
           <Button onClick={() => setChangePasswordOpen(false)} disabled={passwordLoading}>
             Cancel
           </Button>
@@ -633,7 +675,10 @@ const ProfilePage = () => {
         <DialogContent>
           <Typography>Are you sure you want to logout?</Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
+        }}>
           <Button onClick={() => setLogoutOpen(false)} disabled={logoutLoading}>
             Cancel
           </Button>
@@ -656,19 +701,27 @@ const ProfilePage = () => {
         maxWidth="md" 
         fullWidth
         fullScreen={isMobile}
+        PaperProps={{
+          sx: {
+            backgroundColor: theme.palette.background.paper,
+          }
+        }}
       >
         <DialogTitle sx={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: 1,
           backgroundColor: theme.palette.primary.main,
-          color: 'white',
+          color: theme.palette.primary.contrastText,
           fontWeight: 600
         }}>
           <HelpIcon />
           PWA Mobile App User Guide
         </DialogTitle>
-        <DialogContent sx={{ p: 0 }}>
+        <DialogContent sx={{ 
+          p: 0,
+          backgroundColor: theme.palette.background.paper
+        }}>
           <Box sx={{ p: 3 }}>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3, color: 'primary.main' }}>
               📱 Mobile App Guide
@@ -679,16 +732,41 @@ const ProfilePage = () => {
             </Typography>
 
             {/* Getting Started */}
-            <Accordion sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              '&:before': {
+                display: 'none',
+              },
+              '&.Mui-expanded': {
+                margin: '0 0 24px 0',
+              },
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.mode === 'dark' ? theme.palette.primary.main : theme.palette.primary.light,
+                  color: theme.palette.primary.contrastText,
+                  '&:hover': {
+                    backgroundColor: theme.palette.primary.main,
+                  },
+                  '&.Mui-expanded': {
+                    backgroundColor: theme.palette.primary.main,
+                  },
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <StarIcon sx={{ mr: 2, color: 'primary.main' }} />
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  <StarIcon sx={{ mr: 2, color: 'inherit' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'inherit' }}>
                     Getting Started
                   </Typography>
                 </Box>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}>
                 <Typography variant="body1" sx={{ mb: 3 }}>
                   The  Mobile Task Management Application is designed for efficient task management on mobile devices. Here's how to get started:
                 </Typography>
@@ -738,8 +816,30 @@ const ProfilePage = () => {
             </Accordion>
 
             {/* Rate Limiting Guide */}
-            <Accordion sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              '&:before': {
+                display: 'none',
+              },
+              '&.Mui-expanded': {
+                margin: '0 0 24px 0',
+              },
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                  '&.Mui-expanded': {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <SpeedIcon sx={{ mr: 2, color: 'warning.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -747,7 +847,10 @@ const ProfilePage = () => {
                   </Typography>
                 </Box>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}>
                 <Typography variant="body1" sx={{ mb: 3 }}>
                   Our system implements rate limiting to ensure security and optimal performance for all users.
                 </Typography>
@@ -809,8 +912,30 @@ const ProfilePage = () => {
             </Accordion>
 
             {/* PWA Features */}
-            <Accordion sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              '&:before': {
+                display: 'none',
+              },
+              '&.Mui-expanded': {
+                margin: '0 0 24px 0',
+              },
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                  '&.Mui-expanded': {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <MobileIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -818,7 +943,10 @@ const ProfilePage = () => {
                   </Typography>
                 </Box>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}>
                 <Typography variant="body1" sx={{ mb: 3 }}>
                   This Progressive Web App (PWA) is optimized for mobile devices with touch-friendly interfaces and responsive design.
                 </Typography>
@@ -866,8 +994,30 @@ const ProfilePage = () => {
             </Accordion>
 
             {/* Navigation Guide */}
-            <Accordion sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              '&:before': {
+                display: 'none',
+              },
+              '&.Mui-expanded': {
+                margin: '0 0 24px 0',
+              },
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                  '&.Mui-expanded': {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <PersonIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -875,7 +1025,10 @@ const ProfilePage = () => {
                   </Typography>
                 </Box>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}>
                 <Typography variant="body1" sx={{ mb: 3 }}>
                   The PWA mobile app uses a simple bottom navigation bar for easy navigation between main sections.
                 </Typography>
@@ -925,8 +1078,30 @@ const ProfilePage = () => {
             </Accordion>
 
             {/* Task Management Guide */}
-            <Accordion sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              '&:before': {
+                display: 'none',
+              },
+              '&.Mui-expanded': {
+                margin: '0 0 24px 0',
+              },
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                  '&.Mui-expanded': {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <AssignmentIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -934,7 +1109,10 @@ const ProfilePage = () => {
                   </Typography>
                 </Box>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}>
                 <Typography variant="body1" sx={{ mb: 3 }}>
                   Manage your tasks efficiently with the mobile-optimized task management system.
                 </Typography>
@@ -1017,8 +1195,30 @@ const ProfilePage = () => {
             </Accordion>
 
             {/* Notifications Guide */}
-            <Accordion sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              '&:before': {
+                display: 'none',
+              },
+              '&.Mui-expanded': {
+                margin: '0 0 24px 0',
+              },
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                  '&.Mui-expanded': {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <NotificationsIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -1026,7 +1226,10 @@ const ProfilePage = () => {
                   </Typography>
                 </Box>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}>
                 <Typography variant="body1" sx={{ mb: 3 }}>
                   Stay updated with real-time notifications for tasks, comments, and system updates.
                 </Typography>
@@ -1085,8 +1288,30 @@ const ProfilePage = () => {
             </Accordion>
 
             {/* Tips & Best Practices */}
-            <Accordion sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              '&:before': {
+                display: 'none',
+              },
+              '&.Mui-expanded': {
+                margin: '0 0 24px 0',
+              },
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                  '&.Mui-expanded': {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <StarIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -1094,7 +1319,10 @@ const ProfilePage = () => {
                   </Typography>
                 </Box>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}>
                 <Grid container spacing={3}>
                   <Grid item xs={12} md={6}>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: 'primary.main' }}>
@@ -1140,8 +1368,30 @@ const ProfilePage = () => {
             </Accordion>
 
             {/* Support Information */}
-            <Accordion sx={{ mb: 3 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Accordion sx={{ 
+              mb: 3,
+              backgroundColor: theme.palette.background.paper,
+              border: `1px solid ${theme.palette.divider}`,
+              '&:before': {
+                display: 'none',
+              },
+              '&.Mui-expanded': {
+                margin: '0 0 24px 0',
+              },
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                  '&:hover': {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                  '&.Mui-expanded': {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <HelpIcon sx={{ mr: 2, color: 'primary.main' }} />
                   <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -1149,7 +1399,10 @@ const ProfilePage = () => {
                   </Typography>
                 </Box>
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{
+                backgroundColor: theme.palette.background.paper,
+                borderTop: `1px solid ${theme.palette.divider}`,
+              }}>
                 <Typography variant="body1" sx={{ mb: 3 }}>
                   If you need additional assistance or have questions not covered in this guide, please contact your system administrator or IT support team.
                 </Typography>
@@ -1208,7 +1461,10 @@ const ProfilePage = () => {
             </Accordion>
           </Box>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{
+          backgroundColor: theme.palette.background.paper,
+          borderTop: `1px solid ${theme.palette.divider}`,
+        }}>
           <Button onClick={() => setUserGuideOpen(false)} variant="contained">
             Close Guide
           </Button>
