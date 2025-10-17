@@ -62,7 +62,23 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      minHeight: '-webkit-fill-available',
+      // Ensure no white background shows
+      backgroundColor: theme.palette.background.default,
+      // Handle iOS safe area properly
+      paddingTop: 'env(safe-area-inset-top)',
+      paddingLeft: 'env(safe-area-inset-left)',
+      paddingRight: 'env(safe-area-inset-right)',
+      // Prevent any gaps
+      margin: 0,
+      paddingBottom: 0, // Will be handled by bottom navigation
+      // Ensure background covers entire viewport
+      backgroundAttachment: 'fixed',
+    }}>
       {/* Mobile App Bar - REMOVED */}
 
       {/* Mobile Drawer - REMOVED */}
@@ -91,6 +107,10 @@ const Layout = ({ children }) => {
           zIndex: theme.zIndex.appBar,
           backgroundColor: theme.palette.surface,
           borderTop: `1px solid ${theme.palette.border}`,
+          // iOS safe area support
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          // Ensure proper height calculation
+          minHeight: `calc(80px + env(safe-area-inset-bottom))`,
         }}
         elevation={8}
       >
@@ -146,8 +166,11 @@ const Layout = ({ children }) => {
           </BottomNavigation>
         </Paper>
 
-      {/* Bottom padding for bottom navigation */}
-      <Box sx={{ height: '80px' }} />
+      {/* Bottom padding for bottom navigation with iOS safe area support */}
+      <Box sx={{ 
+        height: `calc(80px + env(safe-area-inset-bottom))`,
+        minHeight: '80px'
+      }} />
     </Box>
   );
 };

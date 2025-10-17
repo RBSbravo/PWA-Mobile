@@ -92,8 +92,8 @@ export const theme = createTheme({
       main: colors.info,
     },
     background: {
-      default: colors.background,
-      paper: colors.surface,
+      default: '#121212', // Dark theme background
+      paper: '#1E1E1E', // Slightly lighter for cards
     },
     text: {
       primary: colors.text,
@@ -102,6 +102,8 @@ export const theme = createTheme({
   },
   typography: {
     fontFamily: typography.fontFamily.regular,
+    // iOS system font for better native feel
+    fontFamilyFallback: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     h1: {
       fontFamily: typography.fontFamily.bold,
       fontSize: typography.fontSize.xxxl,
@@ -181,10 +183,90 @@ export const theme = createTheme({
         },
       },
     },
-    MuiChip: {
+    // Global component overrides for background consistency
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: '#121212',
+          backgroundAttachment: 'fixed',
+        },
+        html: {
+          backgroundColor: '#121212',
+          backgroundAttachment: 'fixed',
+        },
+        '#root': {
+          backgroundColor: '#121212',
+          backgroundAttachment: 'fixed',
+        },
+      },
+    },
+    MuiBox: {
       styleOverrides: {
         root: {
-          borderRadius: borderRadius.xl,
+          backgroundColor: 'transparent',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1E1E1E',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1E1E1E',
+        },
+      },
+    },
+    // iOS specific improvements
+    MuiBottomNavigation: {
+      styleOverrides: {
+        root: {
+          // iOS safe area support
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          // Better touch targets for iOS
+          '& .MuiBottomNavigationAction-root': {
+            minHeight: '44px', // iOS minimum touch target
+            minWidth: '44px',
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: borderRadius.lg,
+          padding: `${spacing.sm} ${spacing.lg}`,
+          fontWeight: 500,
+          // iOS specific improvements
+          minHeight: '44px', // iOS minimum touch target
+          '-webkit-tap-highlight-color': 'transparent',
+          '-webkit-touch-callout': 'none',
+          '-webkit-user-select': 'none',
+        },
+        contained: {
+          boxShadow: shadows.sm,
+          '&:hover': {
+            boxShadow: shadows.md,
+          },
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: borderRadius.lg,
+            // iOS specific input fixes
+            fontSize: '16px', // Prevent zoom on iOS
+            '-webkit-appearance': 'none',
+          },
+          '& .MuiInputBase-input': {
+            fontSize: '16px', // Prevent zoom on iOS
+          },
         },
       },
     },

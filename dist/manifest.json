@@ -1,8 +1,8 @@
 {
   "name": "MITO Task Manager",
-  "short_name": "Task Manager",
-  "description": "MITO Task Management App ",
-  "theme_color": "#667eea",
+  "short_name": "Task Manager App",
+  "description": "MITO Task Management App - Progressive Web App",
+  "theme_color": "#2E7D32",
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait-primary",
