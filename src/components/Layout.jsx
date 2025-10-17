@@ -27,6 +27,29 @@ const Layout = ({ children }) => {
   const { user } = useAuth();
   const { unreadCount } = useNotification();
 
+  // Detect if running in iOS PWA standalone mode
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    // Detect iOS
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    setIsIOS(iOS);
+
+    // Detect standalone mode
+    const standalone = window.matchMedia('(display-mode: standalone)').matches ||
+                      window.navigator.standalone === true ||
+                      document.referrer.includes('android-app://');
+    setIsStandalone(standalone);
+
+    // Listen for display mode changes
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleChange = (e) => setIsStandalone(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
   // Navigation items
   const navigationItems = [
     { label: 'Home', icon: <HomeIcon />, path: '/dashboard' },
@@ -67,6 +90,12 @@ const Layout = ({ children }) => {
       flexDirection: 'column', 
       minHeight: '100vh',
       minHeight: '-webkit-fill-available',
+      // iOS PWA standalone mode specific height handling
+      ...(isIOS && isStandalone && {
+        height: '100vh',
+        height: '-webkit-fill-available',
+        overflow: 'hidden',
+      }),
       // Ensure no white background shows
       backgroundColor: theme.palette.background.default,
       // Handle iOS safe area properly - only apply if safe area exists
@@ -92,6 +121,13 @@ const Layout = ({ children }) => {
           flexGrow: 1,
           width: '100%',
           minHeight: '100vh',
+          // iOS PWA standalone mode specific height handling
+          ...(isIOS && isStandalone && {
+            height: 'calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px)',
+            height: 'calc(-webkit-fill-available - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px)',
+            overflow: 'auto',
+            '-webkit-overflow-scrolling': 'touch',
+          }),
         }}
       >
         {children}
@@ -125,6 +161,11 @@ const Layout = ({ children }) => {
               '@supports (padding: max(0px))': {
                 minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
               },
+              // iOS PWA standalone mode specific styling
+              ...(isIOS && isStandalone && {
+                paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+                minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+              }),
               '& .MuiBottomNavigationAction-root': {
                 minWidth: 'auto',
                 padding: '8px 0 12px',
@@ -180,6 +221,11 @@ const Layout = ({ children }) => {
           height: 'calc(80px + env(safe-area-inset-bottom, 0px))',
           minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
         },
+        // iOS PWA standalone mode specific height handling
+        ...(isIOS && isStandalone && {
+          height: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+          minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+        }),
       }} />
     </Box>
   );

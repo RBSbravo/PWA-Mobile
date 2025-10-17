@@ -12,6 +12,7 @@
   "categories": ["productivity", "business", "utilities"],
   "lang": "en",
   "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/mobile_logo.png",
@@ -72,6 +73,5 @@
       ]
     }
   ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  "related_applications": []
 }

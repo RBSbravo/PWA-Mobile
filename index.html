@@ -21,6 +21,15 @@
     <meta name="apple-mobile-web-app-orientations" content="portrait" />
     <meta name="apple-touch-fullscreen" content="yes" />
     
+    <!-- iOS PWA standalone mode fixes -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    
+    <!-- Prevent iOS from treating as web page -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    
     <!-- iOS splash screens for different devices -->
     <link href="/apple_splash_2048.png" sizes="2048x2732" rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
     <link href="/apple_splash_1668.png" sizes="1668x2224" rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
@@ -228,6 +237,62 @@
           padding-right: env(safe-area-inset-right, 0px);
           /* Remove bottom padding to prevent navigation gap */
           padding-bottom: 0;
+        }
+        
+        /* iOS PWA standalone mode specific fixes */
+        @media (display-mode: standalone) {
+          html {
+            /* Full viewport height in standalone mode */
+            height: 100vh;
+            height: -webkit-fill-available;
+            /* Prevent iOS from adding extra space */
+            overflow: hidden;
+          }
+          
+          body {
+            /* Full viewport height in standalone mode */
+            height: 100vh;
+            height: -webkit-fill-available;
+            /* Prevent scroll bounce */
+            overscroll-behavior: none;
+            /* Ensure proper safe area handling */
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-left: env(safe-area-inset-left, 0px);
+            padding-right: env(safe-area-inset-right, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+          }
+          
+          #root {
+            /* Full viewport height in standalone mode */
+            height: 100vh;
+            height: -webkit-fill-available;
+            /* Prevent iOS from adding extra space */
+            overflow: hidden;
+            /* Ensure proper safe area handling */
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-left: env(safe-area-inset-left, 0px);
+            padding-right: env(safe-area-inset-right, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+          }
+          
+          /* Fix for iOS PWA status bar overlap */
+          .MuiAppBar-root {
+            padding-top: env(safe-area-inset-top, 0px) !important;
+          }
+          
+          /* Fix for iOS PWA bottom navigation */
+          .MuiBottomNavigation-root {
+            padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+          }
+          
+          /* Fix for iOS PWA content area */
+          .MuiBox-root {
+            /* Ensure content doesn't overlap with safe areas */
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-left: env(safe-area-inset-left, 0px);
+            padding-right: env(safe-area-inset-right, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+          }
         }
         
         /* iOS specific input fixes */
