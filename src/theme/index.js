@@ -222,8 +222,8 @@ export const theme = createTheme({
     MuiBottomNavigation: {
       styleOverrides: {
         root: {
-          // iOS safe area support
-          paddingBottom: 'env(safe-area-inset-bottom)',
+          // iOS safe area support - only apply if safe area exists
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           // Better touch targets for iOS
           '& .MuiBottomNavigationAction-root': {
             minHeight: '44px', // iOS minimum touch target

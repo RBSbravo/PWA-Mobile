@@ -69,10 +69,10 @@ const Layout = ({ children }) => {
       minHeight: '-webkit-fill-available',
       // Ensure no white background shows
       backgroundColor: theme.palette.background.default,
-      // Handle iOS safe area properly
-      paddingTop: 'env(safe-area-inset-top)',
-      paddingLeft: 'env(safe-area-inset-left)',
-      paddingRight: 'env(safe-area-inset-right)',
+      // Handle iOS safe area properly - only apply if safe area exists
+      paddingTop: 'env(safe-area-inset-top, 0px)',
+      paddingLeft: 'env(safe-area-inset-left, 0px)',
+      paddingRight: 'env(safe-area-inset-right, 0px)',
       // Prevent any gaps
       margin: 0,
       paddingBottom: 0, // Will be handled by bottom navigation
@@ -107,10 +107,14 @@ const Layout = ({ children }) => {
           zIndex: theme.zIndex.appBar,
           backgroundColor: theme.palette.surface,
           borderTop: `1px solid ${theme.palette.border}`,
-          // iOS safe area support
-          paddingBottom: 'env(safe-area-inset-bottom)',
           // Ensure proper height calculation
-          minHeight: `calc(80px + env(safe-area-inset-bottom))`,
+          minHeight: '80px',
+          // iOS safe area support - only apply padding if safe area exists
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          // Add safe area height to minHeight only if it exists
+          '@supports (padding: max(0px))': {
+            minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+          },
         }}
         elevation={8}
       >
@@ -168,8 +172,13 @@ const Layout = ({ children }) => {
 
       {/* Bottom padding for bottom navigation with iOS safe area support */}
       <Box sx={{ 
-        height: `calc(80px + env(safe-area-inset-bottom))`,
-        minHeight: '80px'
+        height: '80px',
+        minHeight: '80px',
+        // Add safe area height only if it exists
+        '@supports (padding: max(0px))': {
+          height: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+          minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+        },
       }} />
     </Box>
   );

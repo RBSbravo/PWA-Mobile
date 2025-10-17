@@ -93,11 +93,11 @@
       }
       
       body {
-        /* Safe area support for iOS */
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
+        /* Safe area support for iOS - only apply if safe area exists */
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
         /* Prevent bounce scrolling on iOS */
         overscroll-behavior: none;
         /* Better font rendering */
@@ -207,11 +207,11 @@
           /* Prevent any gaps */
           margin: 0;
           padding: 0;
-          /* Handle safe area properly */
-          padding-top: env(safe-area-inset-top);
-          padding-bottom: env(safe-area-inset-bottom);
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
+          /* Handle safe area properly - only apply if safe area exists */
+          padding-top: env(safe-area-inset-top, 0px);
+          padding-bottom: env(safe-area-inset-bottom, 0px);
+          padding-left: env(safe-area-inset-left, 0px);
+          padding-right: env(safe-area-inset-right, 0px);
         }
         
         #root {
@@ -220,11 +220,11 @@
           min-height: -webkit-fill-available;
           /* Ensure background covers entire screen */
           background-color: var(--background-color, #F5F5F5); /* Light theme default */
-          /* Handle safe area properly */
-          padding-top: env(safe-area-inset-top);
-          padding-bottom: env(safe-area-inset-bottom);
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
+          /* Handle safe area properly - only apply if safe area exists */
+          padding-top: env(safe-area-inset-top, 0px);
+          padding-bottom: env(safe-area-inset-bottom, 0px);
+          padding-left: env(safe-area-inset-left, 0px);
+          padding-right: env(safe-area-inset-right, 0px);
         }
         
         /* iOS specific input fixes */
