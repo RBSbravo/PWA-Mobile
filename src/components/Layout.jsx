@@ -73,9 +73,9 @@ const Layout = ({ children }) => {
       paddingTop: 'env(safe-area-inset-top, 0px)',
       paddingLeft: 'env(safe-area-inset-left, 0px)',
       paddingRight: 'env(safe-area-inset-right, 0px)',
-      // Prevent any gaps
+      // Prevent any gaps - no bottom padding
       margin: 0,
-      paddingBottom: 0, // Will be handled by bottom navigation
+      paddingBottom: 0,
       // Ensure background covers entire viewport
       backgroundAttachment: 'fixed',
     }}>
@@ -107,14 +107,8 @@ const Layout = ({ children }) => {
           zIndex: theme.zIndex.appBar,
           backgroundColor: theme.palette.surface,
           borderTop: `1px solid ${theme.palette.border}`,
-          // Ensure proper height calculation
+          // Ensure proper height calculation - no padding on the Paper itself
           minHeight: '80px',
-          // iOS safe area support - only apply padding if safe area exists
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-          // Add safe area height to minHeight only if it exists
-          '@supports (padding: max(0px))': {
-            minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
-          },
         }}
         elevation={8}
       >
@@ -124,6 +118,13 @@ const Layout = ({ children }) => {
             showLabels
             sx={{
               backgroundColor: theme.palette.surface,
+              // Add safe area padding to the BottomNavigation component instead
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+              minHeight: '80px',
+              // Add safe area height to minHeight only if it exists
+              '@supports (padding: max(0px))': {
+                minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+              },
               '& .MuiBottomNavigationAction-root': {
                 minWidth: 'auto',
                 padding: '8px 0 12px',
