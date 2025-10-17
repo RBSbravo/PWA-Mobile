@@ -90,8 +90,8 @@ const Layout = ({ children }) => {
       flexDirection: 'column', 
       minHeight: '100vh',
       minHeight: '-webkit-fill-available',
-      // iOS PWA standalone mode specific height handling
-      ...(isIOS && isStandalone && {
+      // Unified iOS handling for both browser and standalone modes
+      ...(isIOS && {
         height: '100vh',
         height: '-webkit-fill-available',
         overflow: 'hidden',
@@ -120,13 +120,14 @@ const Layout = ({ children }) => {
         sx={{
           flexGrow: 1,
           width: '100%',
-          minHeight: '100vh',
-          // iOS PWA standalone mode specific height handling
-          ...(isIOS && isStandalone && {
-            height: 'calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px)',
-            height: 'calc(-webkit-fill-available - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px)',
+          minHeight: 'calc(100vh - 80px)',
+          // Unified iOS handling for both browser and standalone modes
+          ...(isIOS && {
+            minHeight: 'calc(100vh - env(safe-area-inset-top, 0px) - 80px - env(safe-area-inset-bottom, 0px))',
+            minHeight: 'calc(-webkit-fill-available - env(safe-area-inset-top, 0px) - 80px - env(safe-area-inset-bottom, 0px))',
             overflow: 'auto',
             '-webkit-overflow-scrolling': 'touch',
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }),
         }}
       >
@@ -161,8 +162,8 @@ const Layout = ({ children }) => {
               '@supports (padding: max(0px))': {
                 minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
               },
-              // iOS PWA standalone mode specific styling
-              ...(isIOS && isStandalone && {
+              // Unified iOS handling for both browser and standalone modes
+              ...(isIOS && {
                 paddingBottom: 'env(safe-area-inset-bottom, 0px)',
                 minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
               }),
@@ -221,10 +222,13 @@ const Layout = ({ children }) => {
           height: 'calc(80px + env(safe-area-inset-bottom, 0px))',
           minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
         },
-        // iOS PWA standalone mode specific height handling
-        ...(isIOS && isStandalone && {
+        // Unified iOS handling for both browser and standalone modes
+        ...(isIOS && {
           height: 'calc(80px + env(safe-area-inset-bottom, 0px))',
           minHeight: 'calc(80px + env(safe-area-inset-bottom, 0px))',
+          // Ensure no extra spacing in iOS mode
+          marginTop: 0,
+          paddingTop: 0,
         }),
       }} />
     </Box>
