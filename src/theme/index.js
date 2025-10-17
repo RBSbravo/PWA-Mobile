@@ -92,8 +92,8 @@ export const theme = createTheme({
       main: colors.info,
     },
     background: {
-      default: '#121212', // Dark theme background
-      paper: '#1E1E1E', // Slightly lighter for cards
+      default: colors.background, // Light theme background
+      paper: colors.surface, // White for cards
     },
     text: {
       primary: colors.text,
@@ -187,16 +187,13 @@ export const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#121212',
-          backgroundAttachment: 'fixed',
+          backgroundColor: 'transparent', // Let theme handle background
         },
         html: {
-          backgroundColor: '#121212',
-          backgroundAttachment: 'fixed',
+          backgroundColor: 'transparent', // Let theme handle background
         },
         '#root': {
-          backgroundColor: '#121212',
-          backgroundAttachment: 'fixed',
+          backgroundColor: 'transparent', // Let theme handle background
         },
       },
     },
@@ -210,14 +207,14 @@ export const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: '#1E1E1E',
+          backgroundColor: 'transparent', // Let theme handle background
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: '#1E1E1E',
+          backgroundColor: 'transparent', // Let theme handle background
         },
       },
     },

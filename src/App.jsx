@@ -25,6 +25,7 @@ import OfflinePage from './pages/OfflinePage';
 // Components
 import Layout from './components/Layout';
 import GlobalNotificationSnackbar from './components/GlobalNotificationSnackbar';
+import ThemeCSSVariables from './components/ThemeCSSVariables';
 
 // Services
 import socketService from './services/socket';
@@ -93,6 +94,7 @@ const AppContent = () => {
 
   return (
     <Router>
+      <ThemeCSSVariables />
       <Routes>
         {/* Public Routes */}
         <Route 

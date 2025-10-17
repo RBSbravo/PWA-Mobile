@@ -56,7 +56,7 @@
         height: 100vh;
         width: 100%;
         font-family: 'Roboto', sans-serif;
-        background-color: #121212; /* Dark theme background */
+        background-color: var(--background-color, #F5F5F5); /* Light theme default */
         /* Ensure full coverage */
         min-height: 100vh;
         min-height: -webkit-fill-available;
@@ -87,7 +87,7 @@
         /* Better text rendering */
         text-rendering: optimizeLegibility;
         /* Ensure background covers entire viewport */
-        background-color: #121212;
+        background-color: var(--background-color, #F5F5F5); /* Light theme default */
         /* Prevent white flash during scroll */
         background-attachment: fixed;
       }
@@ -111,7 +111,7 @@
         /* Better touch handling */
         touch-action: manipulation;
         /* Ensure background covers entire viewport */
-        background-color: #121212;
+        background-color: var(--background-color, #F5F5F5); /* Light theme default */
         /* Prevent white flash during scroll */
         background-attachment: fixed;
         /* Ensure body fills entire viewport */
@@ -128,7 +128,7 @@
         /* Prevent horizontal scroll */
         overflow-x: hidden;
         /* Ensure background covers entire screen */
-        background-color: #121212;
+        background-color: var(--background-color, #F5F5F5); /* Light theme default */
         /* Prevent white flash during scroll */
         background-attachment: fixed;
         /* Ensure root fills entire viewport */
@@ -158,7 +158,7 @@
         html {
           /* Ensure html fills entire viewport on Android */
           height: 100%;
-          background-color: #121212;
+          background-color: var(--background-color, #F5F5F5); /* Light theme default */
           /* Prevent white flash during scroll */
           background-attachment: fixed;
         }
@@ -166,7 +166,7 @@
         body {
           /* Ensure body fills entire viewport on Android */
           height: 100%;
-          background-color: #121212;
+          background-color: var(--background-color, #F5F5F5); /* Light theme default */
           /* Prevent white flash during scroll */
           background-attachment: fixed;
           /* Prevent overscroll bounce */
@@ -176,14 +176,14 @@
         #root {
           /* Ensure root fills entire viewport on Android */
           height: 100%;
-          background-color: #121212;
+          background-color: var(--background-color, #F5F5F5); /* Light theme default */
           /* Prevent white flash during scroll */
           background-attachment: fixed;
         }
         
         /* Prevent white flash during scroll on Android */
         .MuiBox-root, .MuiPaper-root, .MuiCard-root {
-          background-color: #121212;
+          background-color: var(--background-color, #F5F5F5); /* Light theme default */
         }
       }
       
@@ -193,7 +193,7 @@
           /* Ensure html fills entire viewport */
           height: 100%;
           height: -webkit-fill-available;
-          background-color: #121212;
+          background-color: var(--background-color, #F5F5F5); /* Light theme default */
         }
         
         body {
@@ -203,7 +203,7 @@
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
           /* Ensure no white background shows */
-          background-color: #121212;
+          background-color: var(--background-color, #F5F5F5); /* Light theme default */
           /* Prevent any gaps */
           margin: 0;
           padding: 0;
@@ -219,7 +219,7 @@
           /* Prevent iOS Safari address bar issues */
           min-height: -webkit-fill-available;
           /* Ensure background covers entire screen */
-          background-color: #121212;
+          background-color: var(--background-color, #F5F5F5); /* Light theme default */
           /* Handle safe area properly */
           padding-top: env(safe-area-inset-top);
           padding-bottom: env(safe-area-inset-bottom);
@@ -247,7 +247,7 @@
         
         /* Prevent white flash during scroll */
         .MuiBox-root {
-          background-color: #121212;
+          background-color: var(--background-color, #F5F5F5); /* Light theme default */
         }
       }
       
