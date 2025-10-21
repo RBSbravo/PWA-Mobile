@@ -586,9 +586,9 @@ const TaskDetailPage = () => {
                         }}
                       />
                     </Box>
-                    {task.relatedTicket.category && (
+                    {task.relatedTicket.desired_action && (
                       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
-                        <strong>Category:</strong> {task.relatedTicket.category}
+                        <strong>Desired Action:</strong> {task.relatedTicket.desired_action}
                       </Typography>
                     )}
                     {task.relatedTicket.due_date && (
