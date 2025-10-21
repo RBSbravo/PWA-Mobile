@@ -552,11 +552,61 @@ const TaskDetailPage = () => {
                 </Box>
               )}
               {task.relatedTicket && (
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <AssignmentIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
-                  <Typography variant="body2" color="text.secondary">
-                    <strong>Related Ticket:</strong> {task.relatedTicket.title} (#{task.relatedTicket.id})
-                  </Typography>
+                <Box sx={{ mb: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <AssignmentIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
+                      Related Ticket Details:
+                    </Typography>
+                  </Box>
+                  <Box sx={{ ml: 3, pl: 2, borderLeft: `2px solid ${theme.palette.primary.main}`, backgroundColor: theme.palette.background.paper, borderRadius: 1, p: 2 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
+                      {task.relatedTicket.title} (#{task.relatedTicket.id})
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                      {task.relatedTicket.description || 'No description available'}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+                      <Chip
+                        label={(task.relatedTicket.status || 'Unknown').replace('_', ' ')}
+                        size="small"
+                        sx={{
+                          backgroundColor: getStatusColor(task.relatedTicket.status),
+                          color: theme.palette.getContrastText(getStatusColor(task.relatedTicket.status)),
+                          fontWeight: 'bold',
+                        }}
+                      />
+                      <Chip
+                        label={task.relatedTicket.priority || 'Normal'}
+                        size="small"
+                        sx={{
+                          backgroundColor: getPriorityColor(task.relatedTicket.priority),
+                          color: theme.palette.getContrastText(getPriorityColor(task.relatedTicket.priority)),
+                          fontWeight: 'bold',
+                        }}
+                      />
+                    </Box>
+                    {task.relatedTicket.category && (
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                        <strong>Category:</strong> {task.relatedTicket.category}
+                      </Typography>
+                    )}
+                    {task.relatedTicket.due_date && (
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                        <strong>Due Date:</strong> {format(new Date(task.relatedTicket.due_date), 'MMM dd, yyyy')}
+                      </Typography>
+                    )}
+                    {task.relatedTicket.created_at && (
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                        <strong>Created:</strong> {format(new Date(task.relatedTicket.created_at), 'MMM dd, yyyy')}
+                      </Typography>
+                    )}
+                    {task.relatedTicket.attachments && task.relatedTicket.attachments.length > 0 && (
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                        <strong>Attachments:</strong> {task.relatedTicket.attachments.length} file(s)
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
               )}
               {task.project && (
