@@ -202,10 +202,7 @@ const TaskDetailPage = () => {
     
     try {
       await api.updateTask(token, id, {
-        title: editForm.title,
-        description: editForm.description,
         status: editForm.status,
-        priority: editForm.priority,
       });
       
       // Add remarks as a comment
@@ -554,6 +551,14 @@ const TaskDetailPage = () => {
                   </Typography>
                 </Box>
               )}
+              {task.relatedTicket && (
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <AssignmentIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Related Ticket:</strong> {task.relatedTicket.title} (#{task.relatedTicket.id})
+                  </Typography>
+                </Box>
+              )}
               {task.project && (
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <AssignmentIcon sx={{ mr: 1, color: theme.palette.text.secondary }} />
@@ -809,30 +814,91 @@ const TaskDetailPage = () => {
         <DialogContent sx={{
           backgroundColor: theme.palette.background.paper
         }}>
+          {/* Read-only fields */}
           <TextField
             label="Title"
             value={editForm.title}
-            onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
             fullWidth
             margin="normal"
             variant="outlined"
+            disabled
+            sx={{
+              '& .MuiInputBase-input': {
+                color: theme.palette.text.secondary,
+              },
+            }}
           />
           <TextField
             label="Description"
             value={editForm.description}
-            onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
             fullWidth
             multiline
             rows={4}
             margin="normal"
             variant="outlined"
+            disabled
+            sx={{
+              '& .MuiInputBase-input': {
+                color: theme.palette.text.secondary,
+              },
+            }}
           />
+          <TextField
+            label="Priority"
+            value={editForm.priority}
+            fullWidth
+            margin="normal"
+            variant="outlined"
+            disabled
+            sx={{
+              '& .MuiInputBase-input': {
+                color: theme.palette.text.secondary,
+              },
+            }}
+          />
+          
+          {/* Editable Status Field */}
           <FormControl fullWidth margin="normal">
             <InputLabel>Status</InputLabel>
             <Select
               value={editForm.status}
               onChange={(e) => setEditForm(prev => ({ ...prev, status: e.target.value }))}
               label="Status"
+              sx={{
+                backgroundColor: theme.palette.background.paper,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.divider,
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.primary.main,
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: theme.palette.primary.main,
+                },
+              }}
+              MenuProps={{
+                PaperProps: {
+                  sx: {
+                    backgroundColor: theme.palette.background.paper,
+                    border: `1px solid ${theme.palette.divider}`,
+                    boxShadow: theme.shadows[8],
+                    '& .MuiMenuItem-root': {
+                      backgroundColor: theme.palette.background.paper,
+                      color: theme.palette.text.primary,
+                      '&:hover': {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                      '&.Mui-selected': {
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                        '&:hover': {
+                          backgroundColor: theme.palette.primary.dark,
+                        },
+                      },
+                    },
+                  },
+                },
+              }}
             >
               <MenuItem value="pending">Pending</MenuItem>
               <MenuItem value="in_progress">In Progress</MenuItem>
@@ -840,18 +906,8 @@ const TaskDetailPage = () => {
               <MenuItem value="declined">Declined</MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Priority</InputLabel>
-            <Select
-              value={editForm.priority}
-              onChange={(e) => setEditForm(prev => ({ ...prev, priority: e.target.value }))}
-              label="Priority"
-            >
-              <MenuItem value="low">Low</MenuItem>
-              <MenuItem value="medium">Medium</MenuItem>
-              <MenuItem value="high">High</MenuItem>
-            </Select>
-          </FormControl>
+          
+          {/* Remarks Field */}
           <TextField
             label="Remarks *"
             value={editForm.remarks}

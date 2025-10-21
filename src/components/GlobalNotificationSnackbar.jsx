@@ -66,13 +66,14 @@ const GlobalNotificationSnackbar = () => {
           </IconButton>
         }
         sx={{
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
+          backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : theme.palette.grey[100],
+          color: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
+          border: `1px solid ${theme.palette.divider}`,
           '& .MuiAlert-icon': {
-            color: theme.palette.primary.contrastText,
+            color: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
           },
           '& .MuiAlert-action': {
-            color: theme.palette.primary.contrastText,
+            color: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black,
           },
         }}
       >
