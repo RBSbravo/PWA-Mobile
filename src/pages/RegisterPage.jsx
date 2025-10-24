@@ -14,9 +14,10 @@ import {
   useMediaQuery,
   Divider,
   Avatar,
-  MenuItem,
   CircularProgress,
   FormHelperText,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -438,108 +439,41 @@ const RegisterPage = () => {
               />
               {errors.confirmPassword && <FormHelperText error>{errors.confirmPassword}</FormHelperText>}
 
-              <TextField
-                select
+              <Select
                 fullWidth
-                label="Department"
                 value={formData.departmentId}
                 onChange={(e) => handleInputChange('departmentId', e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <BusinessIcon 
-                        color="primary" 
-                        sx={{ 
-                          mr: 0.5,
-                          fontSize: { xs: '1.2rem', sm: '1.3rem' }
-                        }} 
-                      />
-                    </InputAdornment>
-                  ),
-                }}
+                displayEmpty
                 error={!!errors.departmentId}
+                startAdornment={
+                  <InputAdornment position="start">
+                    <BusinessIcon color="primary" />
+                  </InputAdornment>
+                }
                 sx={{
-                  width: '100%',
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 3,
                     backgroundColor: theme.palette.background.default,
-                    fontSize: { xs: 14, sm: 15 },
-                    height: { xs: 38, sm: 40 },
-                    transition: 'all 0.2s ease',
+                    fontSize: 15,
+                    height: 40,
                   },
                   '& .MuiSelect-select': {
                     display: 'flex',
                     alignItems: 'center',
-                    pl: 0.5,
-                    py: { xs: 1, sm: 1.2 },
+                    gap: 1,
                   },
-                  '& .MuiInputAdornment-root': {
-                    ml: { xs: 0.5, sm: 1 },
-                    mr: -0.5,
-                    height: '100%',
-                  },
-                  '& .MuiInputLabel-root': {
-                    fontSize: { xs: 14, sm: 15 },
-                  },
-                  '& .MuiFormHelperText-root': {
-                    fontSize: { xs: 11, sm: 12 },
-                    mx: 0,
-                  }
-                }}
-                SelectProps={{
-                  MenuProps: {
-                    PaperProps: {
-                      sx: {
-                        maxHeight: { xs: '40vh', sm: 300 },
-                        width: 'auto',
-                        minWidth: '100%',
-                        '& .MuiMenuItem-root': {
-                          fontSize: { xs: 14, sm: 15 },
-                          py: { xs: 0.75, sm: 1 },
-                          px: { xs: 1.5, sm: 2 },
-                          minHeight: { xs: 36, sm: 40 },
-                        },
-                        '& .MuiList-root': {
-                          py: { xs: 0.5, sm: 1 },
-                        }
-                      },
-                    },
-                    anchorOrigin: {
-                      vertical: 'bottom',
-                      horizontal: 'center',
-                    },
-                    transformOrigin: {
-                      vertical: 'top',
-                      horizontal: 'center',
-                    },
-                  },
-                  displayEmpty: true,
                 }}
                 required
               >
                 <MenuItem value="" disabled>
-                  <Typography sx={{ color: theme.palette.text.secondary }}>Select Department</Typography>
+                  <Typography color="text.secondary">Select Department</Typography>
                 </MenuItem>
                 {departments.map((department) => (
-                  <MenuItem 
-                    key={department.id} 
-                    value={department.id}
-                    sx={{
-                      '&.Mui-selected': {
-                        backgroundColor: `${theme.palette.primary.main}15`,
-                        '&:hover': {
-                          backgroundColor: `${theme.palette.primary.main}25`,
-                        },
-                      },
-                      '&:hover': {
-                        backgroundColor: `${theme.palette.primary.main}08`,
-                      },
-                    }}
-                  >
+                  <MenuItem key={department.id} value={department.id}>
                     {department.name}
                   </MenuItem>
                 ))}
-              </TextField>
+              </Select>
               {errors.departmentId && <FormHelperText error>{errors.departmentId}</FormHelperText>}
             </Box>
 
