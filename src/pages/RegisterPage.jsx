@@ -463,6 +463,39 @@ const RegisterPage = () => {
                     gap: 1,
                   },
                 }}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      bgcolor: theme.palette.mode === 'dark' 
+                        ? theme.palette.background.paper 
+                        : '#fff',
+                      backgroundImage: 'none',
+                      boxShadow: theme.shadows[4],
+                      borderRadius: 2,
+                      mt: 0.5,
+                      '& .MuiMenuItem-root': {
+                        fontSize: 15,
+                        py: 1,
+                        px: 2,
+                        '&:hover': {
+                          bgcolor: theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.08)'
+                            : 'rgba(0, 0, 0, 0.04)',
+                        },
+                        '&.Mui-selected': {
+                          bgcolor: theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.15)'
+                            : 'rgba(0, 0, 0, 0.08)',
+                          '&:hover': {
+                            bgcolor: theme.palette.mode === 'dark'
+                              ? 'rgba(255, 255, 255, 0.2)'
+                              : 'rgba(0, 0, 0, 0.12)',
+                          },
+                        },
+                      },
+                    },
+                  },
+                }}
                 required
               >
                 <MenuItem value="" disabled>
