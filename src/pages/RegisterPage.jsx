@@ -526,26 +526,40 @@ const RegisterPage = () => {
       <Dialog
         open={departmentModalOpen}
         onClose={() => setDepartmentModalOpen(false)}
-        maxWidth="sm"
-        fullWidth
-        fullScreen={isMobile}
+        maxWidth="xs"
         PaperProps={{
           sx: {
             backgroundColor: theme.palette.background.paper,
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90%',
+            maxWidth: 360,
+            borderRadius: 2,
+            boxShadow: theme.shadows[8],
           }
         }}
       >
         <DialogTitle sx={{
           backgroundColor: theme.palette.primary.main,
           color: theme.palette.primary.contrastText,
-          fontWeight: 600
+          fontWeight: 600,
+          fontSize: '1.1rem',
+          py: 1.5,
+          px: 2
         }}>
           Select Department
         </DialogTitle>
         <DialogContent sx={{
-          backgroundColor: theme.palette.background.paper
+          backgroundColor: theme.palette.background.paper,
+          p: 2,
+          '&:first-of-type': {
+            pt: 2
+          }
         }}>
           <TextField
+            size="small"
             fullWidth
             placeholder="Search department..."
             value={departmentSearch}
@@ -559,7 +573,27 @@ const RegisterPage = () => {
             }}
             sx={{ mb: 2 }}
           />
-          <List sx={{ maxHeight: 300, overflow: 'auto' }}>
+          <List 
+            sx={{ 
+              mt: 1.5,
+              maxHeight: 240,
+              overflow: 'auto',
+              '&::-webkit-scrollbar': {
+                width: '8px',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: theme.palette.divider,
+                borderRadius: '4px',
+              },
+              '& .MuiListItem-root': {
+                px: 1.5,
+                py: 0.75,
+                borderRadius: 1,
+                mb: 0.5,
+                transition: 'all 0.2s',
+              }
+            }}
+          >
             {filteredDepartments.map((department) => (
               <ListItem
                 key={department.id}
@@ -571,21 +605,39 @@ const RegisterPage = () => {
                 }}
                 sx={{
                   backgroundColor: formData.departmentId === department.id 
-                    ? theme.palette.primary.main + '22' 
+                    ? `${theme.palette.primary.main}15`
                     : 'transparent',
+                  '&:hover': {
+                    backgroundColor: `${theme.palette.primary.main}08`,
+                  }
                 }}
               >
                 <ListItemText
                   primary={department.name}
-                  sx={{
-                    fontWeight: formData.departmentId === department.id ? 'bold' : 'normal',
+                  primaryTypographyProps={{
+                    sx: {
+                      fontSize: '0.95rem',
+                      fontWeight: formData.departmentId === department.id ? 600 : 400,
+                      color: formData.departmentId === department.id 
+                        ? theme.palette.primary.main
+                        : theme.palette.text.primary,
+                    }
                   }}
                 />
               </ListItem>
             ))}
             {filteredDepartments.length === 0 && (
-              <ListItem>
-                <ListItemText primary="No departments found." />
+              <ListItem sx={{ justifyContent: 'center' }}>
+                <ListItemText 
+                  primary="No departments found"
+                  primaryTypographyProps={{
+                    sx: {
+                      color: theme.palette.text.secondary,
+                      fontSize: '0.9rem',
+                      textAlign: 'center'
+                    }
+                  }}
+                />
               </ListItem>
             )}
           </List>
