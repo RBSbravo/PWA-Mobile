@@ -14,12 +14,7 @@ import {
   useMediaQuery,
   Divider,
   Avatar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  List,
-  ListItem,
-  ListItemText,
+  MenuItem,
   CircularProgress,
   FormHelperText,
 } from '@mui/material';
@@ -30,7 +25,6 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Person as PersonIcon,
   Business as BusinessIcon,
-  Search as SearchIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import PWARateLimitAlert from '../components/RateLimitAlert';
@@ -86,8 +80,6 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [departments, setDepartments] = useState([]);
-  const [departmentModalOpen, setDepartmentModalOpen] = useState(false);
-  const [departmentSearch, setDepartmentSearch] = useState('');
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -214,14 +206,7 @@ const RegisterPage = () => {
     }
   };
 
-  const getSelectedDepartmentName = () => {
-    const dept = departments.find(d => d.id === formData.departmentId);
-    return dept ? dept.name : 'Select Department';
-  };
 
-  const filteredDepartments = departments.filter(d => 
-    d.name.toLowerCase().includes(departmentSearch.toLowerCase())
-  );
 
   if (loading && success) {
     return (
@@ -454,30 +439,107 @@ const RegisterPage = () => {
               {errors.confirmPassword && <FormHelperText error>{errors.confirmPassword}</FormHelperText>}
 
               <TextField
+                select
                 fullWidth
                 label="Department"
-                value={getSelectedDepartmentName()}
-                onClick={() => setDepartmentModalOpen(true)}
+                value={formData.departmentId}
+                onChange={(e) => handleInputChange('departmentId', e.target.value)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <BusinessIcon color="primary" />
+                      <BusinessIcon 
+                        color="primary" 
+                        sx={{ 
+                          mr: 0.5,
+                          fontSize: { xs: '1.2rem', sm: '1.3rem' }
+                        }} 
+                      />
                     </InputAdornment>
                   ),
                 }}
                 error={!!errors.departmentId}
                 sx={{
+                  width: '100%',
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 3,
                     backgroundColor: theme.palette.background.default,
-                    fontSize: 15,
-                    height: 40,
-                    cursor: 'pointer',
+                    fontSize: { xs: 14, sm: 15 },
+                    height: { xs: 38, sm: 40 },
+                    transition: 'all 0.2s ease',
                   },
+                  '& .MuiSelect-select': {
+                    display: 'flex',
+                    alignItems: 'center',
+                    pl: 0.5,
+                    py: { xs: 1, sm: 1.2 },
+                  },
+                  '& .MuiInputAdornment-root': {
+                    ml: { xs: 0.5, sm: 1 },
+                    mr: -0.5,
+                    height: '100%',
+                  },
+                  '& .MuiInputLabel-root': {
+                    fontSize: { xs: 14, sm: 15 },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    fontSize: { xs: 11, sm: 12 },
+                    mx: 0,
+                  }
                 }}
-                readOnly
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      sx: {
+                        maxHeight: { xs: '40vh', sm: 300 },
+                        width: 'auto',
+                        minWidth: '100%',
+                        '& .MuiMenuItem-root': {
+                          fontSize: { xs: 14, sm: 15 },
+                          py: { xs: 0.75, sm: 1 },
+                          px: { xs: 1.5, sm: 2 },
+                          minHeight: { xs: 36, sm: 40 },
+                        },
+                        '& .MuiList-root': {
+                          py: { xs: 0.5, sm: 1 },
+                        }
+                      },
+                    },
+                    anchorOrigin: {
+                      vertical: 'bottom',
+                      horizontal: 'center',
+                    },
+                    transformOrigin: {
+                      vertical: 'top',
+                      horizontal: 'center',
+                    },
+                  },
+                  displayEmpty: true,
+                }}
                 required
-              />
+              >
+                <MenuItem value="" disabled>
+                  <Typography sx={{ color: theme.palette.text.secondary }}>Select Department</Typography>
+                </MenuItem>
+                {departments.map((department) => (
+                  <MenuItem 
+                    key={department.id} 
+                    value={department.id}
+                    sx={{
+                      '&.Mui-selected': {
+                        backgroundColor: `${theme.palette.primary.main}15`,
+                        '&:hover': {
+                          backgroundColor: `${theme.palette.primary.main}25`,
+                        },
+                      },
+                      '&:hover': {
+                        backgroundColor: `${theme.palette.primary.main}08`,
+                      },
+                    }}
+                  >
+                    {department.name}
+                  </MenuItem>
+                ))}
+              </TextField>
               {errors.departmentId && <FormHelperText error>{errors.departmentId}</FormHelperText>}
             </Box>
 
@@ -522,127 +584,6 @@ const RegisterPage = () => {
         </CardContent>
       </Card>
 
-      {/* Department Selection Modal */}
-      <Dialog
-        open={departmentModalOpen}
-        onClose={() => setDepartmentModalOpen(false)}
-        maxWidth="xs"
-        PaperProps={{
-          sx: {
-            backgroundColor: theme.palette.background.paper,
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '90%',
-            maxWidth: 360,
-            borderRadius: 2,
-            boxShadow: theme.shadows[8],
-          }
-        }}
-      >
-        <DialogTitle sx={{
-          backgroundColor: theme.palette.primary.main,
-          color: theme.palette.primary.contrastText,
-          fontWeight: 600,
-          fontSize: '1.1rem',
-          py: 1.5,
-          px: 2
-        }}>
-          Select Department
-        </DialogTitle>
-        <DialogContent sx={{
-          backgroundColor: theme.palette.background.paper,
-          p: 2,
-          '&:first-of-type': {
-            pt: 2
-          }
-        }}>
-          <TextField
-            size="small"
-            fullWidth
-            placeholder="Search department..."
-            value={departmentSearch}
-            onChange={(e) => setDepartmentSearch(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ mb: 2 }}
-          />
-          <List 
-            sx={{ 
-              mt: 1.5,
-              maxHeight: 240,
-              overflow: 'auto',
-              '&::-webkit-scrollbar': {
-                width: '8px',
-              },
-              '&::-webkit-scrollbar-thumb': {
-                backgroundColor: theme.palette.divider,
-                borderRadius: '4px',
-              },
-              '& .MuiListItem-root': {
-                px: 1.5,
-                py: 0.75,
-                borderRadius: 1,
-                mb: 0.5,
-                transition: 'all 0.2s',
-              }
-            }}
-          >
-            {filteredDepartments.map((department) => (
-              <ListItem
-                key={department.id}
-                button
-                onClick={() => {
-                  handleInputChange('departmentId', department.id);
-                  setDepartmentModalOpen(false);
-                  setDepartmentSearch('');
-                }}
-                sx={{
-                  backgroundColor: formData.departmentId === department.id 
-                    ? `${theme.palette.primary.main}15`
-                    : 'transparent',
-                  '&:hover': {
-                    backgroundColor: `${theme.palette.primary.main}08`,
-                  }
-                }}
-              >
-                <ListItemText
-                  primary={department.name}
-                  primaryTypographyProps={{
-                    sx: {
-                      fontSize: '0.95rem',
-                      fontWeight: formData.departmentId === department.id ? 600 : 400,
-                      color: formData.departmentId === department.id 
-                        ? theme.palette.primary.main
-                        : theme.palette.text.primary,
-                    }
-                  }}
-                />
-              </ListItem>
-            ))}
-            {filteredDepartments.length === 0 && (
-              <ListItem sx={{ justifyContent: 'center' }}>
-                <ListItemText 
-                  primary="No departments found"
-                  primaryTypographyProps={{
-                    sx: {
-                      color: theme.palette.text.secondary,
-                      fontSize: '0.9rem',
-                      textAlign: 'center'
-                    }
-                  }}
-                />
-              </ListItem>
-            )}
-          </List>
-        </DialogContent>
-      </Dialog>
 
 
       {/* Success/Error Alert */}
