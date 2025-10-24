@@ -15,8 +15,12 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUserFromStorage = async () => {
       try {
-        const storedUser = localStorage.getItem('mito_user');
-        const storedToken = localStorage.getItem('mito_token');
+        // Check which storage to use
+        const authStorage = localStorage.getItem('mito_auth_storage');
+        const storage = authStorage === 'local' ? localStorage : sessionStorage;
+        
+        const storedUser = storage.getItem('mito_user');
+        const storedToken = storage.getItem('mito_token');
         
         if (storedUser && storedToken) {
           setUser(JSON.parse(storedUser));
@@ -27,8 +31,9 @@ export const AuthProvider = ({ children }) => {
             await api.getProfile(storedToken);
           } catch (error) {
             // Token is invalid, clear storage
-            localStorage.removeItem('mito_user');
-            localStorage.removeItem('mito_token');
+            storage.removeItem('mito_user');
+            storage.removeItem('mito_token');
+            storage.removeItem('mito_auth_storage');
             setUser(null);
             setToken(null);
           }
@@ -43,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     loadUserFromStorage();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = false) => {
     setLoginLoading(true);
     try {
       const response = await api.login(email, password);
@@ -53,8 +58,10 @@ export const AuthProvider = ({ children }) => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Store user and token
-      localStorage.setItem('mito_user', JSON.stringify(userData));
-      localStorage.setItem('mito_token', authToken);
+      const storage = rememberMe ? localStorage : sessionStorage;
+      storage.setItem('mito_user', JSON.stringify(userData));
+      storage.setItem('mito_token', authToken);
+      storage.setItem('mito_auth_storage', rememberMe ? 'local' : 'session');
       
       setUser(userData);
       setToken(authToken);
@@ -93,9 +100,13 @@ export const AuthProvider = ({ children }) => {
       // Add 2-second delay for better UX
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Clear local storage and state
+      // Clear all storage and state
       localStorage.removeItem('mito_user');
       localStorage.removeItem('mito_token');
+      localStorage.removeItem('mito_auth_storage');
+      sessionStorage.removeItem('mito_user');
+      sessionStorage.removeItem('mito_token');
+      sessionStorage.removeItem('mito_auth_storage');
       setUser(null);
       setToken(null);
       setLogoutLoading(false);

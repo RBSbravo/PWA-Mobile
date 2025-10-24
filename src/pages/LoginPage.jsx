@@ -15,6 +15,7 @@ import {
   Divider,
   Avatar,
   CircularProgress,
+  Checkbox,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -65,6 +66,7 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -91,7 +93,7 @@ const LoginPage = () => {
     }
     
     try {
-      await login(formData.email, formData.password);
+      await login(formData.email, formData.password, formData.rememberMe);
       pwaRateLimitHandler.clearRetryTimer('login');
       navigate('/dashboard');
     } catch (error) {
@@ -230,21 +232,31 @@ const LoginPage = () => {
                 required
               />
 
-              <Button
-                variant="text"
-                component={Link}
-                to="/forgot-password"
-                sx={{
-                  alignSelf: 'flex-end',
-                  mt: -1,
-                  mb: 1,
-                  textTransform: 'none',
-                  fontSize: 13,
-                  color: theme.palette.primary.main,
-                }}
-              >
-                Forgot Password?
-              </Button>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: -1, mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Checkbox
+                    checked={formData.rememberMe}
+                    onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
+                    color="primary"
+                    size="small"
+                  />
+                  <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                    Remember me
+                  </Typography>
+                </Box>
+                <Button
+                  variant="text"
+                  component={Link}
+                  to="/forgot-password"
+                  sx={{
+                    textTransform: 'none',
+                    fontSize: 13,
+                    color: theme.palette.primary.main,
+                  }}
+                >
+                  Forgot Password?
+                </Button>
+              </Box>
 
               <Button
                 type="submit"
