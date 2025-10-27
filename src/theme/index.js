@@ -258,9 +258,17 @@ export const theme = createTheme({
             // iOS specific input fixes
             fontSize: '16px', // Prevent zoom on iOS
             '-webkit-appearance': 'none',
+            // Ensure keyboard shows on iOS
+            '-webkit-user-select': 'text',
+            '-webkit-touch-callout': 'default',
+            'touch-action': 'manipulation',
           },
           '& .MuiInputBase-input': {
             fontSize: '16px', // Prevent zoom on iOS
+            // Ensure proper focus and keyboard display
+            '-webkit-user-select': 'text',
+            '-webkit-touch-callout': 'default',
+            'touch-action': 'manipulation',
           },
         },
       },

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/mito_logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
     <meta name="theme-color" content="#2E7D32" />
     <meta name="description" content="MITO Task Management System - Progressive Web App" />
     
@@ -86,8 +86,8 @@
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         -webkit-tap-highlight-color: transparent;
-        /* Prevent zoom on input focus */
-        touch-action: manipulation;
+        /* Allow proper input focus and keyboard display */
+        touch-action: pan-x pan-y;
         /* iOS specific improvements */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -118,8 +118,8 @@
         /* Prevent text selection on UI elements */
         -webkit-user-select: none;
         -webkit-touch-callout: none;
-        /* Better touch handling */
-        touch-action: manipulation;
+        /* Better touch handling - allow keyboard to show */
+        touch-action: pan-x pan-y;
         /* Ensure background covers entire viewport */
         background-color: var(--background-color, #F5F5F5); /* Light theme default */
         /* Prevent white flash during scroll */
@@ -273,6 +273,11 @@
           -webkit-appearance: none;
           border-radius: 0;
           font-size: 16px; /* Prevent zoom on iOS */
+          /* Ensure keyboard shows on iOS */
+          -webkit-user-select: text;
+          -webkit-touch-callout: default;
+          /* Allow proper focus */
+          touch-action: manipulation;
         }
         
         /* iOS specific button fixes */
@@ -387,5 +392,47 @@
       </div>
     </div>
     <script type="module" src="/src/main.jsx"></script>
+    
+    <!-- iOS PWA Keyboard Fix -->
+    <script>
+      // Fix for iOS PWA keyboard not showing in standalone mode
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add touchstart event listener to ensure proper focus handling
+        document.addEventListener('touchstart', function(e) {
+          // Allow default behavior for input elements
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            return;
+          }
+          // Prevent default for other elements to avoid interference
+          e.preventDefault();
+        }, { passive: false });
+        
+        // Ensure input focus works properly on iOS
+        document.addEventListener('focusin', function(e) {
+          if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+            // Force focus and ensure keyboard shows
+            setTimeout(() => {
+              e.target.focus();
+            }, 100);
+          }
+        });
+        
+        // Handle iOS viewport changes when keyboard appears/disappears
+        let initialViewportHeight = window.innerHeight;
+        window.addEventListener('resize', function() {
+          const currentHeight = window.innerHeight;
+          const heightDifference = initialViewportHeight - currentHeight;
+          
+          // If height decreased significantly, keyboard likely appeared
+          if (heightDifference > 150) {
+            // Scroll focused input into view
+            const activeElement = document.activeElement;
+            if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+              activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        });
+      });
+    </script>
   </body>
 </html>
