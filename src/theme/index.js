@@ -258,24 +258,9 @@ export const theme = createTheme({
             // iOS specific input fixes
             fontSize: '16px', // Prevent zoom on iOS
             '-webkit-appearance': 'none',
-            // iOS PWA standalone mode fixes
-            '-webkit-tap-highlight-color': 'rgba(0, 0, 0, 0.1)',
-            '-webkit-touch-callout': 'default',
-            'pointer-events': 'auto',
-            'touch-action': 'manipulation',
           },
           '& .MuiInputBase-input': {
             fontSize: '16px', // Prevent zoom on iOS
-            // iOS PWA standalone mode fixes
-            '-webkit-tap-highlight-color': 'rgba(0, 0, 0, 0.1)',
-            '-webkit-touch-callout': 'default',
-            '-webkit-user-select': 'text',
-            '-webkit-text-size-adjust': '100%',
-            'pointer-events': 'auto',
-            'touch-action': 'manipulation',
-            // Ensure proper focus behavior
-            '-webkit-appearance': 'none',
-            'appearance': 'none',
           },
         },
       },

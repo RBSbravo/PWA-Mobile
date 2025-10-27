@@ -31,9 +31,6 @@ import ThemeCSSVariables from './components/ThemeCSSVariables';
 import socketService from './services/socket';
 import api from './services/api';
 
-// Utils
-import { initializeIOSKeyboardFix } from './utils/iosKeyboardFix';
-
 // App Content Component
 const AppContent = () => {
   const theme = useTheme();
@@ -148,12 +145,6 @@ const AppContent = () => {
 
 // Main App Component
 const App = () => {
-  // Initialize iOS keyboard fix
-  useEffect(() => {
-    const cleanup = initializeIOSKeyboardFix();
-    return cleanup;
-  }, []);
-
   return (
     <AppThemeProvider>
       <ErrorProvider>
