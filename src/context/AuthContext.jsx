@@ -54,6 +54,11 @@ export const AuthProvider = ({ children }) => {
       const response = await api.login(email, password);
       const { user: userData, token: authToken } = response;
       
+      // Check if user has employee role
+      if (userData && userData.role !== 'employee') {
+        throw new Error('Access denied. Only employees are allowed to access this mobile app.');
+      }
+      
       // Add 2-second delay for better UX
       await new Promise(resolve => setTimeout(resolve, 2000));
       
