@@ -16,15 +16,22 @@ import {
   Avatar,
   CircularProgress,
   Checkbox,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Email as EmailIcon,
   Lock as LockIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
+  Help as HelpIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import PWARateLimitAlert from '../components/RateLimitAlert';
+import UserGuide from '../components/UserGuide';
 import { handlePWAApiError, pwaRateLimitHandler } from '../utils/rateLimitHandler';
 
 const Logo = () => {
@@ -71,6 +78,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [rateLimitData, setRateLimitData] = useState(null);
+  const [userGuideOpen, setUserGuideOpen] = useState(false);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -140,8 +148,34 @@ const LoginPage = () => {
               mb: 2.25,
               px: 2.25,
               pt: 2.5,
+              position: 'relative',
             }}
           >
+            {/* User Guide Button - Top Right */}
+            <IconButton
+              onClick={() => setUserGuideOpen(true)}
+              sx={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                backgroundColor: theme.palette.mode === 'dark' 
+                  ? 'rgba(255,255,255,0.1)' 
+                  : 'rgba(0,0,0,0.04)',
+                '&:hover': {
+                  backgroundColor: theme.palette.mode === 'dark' 
+                    ? 'rgba(255,255,255,0.2)' 
+                    : 'rgba(0,0,0,0.08)',
+                },
+                zIndex: 1,
+                width: 40,
+                height: 40,
+              }}
+              size="small"
+              title="User Guide"
+            >
+              <HelpIcon sx={{ color: 'primary.main', fontSize: 20 }} />
+            </IconButton>
+
             <Logo />
             <Typography
               variant="h4"
@@ -330,6 +364,62 @@ const LoginPage = () => {
           setError('');
         }}
       />
+
+      {/* User Guide Modal */}
+      <Dialog
+        open={userGuideOpen}
+        onClose={() => setUserGuideOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        fullScreen={isMobile}
+        PaperProps={{
+          sx: {
+            maxHeight: '90vh',
+            borderRadius: isMobile ? 0 : 2,
+            backgroundColor: theme.palette.background.paper,
+            m: isMobile ? 0 : 2,
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          pb: 1, 
+          fontWeight: 600,
+          color: theme.palette.text.primary,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: { xs: 2, sm: 3 },
+          py: { xs: 2, sm: 2.5 }
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <HelpIcon sx={{ mr: 1, color: 'primary.main', fontSize: 20 }} />
+            <Typography variant="h6" sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}>
+              User Guide
+            </Typography>
+          </Box>
+          <IconButton
+            onClick={() => setUserGuideOpen(false)}
+            size="small"
+            sx={{ color: theme.palette.text.secondary }}
+          >
+            <CloseIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ p: 0, overflow: 'auto' }}>
+          <UserGuide />
+        </DialogContent>
+        {!isMobile && (
+          <DialogActions sx={{ px: 3, py: 2 }}>
+            <Button 
+              onClick={() => setUserGuideOpen(false)}
+              variant="contained"
+              sx={{ textTransform: 'none' }}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        )}
+      </Dialog>
     </Box>
   );
 };
