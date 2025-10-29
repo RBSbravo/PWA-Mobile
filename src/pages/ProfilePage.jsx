@@ -1346,12 +1346,6 @@ const ProfilePage = () => {
                     </Typography>
                     <Box sx={{ pl: 2 }}>
                       <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Enable Notifications</strong> - Allow browser notifications for updates
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Use Landscape Mode</strong> - Better viewing for task details
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
                         • <strong>Install PWA</strong> - Add to home screen for app-like experience
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
@@ -1373,9 +1367,6 @@ const ProfilePage = () => {
                       </Typography>
                       <Typography variant="body2" sx={{ mb: 1 }}>
                         • <strong>Attach Files</strong> - Upload supporting documents
-                      </Typography>
-                      <Typography variant="body2" sx={{ mb: 1 }}>
-                        • <strong>Check Dashboard</strong> - Monitor task statistics
                       </Typography>
                     </Box>
                   </Grid>
