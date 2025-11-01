@@ -697,8 +697,8 @@ const TaskDetailPage = () => {
                         <Typography variant="caption" color="text.secondary">
                           {comment.commentUser?.firstname || comment.user?.firstname || 'Unknown'} {comment.commentUser?.lastname || comment.user?.lastname || ''} - {format(new Date(comment.createdAt || comment.date), 'MMM dd, yyyy HH:mm')}
                         </Typography>
-                        {/* Show delete button only for the commenter */}
-                        {(comment.commentUser?.id === user?.id || comment.user?.id === user?.id) && (
+                        {/* Show delete button only for the commenter and never for system-generated updates */}
+                        {!isTaskUpdate && (comment.commentUser?.id === user?.id || comment.user?.id === user?.id) && (
                           <IconButton
                             size="small"
                             onClick={() => handleDeleteComment(comment.id)}
